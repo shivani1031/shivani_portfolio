@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RAG Development Services | Shivani</title>
+<meta name="description" content="RAG development for assistants that answer from your own documents: ingestion, chunking, embeddings, hybrid retrieval, reranking and evaluation.">
+<meta name="robots" content="index,follow">
+<meta name="author" content="Shivani">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<link rel="manifest" href="/site.webmanifest">
+<meta name="theme-color" content="#080b0f">
+<meta property="og:type" content="website">
+<meta property="og:title" content="RAG Development Services | Shivani">
+<meta property="og:description" content="RAG development for assistants that answer from your own documents: ingestion, chunking, embeddings, hybrid retrieval, reranking and evaluation.">
+<meta property="og:image" content="/assets/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"/"},{"@type":"ListItem","position":2,"name":"Services","item":"/services/"},{"@type":"ListItem","position":3,"name":"RAG development","item":"/services/rag-development/"}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"What is the difference between RAG and fine-tuning?","acceptedAnswer":{"@type":"Answer","text":"RAG supplies information to the model at question time, whereas fine-tuning adjusts the model itself using training examples. RAG is generally the better match for facts that change, and fine-tuning is more often considered for consistent style or task behaviour."}},{"@type":"Question","name":"Can RAG use a database we already run?","acceptedAnswer":{"@type":"Answer","text":"Often, if it supports vector or full-text search. Data volume, filtering needs and operational effort decide whether that is enough, and a test on a sample of your content can show this before adding a separate system."}},{"@type":"Question","name":"How are wrong answers handled?","acceptedAnswer":{"@type":"Answer","text":"They cannot be ruled out, so the design plans for them: citations let users check a claim, a fallback applies when no good source is found, and evaluation shows which question types fail and at which stage."}},{"@type":"Question","name":"What types of content can be used?","acceptedAnswer":{"@type":"Answer","text":"Text-based content is the most straightforward. PDFs, tables, scans and images can also be handled, but they usually need extra parsing work, so a sample of your real documents should be reviewed early."}}]}</script>
+<!-- TODO once the domain is known: canonical, absolute og:url and og:image, absolute URLs in JSON-LD -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&family=Poppins:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+<header class="nav">
+  <div class="wrap nav-in">
+    <a class="logo" href="/" aria-label="Shivani, home"><img src="/assets/logo.svg" alt="Shivani" width="144" height="40"></a>
+    <nav id="nav-links" aria-label="Main">
+      <a href="/#services">Services</a>
+      <a href="/#skills">Skills</a>
+      <a href="/#work">Work</a>
+      <a href="/#process">Process</a>
+      <a href="/#faq">FAQ</a>
+      <a href="/blog/">Blog</a>
+      <a class="btn btn-sm" href="/#contact">Hire Me</a>
+    </nav>
+    <button id="menu-toggle" class="menu-toggle" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="nav-links"><span></span><span></span><span></span></button>
+  </div>
+</header>
+
+<main id="top">
+  <section class="page-head">
+    <div class="wrap">
+      <nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a><span aria-hidden="true">/</span><a href="/services/">Services</a><span aria-hidden="true">/</span><span aria-current="page">RAG development</span></nav>
+      <p class="eyebrow">Service</p>
+      <h1>RAG development</h1>
+      <p class="lead">Retrieval-augmented generation systems that find relevant passages in your own content and use them to ground an LLM answer.</p>
+    </div>
+  </section>
+  <section class="article">
+    <div class="wrap prose">
+<h2>What it is</h2>
+<p>Retrieval-augmented generation, or RAG, is a pattern for giving a language model information it was not trained on. When a question arrives, the system searches a knowledge source, selects the most relevant passages and passes them to the model along with the question. The model then writes an answer based on that context, ideally with references back to the sources.</p>
+<p>A RAG system has two main parts: an ingestion pipeline that prepares and indexes content, and a query pipeline that retrieves and generates. The guide <a href="/blog/what-is-rag-and-when-to-use-it/">what RAG is and when to use it</a> explains the pattern in more depth.</p>
+
+<h2>When it suits a project</h2>
+<p>RAG suits projects where answers must reflect specific, changing or private content, such as internal documentation, policies, product manuals or support articles. Because the content lives in an index rather than in the model, it can be updated without retraining anything.</p>
+<p>It suits a project less well if the questions need aggregate calculations across structured records, where a database query is the natural tool, or if the whole knowledge base is small enough to include directly in the prompt. Some systems combine approaches and route each question to the right one.</p>
+
+<h2>How it is typically approached</h2>
+<ul>
+<li><strong>Understand the content and questions.</strong> Review document formats and gather realistic questions, because both shape every later decision.</li>
+<li><strong>Build ingestion.</strong> Parse the source files, clean them, split them into chunks and store useful metadata such as source, section and date. See <a href="/blog/choosing-chunking-strategies-for-rag/">choosing chunking strategies for RAG</a>.</li>
+<li><strong>Index for retrieval.</strong> Create embeddings for vector search, and often add keyword search as well, since exact terms such as product codes can be missed by semantic similarity alone. See <a href="/blog/hybrid-search-and-reranking-for-rag/">hybrid search and reranking for RAG</a>.</li>
+<li><strong>Refine the results.</strong> Apply metadata filters during the search and, where it helps, add a reranking step that reorders candidates by relevance to the query.</li>
+<li><strong>Generate with care.</strong> Instruct the model to rely on the supplied context, cite its sources and say so when the context does not contain an answer.</li>
+<li><strong>Evaluate each stage.</strong> Measure whether the right passages were retrieved separately from whether the final answer was faithful and useful, so that problems can be traced to their source. See <a href="/blog/how-to-evaluate-a-rag-system/">how to evaluate a RAG system</a>.</li>
+<li><strong>Respect access rules.</strong> If not every user may see every document, permissions need to be enforced at retrieval time, before content reaches the model.</li>
+</ul>
+
+<h2>What I can help with</h2>
+<p>I can help with designing and building a new RAG system, connecting it to a user interface, or reviewing where an existing pipeline is losing quality. When retrieval is one step among several, it can also become part of a larger workflow; see <a href="/services/multi-agent-systems/">multi-agent systems</a>.</p>
+      <h2>Frequently asked questions</h2>
+      <h3>What is the difference between RAG and fine-tuning?</h3>
+      <p>RAG supplies information to the model at question time, whereas fine-tuning adjusts the model itself using training examples. RAG is generally the better match for facts that change, and fine-tuning is more often considered for consistent style or task behaviour.</p>
+      <h3>Can RAG use a database we already run?</h3>
+      <p>Often, if it supports vector or full-text search. Data volume, filtering needs and operational effort decide whether that is enough, and a test on a sample of your content can show this before adding a separate system.</p>
+      <h3>How are wrong answers handled?</h3>
+      <p>They cannot be ruled out, so the design plans for them: citations let users check a claim, a fallback applies when no good source is found, and evaluation shows which question types fail and at which stage.</p>
+      <h3>What types of content can be used?</h3>
+      <p>Text-based content is the most straightforward. PDFs, tables, scans and images can also be handled, but they usually need extra parsing work, so a sample of your real documents should be reviewed early.</p>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="foot-cta">
+      <div>
+        <h2>Have an AI or full stack project in mind?</h2>
+        <p>Tell me what you want to build.</p>
+      </div>
+      <div class="foot-cta-btns">
+        <a class="btn" href="/#contact">Start a conversation</a>
+        <a class="btn btn-line" href="mailto:shivanigupta4876@gmail.com">Send an email</a>
+      </div>
+    </div>
+    <div class="foot-grid">
+      <div>
+        <a href="/" aria-label="Shivani, home"><img src="/assets/logo.svg" alt="Shivani" width="144" height="40"></a>
+        <p>AI/ML engineer working across generative AI, LLMs, RAG, agentic AI and NLP, plus full stack development.</p>
+        <span class="avail">Taking new projects</span>
+      </div>
+      <div>
+        <h3>Explore</h3>
+        <ul>
+          <li><a href="/services/">Services</a></li>
+          <li><a href="/#work">Projects</a></li>
+          <li><a href="/#process">Process</a></li>
+          <li><a href="/#faq">FAQ</a></li>
+          <li><a href="/blog/">Blog</a></li>
+          <li><a href="/#contact">Contact</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Services</h3>
+        <ul>
+          <li><a href="/services/generative-ai-llm-development/">Generative AI and LLMs</a></li>
+          <li><a href="/services/rag-development/">RAG development</a></li>
+          <li><a href="/services/multi-agent-systems/">Multi-agent systems</a></li>
+          <li><a href="/services/ai-orchestration-langgraph/">Orchestration with LangGraph</a></li>
+          <li><a href="/services/nlp-development/">NLP development</a></li>
+          <li><a href="/services/full-stack-development/">Full stack development</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Contact</h3>
+        <ul>
+          <li><a href="mailto:shivanigupta4876@gmail.com">shivanigupta4876@gmail.com</a></li>
+          <li><a href="tel:+919720466504">+91 97204 66504</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="foot-bottom">&copy; <span id="year">2026</span> Shivani. All rights reserved.</div>
+  </div>
+</footer>
+<a class="wa-float" href="https://wa.me/919720466504?text=Hi%20Shivani%2C%20I%20saw%20your%20website%20and%20would%20like%20to%20talk%20about%20a%20project." target="_blank" rel="noopener" aria-label="Chat on WhatsApp"><svg viewBox="0 0 24 24" width="28" height="28" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15L2 22l5.1-1.3A10 10 0 1 0 12 2zm0 18.2a8.2 8.2 0 0 1-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1a6.700 6.700 0 0 1-3.300-2.900c-.2-.3 0-.4.1-.6l.4-.4.2-.4v-.5l-.8-1.800c-.2-.5-.4-.4-.6-.4h-.5c-.2 0-.4.1-.6.3-.2.2-.8.8-.8 2s.9 2.300 1 2.500c.1.2 1.700 2.600 4.100 3.600 1.500.7 2.100.7 2.900.6.500-.1 1.500-.6 1.700-1.200.2-.6.2-1.100.1-1.200l-.2-.2z"/></svg></a>
+<script src="/assets/js/site.js" defer></script>
+</body>
+</html>

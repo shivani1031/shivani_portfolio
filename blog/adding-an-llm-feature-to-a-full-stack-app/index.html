@@ -1,0 +1,236 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Adding an LLM Feature to a Full Stack App | Shivani</title>
+<meta name="description" content="A practical guide to adding an LLM feature to a full stack app, covering architecture, streaming, structured outputs, security, UX, testing and costs.">
+<meta name="robots" content="index,follow">
+<meta name="author" content="Shivani">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<link rel="manifest" href="/site.webmanifest">
+<meta name="theme-color" content="#080b0f">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Adding an LLM Feature to a Full Stack App | Shivani">
+<meta property="og:description" content="A practical guide to adding an LLM feature to a full stack app, covering architecture, streaming, structured outputs, security, UX, testing and costs.">
+<meta property="og:image" content="/assets/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Adding an LLM feature to a full stack app","description":"A practical guide to adding an LLM feature to a full stack app, covering architecture, streaming, structured outputs, security, UX, testing and costs.","mainEntityOfPage":"/blog/adding-an-llm-feature-to-a-full-stack-app/","author":{"@type":"Person","name":"Shivani"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"/"},{"@type":"ListItem","position":2,"name":"Blog","item":"/blog/"},{"@type":"ListItem","position":3,"name":"Adding an LLM feature to a full stack app","item":"/blog/adding-an-llm-feature-to-a-full-stack-app/"}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Can I call an LLM API directly from the front-end?","acceptedAnswer":{"@type":"Answer","text":"It is generally unsafe for production, because API keys in browser code can be extracted. Route calls through your backend, where you can also apply authentication, rate limits and logging."}},{"@type":"Question","name":"Should I stream LLM responses?","acceptedAnswer":{"@type":"Answer","text":"Streaming usually suits longer free-text responses, because users see progress straight away. For short responses, or structured output that must be validated before use, a normal request is often simpler."}},{"@type":"Question","name":"What security risks does an LLM feature add?","acceptedAnswer":{"@type":"Answer","text":"The main ones are prompt injection, sensitive data sent to a model provider or kept in logs, unsafe rendering of model output, and abuse of a paid endpoint. Permissions in code, data minimisation, sanitising and per-user limits address them."}},{"@type":"Question","name":"Do I need a framework to add an LLM feature?","acceptedAnswer":{"@type":"Answer","text":"Not for a simple feature, where a provider client and your own code may be enough. Frameworks become more useful for retrieval pipelines or complex agent workflows, so let the actual requirements decide."}}]}</script>
+<!-- TODO once the domain is known: canonical, absolute og:url and og:image, absolute URLs in JSON-LD -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&family=Poppins:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+<header class="nav">
+  <div class="wrap nav-in">
+    <a class="logo" href="/" aria-label="Shivani, home"><img src="/assets/logo.svg" alt="Shivani" width="144" height="40"></a>
+    <nav id="nav-links" aria-label="Main">
+      <a href="/#services">Services</a>
+      <a href="/#skills">Skills</a>
+      <a href="/#work">Work</a>
+      <a href="/#process">Process</a>
+      <a href="/#faq">FAQ</a>
+      <a href="/blog/">Blog</a>
+      <a class="btn btn-sm" href="/#contact">Hire Me</a>
+    </nav>
+    <button id="menu-toggle" class="menu-toggle" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="nav-links"><span></span><span></span><span></span></button>
+  </div>
+</header>
+
+<main id="top">
+  <section class="page-head">
+    <div class="wrap">
+      <nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a><span aria-hidden="true">/</span><a href="/blog/">Blog</a><span aria-hidden="true">/</span><span aria-current="page">Adding an LLM feature to a full stack app</span></nav>
+      <p class="eyebrow">Guide</p>
+      <h1>Adding an LLM feature to a full stack app</h1>
+      <p class="lead">Call the model from your backend, behind a small service layer that owns prompts and output checks, then add validation, timeouts, a fallback and evaluation. The model call is a small part of the work; those surrounding decisions make the feature dependable.</p>
+    </div>
+  </section>
+  <section class="article">
+    <div class="wrap prose">
+<h2>Start with the feature, not the model</h2>
+<p>Before writing any code, describe the feature in plain terms. What goes in, what comes out, and what does the user do with the result? "Add AI" is not a specification, whereas "draft a reply to this ticket for the agent to edit" is. That sentence also reveals something important: a person reviews the result, which changes how much risk an error carries.</p>
+<p>Also ask whether an LLM is necessary at all. If a search filter, a template or a rule would solve the problem, it will be cheaper, faster and more predictable. An LLM earns its place when the input is varied language and fixed logic falls short.</p>
+
+<h2>A typical architecture</h2>
+<p>A common structure places an AI service layer between your application and the model provider:</p>
+<pre><code>Browser UI
+    |
+Backend API  (auth, validation, rate limits)
+    |
+AI service layer  (prompts, context, output checks)
+    |
+Model provider or self-hosted model</code></pre>
+<p>The most important rule follows from this diagram: <strong>call the model from the backend, not the browser</strong>. Anything in the browser can be read by users, including API keys. The backend also gives you one enforceable place for authentication, quotas, logging and policy checks.</p>
+<p>Keeping LLM logic in its own layer has further benefits. Prompts are kept out of your route handlers, a provider can be swapped with limited changes, and the logic can be tested independently. If your main application is not written in Python but your AI code is, that layer can run as a separate service.</p>
+
+<h2>Designing the backend</h2>
+<p>If the feature is an agent that runs for a long time or takes actions, also see <a href="/blog/building-a-backend-api-for-an-ai-agent-in-python/">building a backend API for an AI agent in Python</a>.</p>
+
+<h3>Build the prompt on the server</h3>
+<p>Treat prompts as code: keep them in version control and test them. Keep your instructions clearly separated from user-provided content, and fetch data with the permissions of the current user, so that the model never receives content that user could not otherwise see.</p>
+
+<h3>Use structured output when code consumes the result</h3>
+<p>If your application needs fields rather than prose, ask for a defined format and validate what comes back. Many providers offer features for schema-constrained output, but your code should still validate, as the result may be semantically wrong even when the format is correct.</p>
+<pre><code>import json
+
+CATEGORIES = {"billing", "technical", "other"}
+
+def triage(ticket_text):
+    raw = call_llm(build_prompt(ticket_text))
+    try:
+        data = json.loads(raw)
+        if data["category"] not in CATEGORIES:
+            return None
+        if not isinstance(data["needs_human"], bool):
+            return None  # bool("false") would be True
+        return {
+            "category": data["category"],
+            "summary": str(data["summary"]),
+            "needs_human": data["needs_human"],
+        }
+    except (json.JSONDecodeError, KeyError, TypeError):
+        return None  # retry, or use a safe fallback</code></pre>
+<p>Here <code>call_llm</code> and <code>build_prompt</code> stand in for your own code, and a schema validation library can replace the manual checks. Decide what a failure means in your application: a limited retry, a default value or a visible error are all legitimate.</p>
+
+<h3>Plan for failure</h3>
+<p>Calls to a model can be slow, can be rate limited and can fail. Your backend should have:</p>
+<ul>
+<li><strong>Timeouts</strong> so that a stalled call cannot hold up a request indefinitely.</li>
+<li><strong>Limited retries with backoff</strong> for temporary errors, without repeating calls that fail validation endlessly.</li>
+<li><strong>A fallback</strong> so that the rest of the page still works when the AI feature does not.</li>
+<li><strong>Background jobs</strong> for work that will outlast a normal request, such as processing a large document.</li>
+</ul>
+
+<h2>Streaming responses</h2>
+<p>LLM responses can take a noticeable time, and waiting in front of a blank screen feels longer than watching text appear. Streaming sends partial output as it is generated. Server-sent events are a common choice, because the traffic is one-way from server to browser, while WebSockets may be preferable if you already use them or need two-way communication. The guide on <a href="/blog/streaming-llm-responses-to-a-web-ui/">streaming LLM responses to a web UI</a> covers the details.</p>
+<p>Streaming also complicates some things. Output can only be fully validated once it is complete, so it suits free text better than JSON that drives logic. An error can occur halfway through a response, so the UI needs a partial-failure state. Proxies may buffer responses, which should be checked in your deployed environment. Cancel the upstream call if the user navigates away, so that you do not pay for output nobody will read.</p>
+
+<h2>Designing the interface</h2>
+<p>Interface decisions affect how much people can trust an LLM feature, and the UI should make the model's limitations manageable.</p>
+<ul>
+<li><strong>Show every state.</strong> Idle, loading, streaming, complete, failed and cancelled should all have a defined appearance.</li>
+<li><strong>Make editing easy.</strong> A draft that can be changed is much more forgiving than an automatic action.</li>
+<li><strong>Allow stopping and retrying.</strong> Long responses should have a stop control.</li>
+<li><strong>Show sources where relevant.</strong> Links to source material let users verify answers. If grounding on your own content is required, read <a href="/blog/what-is-rag-and-when-to-use-it/">what RAG is and when to use it</a>.</li>
+<li><strong>Be clear that the content is AI-generated,</strong> and that it may need checking.</li>
+<li><strong>Confirm consequential actions.</strong> Sending, deleting and paying should require a deliberate user action.</li>
+<li><strong>Render output safely.</strong> Treat model output as untrusted and sanitise it before displaying it as HTML or Markdown, to avoid script injection.</li>
+</ul>
+
+<h2>Security and privacy</h2>
+<p>LLM features introduce some new risks and sharpen some older ones.</p>
+<ul>
+<li><strong>Prompt injection.</strong> Users, or content the model reads, may include text designed to override your instructions. There is no complete defence at the prompt level, so limit the damage possible: enforce permissions in code, restrict what tools can do and require approval for sensitive actions. See <a href="/blog/llm-guardrails-and-prompt-injection-defence/">LLM guardrails and prompt injection defence</a>.</li>
+<li><strong>Data handling.</strong> Know what data you are sending to the model provider, review its terms for retention and training use, and minimise personal or confidential information.</li>
+<li><strong>Logging.</strong> Prompts and responses are useful for debugging, but they may contain sensitive data. Set access controls and retention limits.</li>
+<li><strong>Abuse.</strong> A public endpoint connected to a paid model is an attractive target. Require authentication where possible, and apply per-user rate limits and input size limits.</li>
+</ul>
+
+<h2>Managing cost and latency</h2>
+<p>Most hosted model pricing is based on usage, often on the tokens sent and received, so costs follow your prompt size and traffic. Useful controls include:</p>
+<ul>
+<li>Recording token usage per feature and per user, so that you can see where spending goes.</li>
+<li>Limiting output length and trimming unnecessary context.</li>
+<li>Using a smaller model for simple tasks and reserving a larger one for those that need it.</li>
+<li>Caching results for repeated identical requests, where that is safe, while making sure one user's private results are never served to another.</li>
+<li>Setting spending alerts and limits before launch.</li>
+</ul>
+
+<p>For a fuller treatment of these techniques, see <a href="/blog/controlling-llm-cost-and-latency/">controlling LLM cost and latency</a>.</p>
+
+<h2>Testing an LLM feature</h2>
+<p>Because the output varies, ordinary exact-match assertions are not enough on their own. Use a combination of approaches:</p>
+<ul>
+<li><strong>Standard tests with a stubbed model.</strong> Cover routes, permissions, validation, fallbacks and UI states without any live model calls. These can run quickly in continuous integration.</li>
+<li><strong>Evaluation sets.</strong> Maintain realistic inputs, including edge cases and hostile inputs, and score the results against defined criteria each time a prompt or model changes.</li>
+<li><strong>Production feedback.</strong> Monitor errors, latency and cost, and provide a simple way for users to flag poor results. With appropriate privacy handling, flagged cases can become new test cases.</li>
+</ul>
+
+<h2>Rolling it out</h2>
+<p>Put the feature behind a flag and release it to a small group first, watching for failure cases your test set missed. Pin a specific model version if your provider allows it, as behaviour can change when a model is updated, and evaluate before you move to a newer one. Keep a way to disable the feature without a full deployment, so that a provider outage or quality problem has a simple response.</p>
+
+<h2>A short checklist</h2>
+<ul>
+<li>The task, its users and acceptable failure are defined.</li>
+<li>Model calls and keys remain on the backend.</li>
+<li>Authentication, permissions and rate limits are enforced in code.</li>
+<li>Outputs are validated and rendered safely.</li>
+<li>Timeouts, retries and a fallback exist.</li>
+<li>The UI handles streaming, errors and cancellation.</li>
+<li>An evaluation set runs when prompts or models change.</li>
+<li>Usage and cost are monitored, with limits in place.</li>
+</ul>
+<p>For help with either side of this work, see <a href="/services/generative-ai-llm-development/">generative AI and LLM development</a> and <a href="/services/full-stack-development/">full stack development</a>.</p>
+      <h2>Frequently asked questions</h2>
+      <h3>Can I call an LLM API directly from the front-end?</h3>
+      <p>It is generally unsafe for production, because API keys in browser code can be extracted. Route calls through your backend, where you can also apply authentication, rate limits and logging.</p>
+      <h3>Should I stream LLM responses?</h3>
+      <p>Streaming usually suits longer free-text responses, because users see progress straight away. For short responses, or structured output that must be validated before use, a normal request is often simpler.</p>
+      <h3>What security risks does an LLM feature add?</h3>
+      <p>The main ones are prompt injection, sensitive data sent to a model provider or kept in logs, unsafe rendering of model output, and abuse of a paid endpoint. Permissions in code, data minimisation, sanitising and per-user limits address them.</p>
+      <h3>Do I need a framework to add an LLM feature?</h3>
+      <p>Not for a simple feature, where a provider client and your own code may be enough. Frameworks become more useful for retrieval pipelines or complex agent workflows, so let the actual requirements decide.</p>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="foot-cta">
+      <div>
+        <h2>Have an AI or full stack project in mind?</h2>
+        <p>Tell me what you want to build.</p>
+      </div>
+      <div class="foot-cta-btns">
+        <a class="btn" href="/#contact">Start a conversation</a>
+        <a class="btn btn-line" href="mailto:shivanigupta4876@gmail.com">Send an email</a>
+      </div>
+    </div>
+    <div class="foot-grid">
+      <div>
+        <a href="/" aria-label="Shivani, home"><img src="/assets/logo.svg" alt="Shivani" width="144" height="40"></a>
+        <p>AI/ML engineer working across generative AI, LLMs, RAG, agentic AI and NLP, plus full stack development.</p>
+        <span class="avail">Taking new projects</span>
+      </div>
+      <div>
+        <h3>Explore</h3>
+        <ul>
+          <li><a href="/services/">Services</a></li>
+          <li><a href="/#work">Projects</a></li>
+          <li><a href="/#process">Process</a></li>
+          <li><a href="/#faq">FAQ</a></li>
+          <li><a href="/blog/">Blog</a></li>
+          <li><a href="/#contact">Contact</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Services</h3>
+        <ul>
+          <li><a href="/services/generative-ai-llm-development/">Generative AI and LLMs</a></li>
+          <li><a href="/services/rag-development/">RAG development</a></li>
+          <li><a href="/services/multi-agent-systems/">Multi-agent systems</a></li>
+          <li><a href="/services/ai-orchestration-langgraph/">Orchestration with LangGraph</a></li>
+          <li><a href="/services/nlp-development/">NLP development</a></li>
+          <li><a href="/services/full-stack-development/">Full stack development</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Contact</h3>
+        <ul>
+          <li><a href="mailto:shivanigupta4876@gmail.com">shivanigupta4876@gmail.com</a></li>
+          <li><a href="tel:+919720466504">+91 97204 66504</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="foot-bottom">&copy; <span id="year">2026</span> Shivani. All rights reserved.</div>
+  </div>
+</footer>
+<a class="wa-float" href="https://wa.me/919720466504?text=Hi%20Shivani%2C%20I%20saw%20your%20website%20and%20would%20like%20to%20talk%20about%20a%20project." target="_blank" rel="noopener" aria-label="Chat on WhatsApp"><svg viewBox="0 0 24 24" width="28" height="28" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15L2 22l5.1-1.3A10 10 0 1 0 12 2zm0 18.2a8.2 8.2 0 0 1-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1a6.700 6.700 0 0 1-3.300-2.900c-.2-.3 0-.4.1-.6l.4-.4.2-.4v-.5l-.8-1.800c-.2-.5-.4-.4-.6-.4h-.5c-.2 0-.4.1-.6.3-.2.2-.8.8-.8 2s.9 2.300 1 2.500c.1.2 1.700 2.600 4.100 3.600 1.500.7 2.100.7 2.900.6.500-.1 1.500-.6 1.700-1.200.2-.6.2-1.100.1-1.200l-.2-.2z"/></svg></a>
+<script src="/assets/js/site.js" defer></script>
+</body>
+</html>

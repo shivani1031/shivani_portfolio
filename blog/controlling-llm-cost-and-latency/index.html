@@ -1,0 +1,211 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Controlling LLM Cost and Latency | Shivani</title>
+<meta name="description" content="Techniques to reduce LLM cost and latency: measure each step, trim context, route by task, cache safely, cap output, stream and limit agent loops.">
+<meta name="robots" content="index,follow">
+<meta name="author" content="Shivani">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<link rel="manifest" href="/site.webmanifest">
+<meta name="theme-color" content="#080b0f">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Controlling LLM Cost and Latency | Shivani">
+<meta property="og:description" content="Techniques to reduce LLM cost and latency: measure each step, trim context, route by task, cache safely, cap output, stream and limit agent loops.">
+<meta property="og:image" content="/assets/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Controlling LLM cost and latency","description":"Techniques to reduce LLM cost and latency: measure each step, trim context, route by task, cache safely, cap output, stream and limit agent loops.","mainEntityOfPage":"/blog/controlling-llm-cost-and-latency/","author":{"@type":"Person","name":"Shivani"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"/"},{"@type":"ListItem","position":2,"name":"Blog","item":"/blog/"},{"@type":"ListItem","position":3,"name":"Controlling LLM cost and latency","item":"/blog/controlling-llm-cost-and-latency/"}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"What is the first step in reducing LLM cost?","acceptedAnswer":{"@type":"Answer","text":"Measure tokens, model and cost by feature and by step, so you can see where the spending goes. Trimming unnecessary context and history is then often a good early change, tested against your evaluation set."}},{"@type":"Question","name":"Does streaming reduce LLM latency?","acceptedAnswer":{"@type":"Answer","text":"It reduces the time before people see something, not the total generation time, and it does not reduce tokens. For long answers, it makes waiting feel much better."}},{"@type":"Question","name":"Is semantic caching safe?","acceptedAnswer":{"@type":"Answer","text":"It can be, with care. Similar questions can need different answers, so test thresholds on realistic data, scope entries by user and permissions, and avoid it where a wrong reused answer would be costly."}},{"@type":"Question","name":"How do I stop an agent from running up costs?","acceptedAnswer":{"@type":"Answer","text":"Enforce limits on steps, tool calls, tokens and time per run in code, detect repeated calls and add per-user quotas and budget alerts. Prompt instructions alone are not a reliable limit."}}]}</script>
+<!-- TODO once the domain is known: canonical, absolute og:url and og:image, absolute URLs in JSON-LD -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&family=Poppins:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+<header class="nav">
+  <div class="wrap nav-in">
+    <a class="logo" href="/" aria-label="Shivani, home"><img src="/assets/logo.svg" alt="Shivani" width="144" height="40"></a>
+    <nav id="nav-links" aria-label="Main">
+      <a href="/#services">Services</a>
+      <a href="/#skills">Skills</a>
+      <a href="/#work">Work</a>
+      <a href="/#process">Process</a>
+      <a href="/#faq">FAQ</a>
+      <a href="/blog/">Blog</a>
+      <a class="btn btn-sm" href="/#contact">Hire Me</a>
+    </nav>
+    <button id="menu-toggle" class="menu-toggle" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="nav-links"><span></span><span></span><span></span></button>
+  </div>
+</header>
+
+<main id="top">
+  <section class="page-head">
+    <div class="wrap">
+      <nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a><span aria-hidden="true">/</span><a href="/blog/">Blog</a><span aria-hidden="true">/</span><span aria-current="page">Controlling LLM cost and latency</span></nav>
+      <p class="eyebrow">Guide</p>
+      <h1>Controlling LLM cost and latency</h1>
+      <p class="lead">To control LLM cost and latency, first measure where tokens and time go, then send less context, use the smallest model that passes your tests, cache what is safe to reuse, cap output and limit agent loops. Check quality after every change, because a cheaper or faster answer has little value if it is wrong.</p>
+    </div>
+  </section>
+  <section class="article">
+    <div class="wrap prose">
+<h2>Start by measuring</h2>
+<p>Optimising without data usually means working on the wrong thing. A slow answer may be caused by retrieval, a reranker, a tool call or a queue, not by the model. Before changing anything, record these for each model call and each step of a request:</p>
+<ul>
+<li>Input tokens, output tokens and any cached tokens.</li>
+<li>The model used, the feature it served and the outcome, including retries and failures.</li>
+<li>Time to first token, total duration and time spent in each non-model step.</li>
+<li>Your estimated cost per request and per completed user task.</li>
+</ul>
+<p>Look at cost per completed task as well as per call, since a cheaper model that needs several retries may cost more overall. For latency, review high percentiles and not only the average, as the slowest requests shape how reliable a product feels. Group data by feature too: often one feature or a small group of unusually long conversations accounts for much of the total.</p>
+<p>You also need an <a href="/blog/how-to-evaluate-a-rag-system/">evaluation set</a> or an equivalent test for your task. Every technique below can reduce quality, and without a test you will find out from your users.</p>
+
+<h2>Know what drives each one</h2>
+<p>Cost and latency are related, but they do not always move together. Hosted models are commonly priced by tokens, with output often priced differently from input, so check your provider's current pricing. Latency is shaped by the model, input size and especially how much output is generated, along with queueing and everything your application does around the call.</p>
+<div class="table-wrap"><table>
+<thead><tr><th>Technique</th><th>Helps cost</th><th>Helps latency</th><th>Main risk</th></tr></thead>
+<tbody>
+<tr><td>Trimming context</td><td>Yes</td><td>Often</td><td>Removing something the model needed</td></tr>
+<tr><td>Routing to a smaller model</td><td>Usually</td><td>Usually</td><td>Lower quality on hard cases</td></tr>
+<tr><td>Response caching</td><td>Yes</td><td>Yes, on a hit</td><td>Stale or wrongly shared answers</td></tr>
+<tr><td>Provider prompt caching</td><td>Usually</td><td>Often</td><td>Little benefit if prompts keep changing</td></tr>
+<tr><td>Capping output</td><td>Yes</td><td>Yes</td><td>Answers cut off mid-way</td></tr>
+<tr><td>Streaming</td><td>No</td><td>Perceived only</td><td>Harder validation and error handling</td></tr>
+<tr><td>Batch processing</td><td>Often</td><td>No, it is slower</td><td>Unsuitable for interactive use</td></tr>
+</tbody>
+</table></div>
+
+<h2>Send less to the model</h2>
+<p>Input is often the easiest place to find savings, as prompts tend to grow a little at a time.</p>
+<ul>
+<li><strong>Audit the system prompt.</strong> Remove old instructions, repeated rules and examples that no longer change results. Test each removal.</li>
+<li><strong>Manage conversation history.</strong> Sending every earlier turn makes long conversations steadily more expensive. Keep recent turns and summarise or drop older ones. <a href="/blog/agent-memory-short-term-and-long-term-state/">Agent memory</a> explains how to decide what to keep.</li>
+<li><strong>Retrieve less, but better.</strong> In RAG, more passages mean more tokens and sometimes more distraction. Better retrieval and <a href="/blog/hybrid-search-and-reranking-for-rag/">reranking</a> can let you send fewer passages, though a reranker adds its own latency.</li>
+<li><strong>Keep tool definitions and results small.</strong> Each tool definition uses input tokens, and large tool results stay in context for later turns. Load only the relevant tools, and return only the fields needed.</li>
+<li><strong>Strip noise.</strong> Remove markup, boilerplate and repeated headers from documents before they reach the prompt.</li>
+</ul>
+
+<h2>Use the right model for each task</h2>
+<p>Not all steps need your most capable model. Classifying a request, extracting simple fields and rewriting a query are often handled well by something smaller and faster, while complex reasoning may justify a larger one.</p>
+<p><strong>Static routing</strong> assigns a fixed model to each step or feature. It is simple and predictable, and it is a good place to begin. <strong>Dynamic routing</strong> chooses per request using rules or a small classifier, and adds its own errors and delay. <strong>Cascades</strong> try a cheap option first and escalate when a check fails or confidence is low, which works only if you have a reliable way to detect failure.</p>
+<p>Also ask whether the step needs an LLM at all. Rules, a database lookup or a <a href="/blog/text-classification-llms-vs-traditional-nlp/">traditional classifier</a> can be much faster for tasks with a clear structure.</p>
+<p>Here is an illustrative cascade. The helper functions are placeholders:</p>
+<pre><code># Illustrative only. Helpers and model labels are placeholders.
+def answer_with_cascade(request):
+    draft = call_model(model="small", prompt=request.prompt)
+    if passes_checks(draft, request):
+        return draft
+    return call_model(model="large", prompt=request.prompt)</code></pre>
+
+<h2>Cache carefully</h2>
+<p>Caching can save both money and time, but there are several kinds and they carry different risks.</p>
+<ul>
+<li><strong>Exact response caching.</strong> Store the result under a key made from the model, the full prompt and the relevant settings. It is safe and simple, and it works best when inputs repeat, such as when processing the same document again.</li>
+<li><strong>Semantic caching.</strong> Reuse an answer for a question with a similar meaning. This can raise the hit rate, but two similar questions can need different answers, so test thresholds on realistic data and consider it carefully for high-stakes uses.</li>
+<li><strong>Provider prompt caching.</strong> Many providers offer a way to reuse the processing of a repeated prompt prefix. Availability and rules vary, so check current documentation. To get the most from it, put stable content such as instructions and tool definitions first, and variable content last.</li>
+<li><strong>Embedding and retrieval caching.</strong> Avoid re-embedding unchanged documents, and cache repeated query embeddings where appropriate.</li>
+</ul>
+<p>Two safety rules apply to all of these. Scope keys by whatever affects the answer, including the user or tenant and their permissions, so one person's private answer never reaches another. And give entries a way to expire or be invalidated when source content changes.</p>
+
+<h2>Control output</h2>
+<p>Generating output is often the slowest part of a call, so shorter answers help with both measures.</p>
+<ul>
+<li><strong>Ask for what you need.</strong> Specify length and format. "Return the label only" is cheaper than an explanation that nobody reads.</li>
+<li><strong>Set a maximum output limit.</strong> Treat it as a safety cap and handle a cut-off response explicitly, because a truncated answer or broken JSON should not pass as complete.</li>
+<li><strong>Use structured output where it fits.</strong> Fixed fields can reduce chatter and make parsing failures, and the retries they cause, less common.</li>
+<li><strong>Check reasoning settings.</strong> Some models offer settings that spend extra tokens and time on reasoning. Use the lowest level that passes your tests.</li>
+</ul>
+
+<h2>Reduce waiting at the application level</h2>
+<ul>
+<li><strong>Stream long answers.</strong> <a href="/blog/streaming-llm-responses-to-a-web-ui/">Streaming</a> does not shorten total generation time or reduce tokens, but people see progress sooner.</li>
+<li><strong>Run independent steps at the same time.</strong> Retrieval from two sources does not need to happen one after the other. Keep an eye on rate limits when you do this.</li>
+<li><strong>Move work out of the request.</strong> Summaries, tagging and evaluation can run in the background. Where a provider offers a batch option, it can suit work that does not need an immediate result.</li>
+<li><strong>Prepare ahead.</strong> Generate results that are likely to be needed before anyone asks, when the content is known and changes rarely.</li>
+<li><strong>Use timeouts and sensible retries.</strong> Retries with backoff and a limit prevent a brief fault from turning into a flood of requests. A fallback model can help when a provider is slow, as long as it has been tested too.</li>
+<li><strong>Keep connections alive and work close together.</strong> Reusing clients avoids repeated connection setup, and placing services near each other can reduce network time. <a href="/blog/serving-an-llm-app-with-fastapi/">Serving an LLM app with FastAPI</a> shows how to share clients and avoid blocking in a Python service.</li>
+</ul>
+
+<h2>Keep agents within limits</h2>
+<p>Agents multiply everything above, because a single request can trigger many model calls, each carrying a growing context. A loop that goes wrong can run up costs quickly.</p>
+<ul>
+<li><strong>Set hard limits</strong> on steps, tool calls, tokens and time per run, enforced in code, and return a useful message when one is reached.</li>
+<li><strong>Detect repetition.</strong> Stop or escalate when the same call keeps returning the same result.</li>
+<li><strong>Be careful with extra agents.</strong> Every handoff adds calls and context. This is one of the costs to weigh when choosing between <a href="/blog/single-agent-vs-multi-agent-systems/">single and multi-agent designs</a>.</li>
+<li><strong>Compact context during long runs.</strong> Summarise or remove old tool results that are no longer needed.</li>
+</ul>
+
+<h2>Add budgets and guardrails</h2>
+<p>Finally, protect the system from unexpected use. Set maximum input sizes, rate limits and per-user or per-tenant quotas. Set budget alerts, and decide in advance what happens when a limit is reached: refuse, queue or switch to a smaller model. Make the behaviour clear to users. Then review your data regularly, since new features and changing usage can undo earlier savings.</p>
+<p>For help designing LLM features with these controls in place, see <a href="/services/generative-ai-llm-development/">generative AI and LLM development</a>.</p>
+      <h2>Frequently asked questions</h2>
+      <h3>What is the first step in reducing LLM cost?</h3>
+      <p>Measure tokens, model and cost by feature and by step, so you can see where the spending goes. Trimming unnecessary context and history is then often a good early change, tested against your evaluation set.</p>
+      <h3>Does streaming reduce LLM latency?</h3>
+      <p>It reduces the time before people see something, not the total generation time, and it does not reduce tokens. For long answers, it makes waiting feel much better.</p>
+      <h3>Is semantic caching safe?</h3>
+      <p>It can be, with care. Similar questions can need different answers, so test thresholds on realistic data, scope entries by user and permissions, and avoid it where a wrong reused answer would be costly.</p>
+      <h3>How do I stop an agent from running up costs?</h3>
+      <p>Enforce limits on steps, tool calls, tokens and time per run in code, detect repeated calls and add per-user quotas and budget alerts. Prompt instructions alone are not a reliable limit.</p>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="foot-cta">
+      <div>
+        <h2>Have an AI or full stack project in mind?</h2>
+        <p>Tell me what you want to build.</p>
+      </div>
+      <div class="foot-cta-btns">
+        <a class="btn" href="/#contact">Start a conversation</a>
+        <a class="btn btn-line" href="mailto:shivanigupta4876@gmail.com">Send an email</a>
+      </div>
+    </div>
+    <div class="foot-grid">
+      <div>
+        <a href="/" aria-label="Shivani, home"><img src="/assets/logo.svg" alt="Shivani" width="144" height="40"></a>
+        <p>AI/ML engineer working across generative AI, LLMs, RAG, agentic AI and NLP, plus full stack development.</p>
+        <span class="avail">Taking new projects</span>
+      </div>
+      <div>
+        <h3>Explore</h3>
+        <ul>
+          <li><a href="/services/">Services</a></li>
+          <li><a href="/#work">Projects</a></li>
+          <li><a href="/#process">Process</a></li>
+          <li><a href="/#faq">FAQ</a></li>
+          <li><a href="/blog/">Blog</a></li>
+          <li><a href="/#contact">Contact</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Services</h3>
+        <ul>
+          <li><a href="/services/generative-ai-llm-development/">Generative AI and LLMs</a></li>
+          <li><a href="/services/rag-development/">RAG development</a></li>
+          <li><a href="/services/multi-agent-systems/">Multi-agent systems</a></li>
+          <li><a href="/services/ai-orchestration-langgraph/">Orchestration with LangGraph</a></li>
+          <li><a href="/services/nlp-development/">NLP development</a></li>
+          <li><a href="/services/full-stack-development/">Full stack development</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Contact</h3>
+        <ul>
+          <li><a href="mailto:shivanigupta4876@gmail.com">shivanigupta4876@gmail.com</a></li>
+          <li><a href="tel:+919720466504">+91 97204 66504</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="foot-bottom">&copy; <span id="year">2026</span> Shivani. All rights reserved.</div>
+  </div>
+</footer>
+<a class="wa-float" href="https://wa.me/919720466504?text=Hi%20Shivani%2C%20I%20saw%20your%20website%20and%20would%20like%20to%20talk%20about%20a%20project." target="_blank" rel="noopener" aria-label="Chat on WhatsApp"><svg viewBox="0 0 24 24" width="28" height="28" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15L2 22l5.1-1.3A10 10 0 1 0 12 2zm0 18.2a8.2 8.2 0 0 1-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1a6.700 6.700 0 0 1-3.300-2.900c-.2-.3 0-.4.1-.6l.4-.4.2-.4v-.5l-.8-1.800c-.2-.5-.4-.4-.6-.4h-.5c-.2 0-.4.1-.6.3-.2.2-.8.8-.8 2s.9 2.300 1 2.500c.1.2 1.700 2.600 4.100 3.600 1.500.7 2.100.7 2.900.6.500-.1 1.500-.6 1.700-1.200.2-.6.2-1.100.1-1.200l-.2-.2z"/></svg></a>
+<script src="/assets/js/site.js" defer></script>
+</body>
+</html>

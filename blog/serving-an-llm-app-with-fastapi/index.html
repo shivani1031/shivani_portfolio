@@ -1,0 +1,238 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Serving an LLM App with FastAPI: Async Design | Shivani</title>
+<meta name="description" content="Structure a FastAPI LLM service: separate routes from model code, share clients via lifespan, avoid blocking the event loop and limit concurrent calls.">
+<meta name="robots" content="index,follow">
+<meta name="author" content="Shivani">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<link rel="manifest" href="/site.webmanifest">
+<meta name="theme-color" content="#080b0f">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Serving an LLM App with FastAPI: Async Design | Shivani">
+<meta property="og:description" content="Structure a FastAPI LLM service: separate routes from model code, share clients via lifespan, avoid blocking the event loop and limit concurrent calls.">
+<meta property="og:image" content="/assets/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Serving an LLM app with FastAPI: structure and async","description":"Structure a FastAPI LLM service: separate routes from model code, share clients via lifespan, avoid blocking the event loop and limit concurrent calls.","mainEntityOfPage":"/blog/serving-an-llm-app-with-fastapi/","author":{"@type":"Person","name":"Shivani"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"/"},{"@type":"ListItem","position":2,"name":"Blog","item":"/blog/"},{"@type":"ListItem","position":3,"name":"Serving an LLM app with FastAPI: structure and async","item":"/blog/serving-an-llm-app-with-fastapi/"}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Should FastAPI routes for LLM calls be async?","acceptedAnswer":{"@type":"Answer","text":"If you have an async client, yes, since most of the time is spent waiting on the network. If everything the route calls is synchronous, use a plain def route, which FastAPI runs in a thread pool, instead of blocking the event loop."}},{"@type":"Question","name":"Where should the model client be created in FastAPI?","acceptedAnswer":{"@type":"Answer","text":"Create long-lived clients once at startup using the lifespan feature, close them at shutdown and provide them to routes through dependencies. This reuses connections and lets tests substitute a fake."}},{"@type":"Question","name":"Can FastAPI BackgroundTasks run long agent jobs?","acceptedAnswer":{"@type":"Answer","text":"It is a poor fit. Background tasks run in the same process, so a restart can lose them and there is no built-in retry. Use a durable queue with separate workers for long or important runs."}},{"@type":"Question","name":"How do I limit concurrent LLM requests in FastAPI?","acceptedAnswer":{"@type":"Answer","text":"An asyncio semaphore works within one process. Across several workers or instances, each one has its own count, so use a shared rate limiter if you need a global limit."}}]}</script>
+<!-- TODO once the domain is known: canonical, absolute og:url and og:image, absolute URLs in JSON-LD -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&family=Poppins:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+<header class="nav">
+  <div class="wrap nav-in">
+    <a class="logo" href="/" aria-label="Shivani, home"><img src="/assets/logo.svg" alt="Shivani" width="144" height="40"></a>
+    <nav id="nav-links" aria-label="Main">
+      <a href="/#services">Services</a>
+      <a href="/#skills">Skills</a>
+      <a href="/#work">Work</a>
+      <a href="/#process">Process</a>
+      <a href="/#faq">FAQ</a>
+      <a href="/blog/">Blog</a>
+      <a class="btn btn-sm" href="/#contact">Hire Me</a>
+    </nav>
+    <button id="menu-toggle" class="menu-toggle" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="nav-links"><span></span><span></span><span></span></button>
+  </div>
+</header>
+
+<main id="top">
+  <section class="page-head">
+    <div class="wrap">
+      <nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a><span aria-hidden="true">/</span><a href="/blog/">Blog</a><span aria-hidden="true">/</span><span aria-current="page">Serving an LLM app with FastAPI: structure and async</span></nav>
+      <p class="eyebrow">Guide</p>
+      <h1>Serving an LLM app with FastAPI: structure and async</h1>
+      <p class="lead">To serve an LLM app with FastAPI, keep routes thin, put model logic in a separate service layer, create shared clients once at startup and use async calls so that slow model requests do not block other work. Two problems to design against from the start are accidentally blocking the event loop and having no limit on concurrent calls.</p>
+    </div>
+  </section>
+  <section class="article">
+    <div class="wrap prose">
+<h2>What this guide covers</h2>
+<p>This guide is about the inside of a FastAPI application: how to arrange the code and how to use async correctly when most of a request's time is spent waiting for a model. The wider questions of modelling runs, state machines and durable workers are framework-neutral, and they are covered in <a href="/blog/building-a-backend-api-for-an-ai-agent-in-python/">building a backend API for an AI agent in Python</a>.</p>
+<p>The samples below are illustrative. FastAPI and model SDKs change over time, so check their current documentation before relying on exact signatures.</p>
+
+<h2>A project structure that stays manageable</h2>
+<p>The main idea is to keep HTTP concerns away from model concerns. Routes should translate between HTTP and your application. They should not build prompts or know which provider you are using. One reasonable layout looks like this:</p>
+<pre><code>app/
+  main.py          # creates the app and registers routers
+  config.py        # settings read from the environment
+  dependencies.py  # shared objects supplied to routes
+  routers/
+    chat.py        # HTTP endpoints only
+  schemas/
+    chat.py        # request and response models
+  services/
+    chat.py        # application logic for one feature
+  llm/
+    client.py      # your small wrapper around the provider
+    prompts.py     # prompt templates
+tests/</code></pre>
+<p>Each layer gives you something specific. The wrapper in <code>llm/</code> is the only place that knows a provider's details, so changing provider or adding a retry policy touches one module. The service layer can be tested without HTTP. The routers remain short enough to read at a glance. A small project does not need all of these folders on the first day, but the separation between routes, logic and provider code is worth having from the start.</p>
+
+<h2>Validate at the edge with schemas</h2>
+<p>Define request and response bodies as Pydantic models. FastAPI uses them to validate input and generate API documentation. For an LLM app, the request schema is also your first line of defence against oversized input, so set a maximum length on free text:</p>
+<pre><code># Illustrative only.
+from pydantic import BaseModel, Field
+
+class ChatRequest(BaseModel):
+    conversation_id: str
+    message: str = Field(min_length=1, max_length=8000)
+
+class ChatResponse(BaseModel):
+    reply: str
+    conversation_id: str</code></pre>
+<p>Keep these API schemas separate from any structure you ask the model to produce. Your public contract should not change because a prompt did, and model output needs its own validation before you trust it.</p>
+
+<h2>Share clients with lifespan and dependencies</h2>
+<p>Creating a new HTTP or model client for every request wastes connections and can hurt performance. Create long-lived clients once when the application starts, close them when it stops, and supply them to routes through dependencies. FastAPI's lifespan feature is designed for this kind of setup and teardown:</p>
+<pre><code># Illustrative only. LLMClient is your own wrapper.
+from contextlib import asynccontextmanager
+from fastapi import Depends, FastAPI, Request
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    app.state.llm = LLMClient.from_settings()
+    yield
+    await app.state.llm.aclose()
+
+app = FastAPI(lifespan=lifespan)
+
+def get_llm(request: Request) -&gt; LLMClient:
+    return request.app.state.llm
+
+@app.post("/chat", response_model=ChatResponse)
+async def chat(body: ChatRequest, llm: LLMClient = Depends(get_llm)):
+    reply = await llm.complete(body.message)
+    return ChatResponse(reply=reply, conversation_id=body.conversation_id)</code></pre>
+<p>Dependencies also make testing simple. <code>app.dependency_overrides</code> lets a test replace <code>get_llm</code> with a fake client, so that route tests run without network access or cost.</p>
+
+<h2>Understanding async in an LLM service</h2>
+<p>An LLM call is a long wait on the network, and async suits that well. While one request waits for a response, the event loop can serve others. This only works if nothing blocks the loop, so it pays to know how FastAPI treats each kind of route:</p>
+<ul>
+<li><strong><code>async def</code> routes</strong> run on the event loop. Anything slow and blocking inside them stalls every other request handled by that worker.</li>
+<li><strong>Plain <code>def</code> routes</strong> are run in a thread pool, so blocking calls will not stall the loop, although threads are a limited resource.</li>
+</ul>
+<p>The most common mistake is calling a synchronous SDK or database driver from inside an <code>async def</code> route. It often seems fine under light testing, then the whole service becomes slow under concurrent use. Your options, in rough order of preference, are:</p>
+<ol>
+<li>Use an async client, if your SDK or driver offers one.</li>
+<li>Use a plain <code>def</code> route if everything it calls is synchronous.</li>
+<li>Move the blocking call to a thread with <code>asyncio.to_thread</code>.</li>
+<li>Send CPU-heavy work, such as local embedding or document parsing, to a separate process or worker. Threads do not generally help with CPU-bound Python, and an event loop certainly does not.</li>
+</ol>
+
+<h2>Running calls concurrently and limiting them</h2>
+<p>Async makes it easy to run independent steps together, such as retrieving from two sources at once with <code>asyncio.gather</code>. It also makes it easy to accept far more work than your provider or budget allows, because the event loop will happily start every request it receives. Set a deliberate limit, and fail clearly when it is reached:</p>
+<pre><code># Illustrative only.
+import asyncio
+from fastapi import HTTPException
+
+llm_slots = asyncio.Semaphore(20)  # example value; tune for your limits
+
+async def complete_with_limits(llm, prompt):
+    async with llm_slots:
+        try:
+            return await asyncio.wait_for(llm.complete(prompt), timeout=60)
+        except asyncio.TimeoutError:
+            raise HTTPException(status_code=504, detail="Model timed out")</code></pre>
+<p>Keep in mind that a semaphore belongs to one process. If you run several workers or instances, each has its own count, and a limit shared across all of them needs something external such as a rate limiter backed by a shared store. The same is true of any in-memory cache or conversation store: it disappears on restart and is invisible to other workers. Keep persistent state outside the process.</p>
+<p>Set timeouts at every layer, too. An application timeout is of limited use if a proxy in front of it gives up earlier, so check that they agree with each other.</p>
+
+<h2>Streaming and client disconnects</h2>
+<p><code>StreamingResponse</code> can wrap an async generator so that tokens are forwarded as they arrive:</p>
+<pre><code># Illustrative only.
+from fastapi.responses import StreamingResponse
+
+@app.post("/chat/stream")
+async def chat_stream(body: ChatRequest, llm: LLMClient = Depends(get_llm)):
+    async def events():
+        async for token in llm.stream(body.message):
+            yield f"data: {token}\n\n"
+    return StreamingResponse(events(), media_type="text/event-stream")</code></pre>
+<p>Remember that the route has returned before the generator has finished. Resources created inside the route, or dependencies that clean up after the response, need checking so they are still available while streaming. If a user closes the tab, you also want to stop paying for tokens nobody will read, so confirm that disconnection actually stops the upstream call in your setup, and test it. <a href="/blog/streaming-llm-responses-to-a-web-ui/">Streaming LLM responses to a web UI</a> covers event design, browsers and proxies.</p>
+<p>When handling cancellation, avoid catching <code>asyncio.CancelledError</code> and carrying on. Clean up if you must, then let it propagate, or the task may continue working after it was asked to stop.</p>
+
+<h2>Background work: know the limits</h2>
+<p>FastAPI's <code>BackgroundTasks</code> runs a function after the response is sent, in the same process. It suits small follow-up jobs such as writing a log entry. It does not suit important or long-running work, because a restart can lose the task and nothing will retry it. Long agent runs generally belong in a durable queue with separate workers, and the route should simply record the job and return its ID.</p>
+
+<h2>Errors, logs and testing</h2>
+<ul>
+<li><strong>Map provider errors to your own.</strong> Catch them in the wrapper and raise your own exceptions. Use a FastAPI exception handler to turn them into consistent responses, so provider details do not leak to clients.</li>
+<li><strong>Add a request ID.</strong> Middleware can attach one to each request and include it in the logs, which lets you connect an HTTP request to its model calls.</li>
+<li><strong>Log duration and token usage per call.</strong> Redact sensitive content. This data is the starting point for <a href="/blog/controlling-llm-cost-and-latency/">controlling LLM cost and latency</a>.</li>
+<li><strong>Test with fakes.</strong> Override dependencies to simulate timeouts, malformed output and streams that fail partway. These cases are difficult to produce with a live model.</li>
+<li><strong>Try concurrent requests.</strong> A simple load test against a slow fake model will quickly reveal a blocked event loop, because requests that should overlap will instead run one after another.</li>
+</ul>
+<p>For help with the service, interface and deployment around a model, see <a href="/services/full-stack-development/">full stack development for AI products</a>.</p>
+      <h2>Frequently asked questions</h2>
+      <h3>Should FastAPI routes for LLM calls be async?</h3>
+      <p>If you have an async client, yes, since most of the time is spent waiting on the network. If everything the route calls is synchronous, use a plain def route, which FastAPI runs in a thread pool, instead of blocking the event loop.</p>
+      <h3>Where should the model client be created in FastAPI?</h3>
+      <p>Create long-lived clients once at startup using the lifespan feature, close them at shutdown and provide them to routes through dependencies. This reuses connections and lets tests substitute a fake.</p>
+      <h3>Can FastAPI BackgroundTasks run long agent jobs?</h3>
+      <p>It is a poor fit. Background tasks run in the same process, so a restart can lose them and there is no built-in retry. Use a durable queue with separate workers for long or important runs.</p>
+      <h3>How do I limit concurrent LLM requests in FastAPI?</h3>
+      <p>An asyncio semaphore works within one process. Across several workers or instances, each one has its own count, so use a shared rate limiter if you need a global limit.</p>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="foot-cta">
+      <div>
+        <h2>Have an AI or full stack project in mind?</h2>
+        <p>Tell me what you want to build.</p>
+      </div>
+      <div class="foot-cta-btns">
+        <a class="btn" href="/#contact">Start a conversation</a>
+        <a class="btn btn-line" href="mailto:shivanigupta4876@gmail.com">Send an email</a>
+      </div>
+    </div>
+    <div class="foot-grid">
+      <div>
+        <a href="/" aria-label="Shivani, home"><img src="/assets/logo.svg" alt="Shivani" width="144" height="40"></a>
+        <p>AI/ML engineer working across generative AI, LLMs, RAG, agentic AI and NLP, plus full stack development.</p>
+        <span class="avail">Taking new projects</span>
+      </div>
+      <div>
+        <h3>Explore</h3>
+        <ul>
+          <li><a href="/services/">Services</a></li>
+          <li><a href="/#work">Projects</a></li>
+          <li><a href="/#process">Process</a></li>
+          <li><a href="/#faq">FAQ</a></li>
+          <li><a href="/blog/">Blog</a></li>
+          <li><a href="/#contact">Contact</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Services</h3>
+        <ul>
+          <li><a href="/services/generative-ai-llm-development/">Generative AI and LLMs</a></li>
+          <li><a href="/services/rag-development/">RAG development</a></li>
+          <li><a href="/services/multi-agent-systems/">Multi-agent systems</a></li>
+          <li><a href="/services/ai-orchestration-langgraph/">Orchestration with LangGraph</a></li>
+          <li><a href="/services/nlp-development/">NLP development</a></li>
+          <li><a href="/services/full-stack-development/">Full stack development</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Contact</h3>
+        <ul>
+          <li><a href="mailto:shivanigupta4876@gmail.com">shivanigupta4876@gmail.com</a></li>
+          <li><a href="tel:+919720466504">+91 97204 66504</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="foot-bottom">&copy; <span id="year">2026</span> Shivani. All rights reserved.</div>
+  </div>
+</footer>
+<a class="wa-float" href="https://wa.me/919720466504?text=Hi%20Shivani%2C%20I%20saw%20your%20website%20and%20would%20like%20to%20talk%20about%20a%20project." target="_blank" rel="noopener" aria-label="Chat on WhatsApp"><svg viewBox="0 0 24 24" width="28" height="28" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15L2 22l5.1-1.3A10 10 0 1 0 12 2zm0 18.2a8.2 8.2 0 0 1-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1a6.700 6.700 0 0 1-3.300-2.900c-.2-.3 0-.4.1-.6l.4-.4.2-.4v-.5l-.8-1.800c-.2-.5-.4-.4-.6-.4h-.5c-.2 0-.4.1-.6.3-.2.2-.8.8-.8 2s.9 2.300 1 2.500c.1.2 1.700 2.600 4.100 3.600 1.500.7 2.100.7 2.900.6.500-.1 1.500-.6 1.700-1.200.2-.6.2-1.100.1-1.200l-.2-.2z"/></svg></a>
+<script src="/assets/js/site.js" defer></script>
+</body>
+</html>

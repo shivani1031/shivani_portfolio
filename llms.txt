@@ -1,0 +1,51 @@
+# Shivani
+
+> Portfolio of Shivani, an AI/ML Engineer working on generative AI, LLMs, RAG, agentic AI, multi-agent systems, orchestrators, NLP, Python, LangGraph, UI, backend, front-end and full stack development.
+
+The site describes the services on offer and publishes general technical guides. Wayfarer is a live project. The home page also lists other systems Shivani can build.
+
+## Main pages
+
+- [Home](/): overview, skills, projects and contact form
+- [Services](/services/): all services
+- [Blog](/blog/): all technical guides
+
+## Services
+
+- [Generative AI and LLM development](/services/generative-ai-llm-development/): software features built on large language models
+- [RAG development](/services/rag-development/): systems that ground LLM answers in your own content
+- [Multi-agent systems development](/services/multi-agent-systems/): specialised agents with clear roles, controlled tools and visible limits
+- [AI orchestration with LangGraph](/services/ai-orchestration-langgraph/): the control layer for routing, state, recovery and pauses
+- [NLP development in Python](/services/nlp-development/): classifying, extracting, searching and summarising text
+- [Full stack development for AI products](/services/full-stack-development/): the backend, front-end and UI around a model or agent
+
+## Guides
+
+- [What RAG is and when to use it](/blog/what-is-rag-and-when-to-use-it/): how RAG works and when it is the wrong tool
+- [Choosing chunking strategies for RAG](/blog/choosing-chunking-strategies-for-rag/): comparing ways to split documents
+- [How to evaluate a RAG system](/blog/how-to-evaluate-a-rag-system/): measuring retrieval and answer quality
+- [Hybrid search and reranking for RAG](/blog/hybrid-search-and-reranking-for-rag/): combining keyword and vector search and reordering results
+- [Single agent vs multi-agent systems](/blog/single-agent-vs-multi-agent-systems/): comparing the two designs and choosing between them
+- [Building an orchestrator with LangGraph](/blog/building-an-orchestrator-with-langgraph/): state, nodes, routing, checkpointing and review
+- [Human-in-the-loop approval for AI agents](/blog/human-in-the-loop-approval-for-ai-agents/): what to gate, resuming safely and avoiding approval fatigue
+- [Adding an LLM feature to a full stack app](/blog/adding-an-llm-feature-to-a-full-stack-app/): backend, front-end and operational decisions
+- [Streaming LLM responses to a web UI](/blog/streaming-llm-responses-to-a-web-ui/): transports, events, rendering, cancellation and proxies
+- [LLM guardrails and prompt injection defence](/blog/llm-guardrails-and-prompt-injection-defence/): layered defences that limit damage from a manipulated model
+- [Text classification with LLMs vs traditional NLP](/blog/text-classification-llms-vs-traditional-nlp/): comparing methods, testing them fairly and combining them in a cascade
+- [Named entity recognition and data extraction with LLMs](/blog/named-entity-recognition-and-data-extraction-with-llms/): schemas, validation, grounding checks and field-level measurement
+- [Agent memory: short-term and long-term state](/blog/agent-memory-short-term-and-long-term-state/): managing run state and designing, retrieving and securing long-term memory
+- [Tool calling for AI agents: designing reliable tools](/blog/tool-calling-for-ai-agents/): schemas, validation, actionable errors, idempotency, loop limits and testing
+- [Building a backend API for an AI agent in Python](/blog/building-a-backend-api-for-an-ai-agent-in-python/): framework-neutral design of runs, workers, idempotency, cancellation and testing
+- [LangChain vs LangGraph: when to use each](/blog/langchain-vs-langgraph-when-to-use-each/): choosing by control flow, using both together and knowing when plain code is enough
+- [Serving an LLM app with FastAPI: structure and async](/blog/serving-an-llm-app-with-fastapi/): project layout, shared clients, the event loop, concurrency limits, disconnects and test overrides
+- [Embeddings and choosing a vector database](/blog/embeddings-and-choosing-a-vector-database/): how embeddings work and the criteria for selecting a model and a vector store, with no product rankings
+- [Text-to-SQL agents: risks and safeguards](/blog/text-to-sql-agents-risks-and-safeguards/): data exposure, wrong answers, database permissions, query validation, resource limits and testing
+- [Controlling LLM cost and latency](/blog/controlling-llm-cost-and-latency/): measurement, context trimming, model routing, caching, output caps, streaming and agent loop limits
+
+## Projects
+
+- [Wayfarer: AI travel planning agent](/projects/wayfarer/): a live AI-powered travel planning web application
+
+## Contact
+
+- [Contact form](/#contact): enquiries about AI or full stack projects

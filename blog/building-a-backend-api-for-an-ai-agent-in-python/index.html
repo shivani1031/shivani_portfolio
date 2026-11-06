@@ -1,0 +1,233 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Building a Backend API for an AI Agent in Python | Shivani</title>
+<meta name="description" content="Framework-neutral concepts for an AI agent backend in Python: run resources, state machines, queues, idempotency, cancellation, limits and testing.">
+<meta name="robots" content="index,follow">
+<meta name="author" content="Shivani">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<link rel="manifest" href="/site.webmanifest">
+<meta name="theme-color" content="#080b0f">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Building a Backend API for an AI Agent in Python | Shivani">
+<meta property="og:description" content="Framework-neutral concepts for an AI agent backend in Python: run resources, state machines, queues, idempotency, cancellation, limits and testing.">
+<meta property="og:image" content="/assets/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Building a backend API for an AI agent in Python","description":"Framework-neutral concepts for an AI agent backend in Python: run resources, state machines, queues, idempotency, cancellation, limits and testing.","mainEntityOfPage":"/blog/building-a-backend-api-for-an-ai-agent-in-python/","author":{"@type":"Person","name":"Shivani"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"/"},{"@type":"ListItem","position":2,"name":"Blog","item":"/blog/"},{"@type":"ListItem","position":3,"name":"Building a backend API for an AI agent in Python","item":"/blog/building-a-backend-api-for-an-ai-agent-in-python/"}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Which Python framework is best for an AI agent API?","acceptedAnswer":{"@type":"Answer","text":"The concepts here matter more than the framework. Choose one your team knows and that fits your needs, including its support for asynchronous work and streaming if you need them. Check its current documentation for specifics."}},{"@type":"Question","name":"Do I need a job queue for an AI agent?","acceptedAnswer":{"@type":"Answer","text":"Not always. A short, safe task can run inside the request. A durable queue becomes more useful when runs are long, have side effects or must survive restarts and dropped connections."}},{"@type":"Question","name":"Should an agent API use streaming or polling?","acceptedAnswer":{"@type":"Answer","text":"Either can work, and many APIs support both. Polling a run's status is a simple starting point, and streaming gives a more responsive interface. Storing events with sequence numbers lets clients reconnect in either case."}},{"@type":"Question","name":"How do I test an agent backend without calling a model?","acceptedAnswer":{"@type":"Answer","text":"Put the model behind your own small interface and use a scripted fake in tests. That makes failures, tool calls, cancellations and repeated requests repeatable, and a few separate tests can cover the real integration."}}]}</script>
+<!-- TODO once the domain is known: canonical, absolute og:url and og:image, absolute URLs in JSON-LD -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&family=Poppins:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+<header class="nav">
+  <div class="wrap nav-in">
+    <a class="logo" href="/" aria-label="Shivani, home"><img src="/assets/logo.svg" alt="Shivani" width="144" height="40"></a>
+    <nav id="nav-links" aria-label="Main">
+      <a href="/#services">Services</a>
+      <a href="/#skills">Skills</a>
+      <a href="/#work">Work</a>
+      <a href="/#process">Process</a>
+      <a href="/#faq">FAQ</a>
+      <a href="/blog/">Blog</a>
+      <a class="btn btn-sm" href="/#contact">Hire Me</a>
+    </nav>
+    <button id="menu-toggle" class="menu-toggle" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="nav-links"><span></span><span></span><span></span></button>
+  </div>
+</header>
+
+<main id="top">
+  <section class="page-head">
+    <div class="wrap">
+      <nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a><span aria-hidden="true">/</span><a href="/blog/">Blog</a><span aria-hidden="true">/</span><span aria-current="page">Building a backend API for an AI agent in Python</span></nav>
+      <p class="eyebrow">Guide</p>
+      <h1>Building a backend API for an AI agent in Python</h1>
+      <p class="lead">Model agent work as a run: a stored resource with its own status, events and limits, usually executed by a worker and not inside the HTTP request. Clients can then reconnect, cancel and retry, whichever Python web framework you use.</p>
+    </div>
+  </section>
+  <section class="article">
+    <div class="wrap prose">
+<h2>Why an agent is different from a normal endpoint</h2>
+<p>A typical API request is short, does one thing and either succeeds or fails. An agent request can run for a long time, make many model and tool calls, change data in other systems, pause for a person and fail halfway through. Treating it as a slow function behind a single POST route works for a demo, but it breaks when connections drop or users retry.</p>
+<p>This guide sets out concepts that apply in any Python web framework. It focuses on the agent-specific parts. For the broader decisions around an LLM feature, see <a href="/blog/adding-an-llm-feature-to-a-full-stack-app/">adding an LLM feature to a full stack app</a>.</p>
+
+<h2>Model the API around runs</h2>
+<p>The most useful design step is to make the unit of agent work into a resource of its own. A small set of concepts covers most products:</p>
+<ul>
+<li><strong>Conversation or thread.</strong> A long-lived container for related messages, owned by a user.</li>
+<li><strong>Message.</strong> One user or assistant turn.</li>
+<li><strong>Run.</strong> One execution of the agent, with its own status, inputs, limits, outcome and usage.</li>
+<li><strong>Step or event.</strong> A record of something that happened during a run, such as a model call or tool result.</li>
+</ul>
+<p>Separating a run from its conversation means that a client can ask "what is happening?" at any point, reconnect after a dropped connection, cancel the work or retry after a failure without confusing the history. An illustrative set of routes might look like this:</p>
+<div class="table-wrap"><table>
+<thead><tr><th>Route</th><th>Purpose</th></tr></thead>
+<tbody>
+<tr><td><code>POST /conversations</code></td><td>Create a conversation</td></tr>
+<tr><td><code>POST /conversations/{id}/runs</code></td><td>Add a message and start a run</td></tr>
+<tr><td><code>GET /runs/{id}</code></td><td>Read the status and result</td></tr>
+<tr><td><code>GET /runs/{id}/events</code></td><td>Stream or list progress events</td></tr>
+<tr><td><code>POST /runs/{id}/cancel</code></td><td>Ask the run to stop</td></tr>
+<tr><td><code>POST /runs/{id}/decisions</code></td><td>Submit a human approval or rejection</td></tr>
+</tbody>
+</table></div>
+
+<h2>Give runs an explicit state machine</h2>
+<p>A run should always be in one known state, and only certain transitions should be allowed. This turns vague situations into ones your code and UI can handle:</p>
+<pre><code># Illustrative only. Allowed run state transitions.
+TRANSITIONS = {
+    "queued": {"running", "cancelled"},
+    "running": {"waiting_for_approval", "succeeded", "failed", "cancelled"},
+    "waiting_for_approval": {"running", "cancelled"},
+    "succeeded": set(),
+    "failed": set(),
+    "cancelled": set(),
+}
+
+def change_status(run, new_status):
+    if new_status not in TRANSITIONS[run.status]:
+        raise ValueError(f"{run.status} cannot become {new_status}")
+    run.status = new_status</code></pre>
+<p>In a real system, the update should be atomic in the database, for example a conditional update on the current status, so that two workers cannot both make a transition. The <code>waiting_for_approval</code> state is what makes <a href="/blog/human-in-the-loop-approval-for-ai-agents/">human-in-the-loop approval</a> workable, because a pause may last far longer than any HTTP request.</p>
+
+<h2>Decide where the work runs</h2>
+<p>You have three broad options:</p>
+<ul>
+<li><strong>Inside the request.</strong> The handler runs the agent and returns the answer. This is simple and fine for quick, safe tasks, but it ties the work to one connection and one process.</li>
+<li><strong>In-process background tasks.</strong> The handler responds at once and the agent continues on the same server. This is easy to set up, but work can be lost when the process restarts, so it suits only tasks that are safe to lose or that are recovered by some other mechanism.</li>
+<li><strong>A durable queue and workers.</strong> The handler records the run and enqueues it, and a separate worker carries it out. There are more parts to operate, but work survives restarts, and web and worker capacity can scale separately.</li>
+</ul>
+<p>For long or consequential agents, a queue is usually the safer choice. Most queues redeliver a job if a worker dies, which means that a run can execute more than once, so the steps must be written to tolerate repetition. Saving a checkpoint after each step lets a new worker resume instead of starting over, an idea explored in <a href="/blog/building-an-orchestrator-with-langgraph/">building an orchestrator with LangGraph</a>.</p>
+<p>Agent workloads spend most of their time waiting on network calls, so asynchronous Python can be a natural fit. If you use it, make sure that blocking libraries do not run directly on the event loop, where they would stall every other request in that process.</p>
+
+<p>If you are using FastAPI, <a href="/blog/serving-an-llm-app-with-fastapi/">serving an LLM app with FastAPI</a> covers the framework-specific side, including project structure and avoiding a blocked event loop.</p>
+
+<h2>Make requests safe to repeat</h2>
+<p>Clients retry and users double-click. Without protection, each repeat could start another expensive run, or send a second email. Accept an idempotency key from the client on the route that starts a run, enforce uniqueness per user in the database and return the original run if the key has been seen before:</p>
+<pre><code># Illustrative only. Framework-neutral service function.
+def start_run(user, conversation_id, text, idempotency_key):
+    conversation = load_conversation(conversation_id)
+    if conversation is None or conversation.owner_id != user.id:
+        raise NotFound()
+
+    existing = find_run(user.id, idempotency_key)
+    if existing:
+        return existing
+
+    # Create the message and run in one transaction. A unique
+    # constraint on (user_id, idempotency_key) rejects a racing
+    # duplicate; on that error, load and return the existing run.
+    run = create_message_and_run(
+        conversation, text, user.id, idempotency_key
+    )
+    enqueue_run(run.id)
+    return run</code></pre>
+<p>A crash between the commit and the enqueue would strand a run, which is a known problem with writing to two systems. A common fix is a periodic job that re-enqueues old queued runs, or a transactional outbox. Also decide what happens when a second message arrives while a run is in progress on the same conversation. Rejecting it, queueing it or cancelling the first run are all defensible, but silently running both can corrupt the history.</p>
+
+<h2>Authentication and authorisation</h2>
+<p>Authenticate every route, then check ownership on every resource. Run IDs must never be enough on their own to read someone else's data. The more distinctive concern is what happens inside the run: the agent acts on behalf of a user, so tool execution should receive that user's identity from the server side and enforce their permissions, as described in <a href="/blog/tool-calling-for-ai-agents/">tool calling for AI agents</a>. A background worker has no request context, so identity has to be stored with the run and checked when it executes. Approval routes need their own check on who may approve.</p>
+
+<h2>Reporting progress and streaming</h2>
+<p>Write events to storage as the run proceeds and publish them to any connected client. Give each event an increasing sequence number, so that a client can reconnect and ask for everything after the last one it saw. Then the connection becomes a view onto the run, not the thing keeping it alive. Plain polling of the status route is a perfectly good starting point. For transports, event design and proxy issues, see <a href="/blog/streaming-llm-responses-to-a-web-ui/">streaming LLM responses to a web UI</a>.</p>
+
+<h2>Cancellation, timeouts and limits</h2>
+<ul>
+<li><strong>Cancellation.</strong> Cancellation is a request, not an instant stop. Record it, and have the worker check before each step and each side effect. A tool call already under way may complete, so report what did happen.</li>
+<li><strong>Timeouts at each level.</strong> Set them for model calls, for tools and for the run as a whole. Add a periodic sweep that finds runs stuck in <code>running</code> whose worker has stopped sending heartbeats.</li>
+<li><strong>Step and usage budgets.</strong> Cap model turns, tool calls and tokens per run, and stop cleanly with a clear status when they are reached.</li>
+<li><strong>Rate limits and quotas.</strong> Limit runs per user, not just requests per second, since a single request can create a lot of work. Limit concurrency too, so that one user cannot take up all the workers.</li>
+<li><strong>Input limits.</strong> Validate message length and file size at the edge, before any model is involved.</li>
+</ul>
+
+<h2>Handling failures</h2>
+<p>Separate temporary faults, such as provider rate limits and timeouts, from permanent ones, such as invalid requests. Retry the first kind with exponential backoff and jitter, and fail the second kind at once. Record a safe, stable error code on the run for the client, and keep the details in internal logs. An API that distinguishes "the model service is busy" from "this run hit its step limit" is much easier to build a good interface on.</p>
+<p>Model output should be validated like any other external input before it is stored, displayed or used to trigger something. See <a href="/blog/llm-guardrails-and-prompt-injection-defence/">LLM guardrails and prompt injection defence</a> for the wider picture.</p>
+
+<h2>Persistence and observability</h2>
+<p>Store conversations, messages, runs and events in ordinary database tables, with the agent's own state alongside them or in a dedicated checkpoint store. Deciding what gets carried between runs is covered in <a href="/blog/agent-memory-short-term-and-long-term-state/">agent memory: short-term and long-term state</a>.</p>
+<p>Attach a trace ID to each run and pass it through the worker, model calls and tools. Record the prompt version, model name, token usage, step durations and outcome for every run. Agent content can be sensitive, so redact logs and set retention periods deliberately.</p>
+
+<h2>Testing the backend without a live model</h2>
+<p>Put the model behind a small interface of your own, then substitute a scripted fake in tests. This keeps tests fast and repeatable, and it makes rare situations easy to produce:</p>
+<ul>
+<li>A model that requests a tool, then fails on the following call.</li>
+<li>A worker that dies between two steps, followed by resumption.</li>
+<li>The same idempotency key sent twice at the same moment.</li>
+<li>A cancellation that arrives during a tool call.</li>
+<li>One user requesting another user's run, which should return not found.</li>
+<li>A run that reaches its step limit.</li>
+</ul>
+<p>Keep a smaller set of tests against a real model to check for integration problems, and evaluate agent quality separately. For help building the service around an agent, including the interface that sits on top of it, see <a href="/services/full-stack-development/">full stack development for AI products</a>.</p>
+      <h2>Frequently asked questions</h2>
+      <h3>Which Python framework is best for an AI agent API?</h3>
+      <p>The concepts here matter more than the framework. Choose one your team knows and that fits your needs, including its support for asynchronous work and streaming if you need them. Check its current documentation for specifics.</p>
+      <h3>Do I need a job queue for an AI agent?</h3>
+      <p>Not always. A short, safe task can run inside the request. A durable queue becomes more useful when runs are long, have side effects or must survive restarts and dropped connections.</p>
+      <h3>Should an agent API use streaming or polling?</h3>
+      <p>Either can work, and many APIs support both. Polling a run's status is a simple starting point, and streaming gives a more responsive interface. Storing events with sequence numbers lets clients reconnect in either case.</p>
+      <h3>How do I test an agent backend without calling a model?</h3>
+      <p>Put the model behind your own small interface and use a scripted fake in tests. That makes failures, tool calls, cancellations and repeated requests repeatable, and a few separate tests can cover the real integration.</p>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="foot-cta">
+      <div>
+        <h2>Have an AI or full stack project in mind?</h2>
+        <p>Tell me what you want to build.</p>
+      </div>
+      <div class="foot-cta-btns">
+        <a class="btn" href="/#contact">Start a conversation</a>
+        <a class="btn btn-line" href="mailto:shivanigupta4876@gmail.com">Send an email</a>
+      </div>
+    </div>
+    <div class="foot-grid">
+      <div>
+        <a href="/" aria-label="Shivani, home"><img src="/assets/logo.svg" alt="Shivani" width="144" height="40"></a>
+        <p>AI/ML engineer working across generative AI, LLMs, RAG, agentic AI and NLP, plus full stack development.</p>
+        <span class="avail">Taking new projects</span>
+      </div>
+      <div>
+        <h3>Explore</h3>
+        <ul>
+          <li><a href="/services/">Services</a></li>
+          <li><a href="/#work">Projects</a></li>
+          <li><a href="/#process">Process</a></li>
+          <li><a href="/#faq">FAQ</a></li>
+          <li><a href="/blog/">Blog</a></li>
+          <li><a href="/#contact">Contact</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Services</h3>
+        <ul>
+          <li><a href="/services/generative-ai-llm-development/">Generative AI and LLMs</a></li>
+          <li><a href="/services/rag-development/">RAG development</a></li>
+          <li><a href="/services/multi-agent-systems/">Multi-agent systems</a></li>
+          <li><a href="/services/ai-orchestration-langgraph/">Orchestration with LangGraph</a></li>
+          <li><a href="/services/nlp-development/">NLP development</a></li>
+          <li><a href="/services/full-stack-development/">Full stack development</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Contact</h3>
+        <ul>
+          <li><a href="mailto:shivanigupta4876@gmail.com">shivanigupta4876@gmail.com</a></li>
+          <li><a href="tel:+919720466504">+91 97204 66504</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="foot-bottom">&copy; <span id="year">2026</span> Shivani. All rights reserved.</div>
+  </div>
+</footer>
+<a class="wa-float" href="https://wa.me/919720466504?text=Hi%20Shivani%2C%20I%20saw%20your%20website%20and%20would%20like%20to%20talk%20about%20a%20project." target="_blank" rel="noopener" aria-label="Chat on WhatsApp"><svg viewBox="0 0 24 24" width="28" height="28" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15L2 22l5.1-1.3A10 10 0 1 0 12 2zm0 18.2a8.2 8.2 0 0 1-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1a6.700 6.700 0 0 1-3.300-2.900c-.2-.3 0-.4.1-.6l.4-.4.2-.4v-.5l-.8-1.800c-.2-.5-.4-.4-.6-.4h-.5c-.2 0-.4.1-.6.3-.2.2-.8.8-.8 2s.9 2.300 1 2.500c.1.2 1.700 2.600 4.100 3.600 1.500.7 2.100.7 2.900.6.500-.1 1.500-.6 1.700-1.200.2-.6.2-1.100.1-1.200l-.2-.2z"/></svg></a>
+<script src="/assets/js/site.js" defer></script>
+</body>
+</html>

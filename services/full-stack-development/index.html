@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Full Stack Development for AI Products | Shivani</title>
+<meta name="description" content="Full stack development covering backend, front-end and UI, so that an AI capability becomes a complete product people can use, check and correct.">
+<meta name="robots" content="index,follow">
+<meta name="author" content="Shivani">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<link rel="manifest" href="/site.webmanifest">
+<meta name="theme-color" content="#080b0f">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Full Stack Development for AI Products | Shivani">
+<meta property="og:description" content="Full stack development covering backend, front-end and UI, so that an AI capability becomes a complete product people can use, check and correct.">
+<meta property="og:image" content="/assets/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"/"},{"@type":"ListItem","position":2,"name":"Services","item":"/services/"},{"@type":"ListItem","position":3,"name":"Full stack development for AI products","item":"/services/full-stack-development/"}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"What does full stack development include?","acceptedAnswer":{"@type":"Answer","text":"It includes the user interface, front-end logic, backend services and APIs, and data storage, along with the integration between them. Deployment and basic operational setup are often part of the work too."}},{"@type":"Question","name":"Where should the AI code live in a product?","acceptedAnswer":{"@type":"Answer","text":"In a server-side layer with a clear boundary, so that the rest of the application calls it like any other service. If the main application is not in Python, that layer can run as a separate Python service."}},{"@type":"Question","name":"Can you work with an existing codebase?","acceptedAnswer":{"@type":"Answer","text":"Yes, I can help with extending existing applications as well as new builds. Reviewing the current code and architecture comes first, so that new work fits what is already there."}},{"@type":"Question","name":"Does a project have to involve AI?","acceptedAnswer":{"@type":"Answer","text":"No. Backend, front-end and UI work are useful in their own right, and the same engineering principles apply to a web application with no AI features."}}]}</script>
+<!-- TODO once the domain is known: canonical, absolute og:url and og:image, absolute URLs in JSON-LD -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&family=Poppins:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+<header class="nav">
+  <div class="wrap nav-in">
+    <a class="logo" href="/" aria-label="Shivani, home"><img src="/assets/logo.svg" alt="Shivani" width="144" height="40"></a>
+    <nav id="nav-links" aria-label="Main">
+      <a href="/#services">Services</a>
+      <a href="/#skills">Skills</a>
+      <a href="/#work">Work</a>
+      <a href="/#process">Process</a>
+      <a href="/#faq">FAQ</a>
+      <a href="/blog/">Blog</a>
+      <a class="btn btn-sm" href="/#contact">Hire Me</a>
+    </nav>
+    <button id="menu-toggle" class="menu-toggle" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="nav-links"><span></span><span></span><span></span></button>
+  </div>
+</header>
+
+<main id="top">
+  <section class="page-head">
+    <div class="wrap">
+      <nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a><span aria-hidden="true">/</span><a href="/services/">Services</a><span aria-hidden="true">/</span><span aria-current="page">Full stack development for AI products</span></nav>
+      <p class="eyebrow">Service</p>
+      <h1>Full stack development for AI products</h1>
+      <p class="lead">The backend, front-end and UI work that turns a model or agent into a complete product people can use.</p>
+    </div>
+  </section>
+  <section class="article">
+    <div class="wrap prose">
+<h2>What it is</h2>
+<p>Full stack development covers every layer of a web application: the interface people see, the front-end logic behind it, the backend services and APIs, the data storage and the connections between them. For an AI product, it also includes the layer that manages model calls, retrieval and agents.</p>
+<p>A capable model does not become a useful product by itself. People need ways to sign in, submit input, follow progress, review results and correct mistakes, and the business needs data handling, logging and control over usage.</p>
+
+<h2>When it suits a project</h2>
+<p>Having one person consider the whole stack is helpful when the AI behaviour and the user experience depend on each other. A slow agent, for example, is partly an interface problem: showing progress or streaming partial output changes how the wait feels. Likewise, a model that may be wrong needs a UI that shows sources and makes correction easy.</p>
+<p>This approach suits new products and prototypes that need to reach real users, as well as existing applications adding an AI feature. Full stack development without AI is equally valid; not every product needs a model. A very large system with deep specialist needs at each layer may need a broader team.</p>
+
+<h2>How it is typically approached</h2>
+<ul>
+<li><strong>Start from the user journey.</strong> Identify the core task and design the screens and states it needs, including loading, empty and error states.</li>
+<li><strong>Define the data and APIs.</strong> Model the data, define clear contracts between front-end and backend, and decide what must be stored.</li>
+<li><strong>Build the backend.</strong> Implement business logic, authentication, permissions and validation on the server. Python is a natural choice when the backend sits close to AI components.</li>
+<li><strong>Isolate the AI layer.</strong> Keep model calls and API keys on the server, behind a service boundary, so that providers and prompts can change without rewriting the application.</li>
+<li><strong>Build the interface.</strong> Create a responsive, accessible UI, with <a href="/blog/streaming-llm-responses-to-a-web-ui/">streaming</a> and progress indicators where responses take time.</li>
+<li><strong>Handle long-running work.</strong> Use background jobs for tasks that outlast a normal request, with a way for the interface to show status.</li>
+<li><strong>Prepare for production.</strong> Add automated tests, logging, rate limits and error handling, and set up a repeatable deployment process.</li>
+</ul>
+
+<h2>What I can help with</h2>
+<p>I can help with building a product from backend to UI, adding an AI capability to an existing application, or creating the interface and API around an existing model or agent. The guide on <a href="/blog/adding-an-llm-feature-to-a-full-stack-app/">adding an LLM feature to a full stack app</a> shows how these layers fit together, <a href="/blog/building-a-backend-api-for-an-ai-agent-in-python/">building a backend API for an AI agent in Python</a> covers the service behind an agent, and <a href="/services/generative-ai-llm-development/">generative AI and LLM development</a> covers the model side.</p>
+      <h2>Frequently asked questions</h2>
+      <h3>What does full stack development include?</h3>
+      <p>It includes the user interface, front-end logic, backend services and APIs, and data storage, along with the integration between them. Deployment and basic operational setup are often part of the work too.</p>
+      <h3>Where should the AI code live in a product?</h3>
+      <p>In a server-side layer with a clear boundary, so that the rest of the application calls it like any other service. If the main application is not in Python, that layer can run as a separate Python service.</p>
+      <h3>Can you work with an existing codebase?</h3>
+      <p>Yes, I can help with extending existing applications as well as new builds. Reviewing the current code and architecture comes first, so that new work fits what is already there.</p>
+      <h3>Does a project have to involve AI?</h3>
+      <p>No. Backend, front-end and UI work are useful in their own right, and the same engineering principles apply to a web application with no AI features.</p>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="foot-cta">
+      <div>
+        <h2>Have an AI or full stack project in mind?</h2>
+        <p>Tell me what you want to build.</p>
+      </div>
+      <div class="foot-cta-btns">
+        <a class="btn" href="/#contact">Start a conversation</a>
+        <a class="btn btn-line" href="mailto:shivanigupta4876@gmail.com">Send an email</a>
+      </div>
+    </div>
+    <div class="foot-grid">
+      <div>
+        <a href="/" aria-label="Shivani, home"><img src="/assets/logo.svg" alt="Shivani" width="144" height="40"></a>
+        <p>AI/ML engineer working across generative AI, LLMs, RAG, agentic AI and NLP, plus full stack development.</p>
+        <span class="avail">Taking new projects</span>
+      </div>
+      <div>
+        <h3>Explore</h3>
+        <ul>
+          <li><a href="/services/">Services</a></li>
+          <li><a href="/#work">Projects</a></li>
+          <li><a href="/#process">Process</a></li>
+          <li><a href="/#faq">FAQ</a></li>
+          <li><a href="/blog/">Blog</a></li>
+          <li><a href="/#contact">Contact</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Services</h3>
+        <ul>
+          <li><a href="/services/generative-ai-llm-development/">Generative AI and LLMs</a></li>
+          <li><a href="/services/rag-development/">RAG development</a></li>
+          <li><a href="/services/multi-agent-systems/">Multi-agent systems</a></li>
+          <li><a href="/services/ai-orchestration-langgraph/">Orchestration with LangGraph</a></li>
+          <li><a href="/services/nlp-development/">NLP development</a></li>
+          <li><a href="/services/full-stack-development/">Full stack development</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Contact</h3>
+        <ul>
+          <li><a href="mailto:shivanigupta4876@gmail.com">shivanigupta4876@gmail.com</a></li>
+          <li><a href="tel:+919720466504">+91 97204 66504</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="foot-bottom">&copy; <span id="year">2026</span> Shivani. All rights reserved.</div>
+  </div>
+</footer>
+<a class="wa-float" href="https://wa.me/919720466504?text=Hi%20Shivani%2C%20I%20saw%20your%20website%20and%20would%20like%20to%20talk%20about%20a%20project." target="_blank" rel="noopener" aria-label="Chat on WhatsApp"><svg viewBox="0 0 24 24" width="28" height="28" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15L2 22l5.1-1.3A10 10 0 1 0 12 2zm0 18.2a8.2 8.2 0 0 1-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1a6.700 6.700 0 0 1-3.300-2.900c-.2-.3 0-.4.1-.6l.4-.4.2-.4v-.5l-.8-1.800c-.2-.5-.4-.4-.6-.4h-.5c-.2 0-.4.1-.6.3-.2.2-.8.8-.8 2s.9 2.300 1 2.500c.1.2 1.700 2.600 4.100 3.600 1.500.7 2.100.7 2.900.6.500-.1 1.500-.6 1.700-1.200.2-.6.2-1.100.1-1.200l-.2-.2z"/></svg></a>
+<script src="/assets/js/site.js" defer></script>
+</body>
+</html>

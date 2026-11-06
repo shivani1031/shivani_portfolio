@@ -1,0 +1,209 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Embeddings and Choosing a Vector Database | Shivani</title>
+<meta name="description" content="How embeddings work and how to choose a vector database by filtering, updates, scale, hybrid search, access control and operations, tested on your own data.">
+<meta name="robots" content="index,follow">
+<meta name="author" content="Shivani">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<link rel="manifest" href="/site.webmanifest">
+<meta name="theme-color" content="#080b0f">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Embeddings and Choosing a Vector Database | Shivani">
+<meta property="og:description" content="How embeddings work and how to choose a vector database by filtering, updates, scale, hybrid search, access control and operations, tested on your own data.">
+<meta property="og:image" content="/assets/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Embeddings and choosing a vector database","description":"How embeddings work and how to choose a vector database by filtering, updates, scale, hybrid search, access control and operations, tested on your own data.","mainEntityOfPage":"/blog/embeddings-and-choosing-a-vector-database/","author":{"@type":"Person","name":"Shivani"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"/"},{"@type":"ListItem","position":2,"name":"Blog","item":"/blog/"},{"@type":"ListItem","position":3,"name":"Embeddings and choosing a vector database","item":"/blog/embeddings-and-choosing-a-vector-database/"}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Can I change embedding model later?","acceptedAnswer":{"@type":"Answer","text":"Yes, but you need to re-embed all your content, because vectors from different models are not comparable. Keeping the original text and building a new index alongside the old one makes this a manageable change."}},{"@type":"Question","name":"Do I need a dedicated vector database for RAG?","acceptedAnswer":{"@type":"Answer","text":"Not necessarily. Vector support in a database you already run can be enough, particularly for smaller collections. A dedicated system makes more sense when a specific requirement cannot be met otherwise."}},{"@type":"Question","name":"Are more embedding dimensions always better?","acceptedAnswer":{"@type":"Answer","text":"No. More dimensions can carry more information but use more storage and memory and may slow search. Compare options on your own retrieval tests before accepting the extra cost."}},{"@type":"Question","name":"What is the best vector database?","acceptedAnswer":{"@type":"Answer","text":"There is no single best option. The right choice depends on your filtering, update, scale, security and operational needs, and on what your team already runs. Test candidates with your own data and real filters."}}]}</script>
+<!-- TODO once the domain is known: canonical, absolute og:url and og:image, absolute URLs in JSON-LD -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&family=Poppins:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+<header class="nav">
+  <div class="wrap nav-in">
+    <a class="logo" href="/" aria-label="Shivani, home"><img src="/assets/logo.svg" alt="Shivani" width="144" height="40"></a>
+    <nav id="nav-links" aria-label="Main">
+      <a href="/#services">Services</a>
+      <a href="/#skills">Skills</a>
+      <a href="/#work">Work</a>
+      <a href="/#process">Process</a>
+      <a href="/#faq">FAQ</a>
+      <a href="/blog/">Blog</a>
+      <a class="btn btn-sm" href="/#contact">Hire Me</a>
+    </nav>
+    <button id="menu-toggle" class="menu-toggle" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="nav-links"><span></span><span></span><span></span></button>
+  </div>
+</header>
+
+<main id="top">
+  <section class="page-head">
+    <div class="wrap">
+      <nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a><span aria-hidden="true">/</span><a href="/blog/">Blog</a><span aria-hidden="true">/</span><span aria-current="page">Embeddings and choosing a vector database</span></nav>
+      <p class="eyebrow">Guide</p>
+      <h1>Embeddings and choosing a vector database</h1>
+      <p class="lead">An embedding is a list of numbers that represents the meaning of a piece of text, so that similar texts sit close together and can be found by distance. Choose your embedding model by testing it on your own queries, and choose a vector database by your needs for filtering, updates, scale, access control and operations, not by a general ranking.</p>
+    </div>
+  </section>
+  <section class="article">
+    <div class="wrap prose">
+<h2>What embeddings do</h2>
+<p>An embedding model turns text into a vector, a fixed-length list of numbers. The model is trained so that texts with related meanings end up near each other. A question about "cancelling a subscription" can then match a passage about "ending your plan", even though the two share few words.</p>
+<p>In a typical semantic search or <a href="/blog/what-is-rag-and-when-to-use-it/">RAG</a> pipeline, you embed each stored passage ahead of time and save the vectors. When a query arrives, you embed it with the same model and look for the nearest stored vectors. The results are then returned directly or passed to an LLM as context.</p>
+<p>Two limits are worth remembering. First, similarity is not truth or relevance: a close match can be out of date or simply about a neighbouring topic. Second, embeddings can blur exact details. Product codes, names and precise phrases are often better found by keyword search, which is why <a href="/blog/hybrid-search-and-reranking-for-rag/">hybrid search and reranking</a> are so widely used.</p>
+
+<h2>Choosing an embedding model</h2>
+<p>Published comparisons are a starting point at most, since your documents and your users' language may look very different from any general test set. These are the criteria to consider:</p>
+<ul>
+<li><strong>Retrieval quality on your data.</strong> This outweighs everything else, and it is covered in the next section.</li>
+<li><strong>Domain and language.</strong> Legal text, code, medical notes and mixed-language content can each behave differently. If users search in more than one language, test each one.</li>
+<li><strong>Dimensions.</strong> More dimensions can hold more information, but they also use more storage and memory and can slow search. Some models let you choose a shorter output. Measure whether a smaller size loses anything that matters to you.</li>
+<li><strong>Input length.</strong> Models have a maximum input size, and text beyond it may be cut off or rejected. Your <a href="/blog/choosing-chunking-strategies-for-rag/">chunking strategy</a> has to fit within that limit.</li>
+<li><strong>Hosted or self-hosted.</strong> A hosted API is simple to adopt but sends your text to a third party and depends on that provider's terms and availability. Running a model yourself gives more control, but you take on the hardware and operations.</li>
+<li><strong>Cost at both stages.</strong> Include the initial embedding of everything, ongoing updates and query-time calls, plus query latency.</li>
+<li><strong>Model stability.</strong> Find out how the provider handles model retirement, since a retired model can force you to re-embed everything.</li>
+</ul>
+<p>Some models expect queries and documents to be treated differently, for example through a prefix or a separate setting. Read the model's documentation, as getting this wrong can quietly reduce quality.</p>
+
+<h2>Testing models on your own data</h2>
+<p>A small experiment tells you more than a general comparison:</p>
+<ol>
+<li><strong>Collect realistic queries.</strong> Use real user questions if you have them, including vague and badly worded ones.</li>
+<li><strong>Mark the right passages.</strong> For each query, record which passages would genuinely help.</li>
+<li><strong>Embed the same chunks with each candidate.</strong> Change only one thing at a time, or you will not know the cause of a difference.</li>
+<li><strong>Compare retrieval metrics.</strong> Recall and rank-aware measures at the number of results you actually use are good choices. <a href="/blog/how-to-evaluate-a-rag-system/">How to evaluate a RAG system</a> explains how to set these up.</li>
+<li><strong>Read the failures.</strong> Averages hide patterns, such as one model consistently failing on acronyms.</li>
+</ol>
+<p>Here is an illustrative sketch of the core comparison. It uses exact search over normalised vectors, which is simple and fine for a small experiment:</p>
+<pre><code># Illustrative only. embed() is a placeholder returning normalised vectors.
+def recall_at_k(queries, passages, relevant, embed, k):
+    doc_vectors = [embed(text) for text in passages]
+    hits = 0
+    for query_id, query in queries.items():
+        query_vector = embed(query)
+        scores = [
+            (sum(a * b for a, b in zip(query_vector, vector)), index)
+            for index, vector in enumerate(doc_vectors)
+        ]
+        top = {index for _, index in sorted(scores, reverse=True)[:k]}
+        if top &amp; relevant[query_id]:
+            hits += 1
+    return hits / len(queries)</code></pre>
+
+<h2>Practical rules for storing embeddings</h2>
+<ul>
+<li><strong>Never mix models.</strong> Vectors from different models are not comparable. Queries and documents must use the same model, or a correctly paired one.</li>
+<li><strong>Record the model with each vector.</strong> Store the model name and version as metadata, along with the source document and chunk ID.</li>
+<li><strong>Keep the original text.</strong> You will need it to display results, and to re-embed when you change model or chunking.</li>
+<li><strong>Match the distance metric.</strong> Cosine similarity, dot product and Euclidean distance are the usual options. Use what the model's documentation recommends. For normalised vectors, cosine and dot product produce the same ordering.</li>
+<li><strong>Plan for re-embedding.</strong> Build a process that can write to a new index, compare it with the old one and switch over, so a model change does not become an emergency.</li>
+</ul>
+
+<h2>Do you need a dedicated vector database?</h2>
+<p>You have three broad choices, and the first may be enough for longer than you expect:</p>
+<div class="table-wrap"><table>
+<thead><tr><th>Option</th><th>Strengths</th><th>Watch for</th></tr></thead>
+<tbody>
+<tr><td>Vector support in your existing database</td><td>One system to run, normal joins, transactions and existing permissions</td><td>Search workload competing with your application; feature limits</td></tr>
+<tr><td>Search engine with vector support</td><td>Mature keyword search alongside vectors</td><td>A separate system to keep in sync; its own operational learning curve</td></tr>
+<tr><td>Dedicated vector database</td><td>Features and tuning focused on vector workloads</td><td>Another system to sync, secure and pay for</td></tr>
+</tbody>
+</table></div>
+<p>For a small collection, even exact search in memory can work. Start with what your team already operates unless a specific requirement rules it out, and keep retrieval behind your own small interface so that moving later is possible.</p>
+
+<h2>Criteria for choosing a vector store</h2>
+<p>These questions matter more than any ranking, and the answers will differ between projects:</p>
+<h3>Metadata filtering</h3>
+<p>Most real queries have conditions such as tenant, language, date or permission level. Ask how filtering interacts with vector search. Filtering after the search can leave too few results when the filter is selective, so test selective filters with realistic data.</p>
+<h3>Search quality and index type</h3>
+<p>Large collections generally use approximate nearest neighbour indexes, which trade a little recall for speed. Graph-based and cluster-based indexes are common examples. Look at what can be tuned, then measure recall against exact search on your data. Check also for built-in keyword or hybrid search if your project needs it.</p>
+<h3>Updates and deletes</h3>
+<p>How quickly does a new document become searchable? How are deletes handled, and when is data actually removed? This affects both freshness and privacy obligations. Some indexes need periodic rebuilds or compaction as data changes.</p>
+<h3>Scale and resource use</h3>
+<p>Estimate your vector count, dimensions, query rate and growth. Some indexes are memory-hungry, so check whether storage options such as disk-based indexes or compression suit your needs, and how they affect recall. Test with a realistic volume, since behaviour on a small sample may not carry over.</p>
+<h3>Security and isolation</h3>
+<p>For multi-tenant data, decide between separate collections and a tenant filter, then confirm that one customer can never see another's results. Check encryption, access controls and where data is stored. Vectors derived from sensitive text should be treated as sensitive too.</p>
+<h3>Operations</h3>
+<p>Consider backups and restore, monitoring, upgrades, how the system handles failure, and whether you want a managed service or to run it yourself. Also check how easily you can export your data, including the original text and metadata.</p>
+
+<h2>Common mistakes</h2>
+<ul>
+<li><strong>Tuning the database before checking retrieval.</strong> Poor results can come from chunking, the model or missing keyword search, so rule those out before blaming the store.</li>
+<li><strong>Benchmarking without filters.</strong> A test without your real filters may not reflect production behaviour.</li>
+<li><strong>Treating a similarity score as confidence.</strong> Scores are not comparable across models and do not directly mean "correct". Any threshold needs testing on your own data.</li>
+<li><strong>Forgetting to sync.</strong> When a source document changes or is deleted, its old chunks must go too, or the system will keep retrieving them.</li>
+</ul>
+<p>For help designing retrieval around your own content, see <a href="/services/rag-development/">RAG development</a>.</p>
+      <h2>Frequently asked questions</h2>
+      <h3>Can I change embedding model later?</h3>
+      <p>Yes, but you need to re-embed all your content, because vectors from different models are not comparable. Keeping the original text and building a new index alongside the old one makes this a manageable change.</p>
+      <h3>Do I need a dedicated vector database for RAG?</h3>
+      <p>Not necessarily. Vector support in a database you already run can be enough, particularly for smaller collections. A dedicated system makes more sense when a specific requirement cannot be met otherwise.</p>
+      <h3>Are more embedding dimensions always better?</h3>
+      <p>No. More dimensions can carry more information but use more storage and memory and may slow search. Compare options on your own retrieval tests before accepting the extra cost.</p>
+      <h3>What is the best vector database?</h3>
+      <p>There is no single best option. The right choice depends on your filtering, update, scale, security and operational needs, and on what your team already runs. Test candidates with your own data and real filters.</p>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="foot-cta">
+      <div>
+        <h2>Have an AI or full stack project in mind?</h2>
+        <p>Tell me what you want to build.</p>
+      </div>
+      <div class="foot-cta-btns">
+        <a class="btn" href="/#contact">Start a conversation</a>
+        <a class="btn btn-line" href="mailto:shivanigupta4876@gmail.com">Send an email</a>
+      </div>
+    </div>
+    <div class="foot-grid">
+      <div>
+        <a href="/" aria-label="Shivani, home"><img src="/assets/logo.svg" alt="Shivani" width="144" height="40"></a>
+        <p>AI/ML engineer working across generative AI, LLMs, RAG, agentic AI and NLP, plus full stack development.</p>
+        <span class="avail">Taking new projects</span>
+      </div>
+      <div>
+        <h3>Explore</h3>
+        <ul>
+          <li><a href="/services/">Services</a></li>
+          <li><a href="/#work">Projects</a></li>
+          <li><a href="/#process">Process</a></li>
+          <li><a href="/#faq">FAQ</a></li>
+          <li><a href="/blog/">Blog</a></li>
+          <li><a href="/#contact">Contact</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Services</h3>
+        <ul>
+          <li><a href="/services/generative-ai-llm-development/">Generative AI and LLMs</a></li>
+          <li><a href="/services/rag-development/">RAG development</a></li>
+          <li><a href="/services/multi-agent-systems/">Multi-agent systems</a></li>
+          <li><a href="/services/ai-orchestration-langgraph/">Orchestration with LangGraph</a></li>
+          <li><a href="/services/nlp-development/">NLP development</a></li>
+          <li><a href="/services/full-stack-development/">Full stack development</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Contact</h3>
+        <ul>
+          <li><a href="mailto:shivanigupta4876@gmail.com">shivanigupta4876@gmail.com</a></li>
+          <li><a href="tel:+919720466504">+91 97204 66504</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="foot-bottom">&copy; <span id="year">2026</span> Shivani. All rights reserved.</div>
+  </div>
+</footer>
+<a class="wa-float" href="https://wa.me/919720466504?text=Hi%20Shivani%2C%20I%20saw%20your%20website%20and%20would%20like%20to%20talk%20about%20a%20project." target="_blank" rel="noopener" aria-label="Chat on WhatsApp"><svg viewBox="0 0 24 24" width="28" height="28" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15L2 22l5.1-1.3A10 10 0 1 0 12 2zm0 18.2a8.2 8.2 0 0 1-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1a6.700 6.700 0 0 1-3.300-2.900c-.2-.3 0-.4.1-.6l.4-.4.2-.4v-.5l-.8-1.800c-.2-.5-.4-.4-.6-.4h-.5c-.2 0-.4.1-.6.3-.2.2-.8.8-.8 2s.9 2.300 1 2.500c.1.2 1.700 2.600 4.100 3.600 1.500.7 2.100.7 2.900.6.500-.1 1.500-.6 1.700-1.200.2-.6.2-1.100.1-1.200l-.2-.2z"/></svg></a>
+<script src="/assets/js/site.js" defer></script>
+</body>
+</html>

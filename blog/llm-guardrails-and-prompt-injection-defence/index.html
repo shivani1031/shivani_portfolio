@@ -1,0 +1,218 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>LLM Guardrails and Prompt Injection Defence | Shivani</title>
+<meta name="description" content="A practical guide to LLM guardrails: direct and indirect prompt injection, layered defences, safe tool permissions, output handling and red-team testing.">
+<meta name="robots" content="index,follow">
+<meta name="author" content="Shivani">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<link rel="manifest" href="/site.webmanifest">
+<meta name="theme-color" content="#080b0f">
+<meta property="og:type" content="article">
+<meta property="og:title" content="LLM Guardrails and Prompt Injection Defence | Shivani">
+<meta property="og:description" content="A practical guide to LLM guardrails: direct and indirect prompt injection, layered defences, safe tool permissions, output handling and red-team testing.">
+<meta property="og:image" content="/assets/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"LLM guardrails and prompt injection defence","description":"A practical guide to LLM guardrails: direct and indirect prompt injection, layered defences, safe tool permissions, output handling and red-team testing.","mainEntityOfPage":"/blog/llm-guardrails-and-prompt-injection-defence/","author":{"@type":"Person","name":"Shivani"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"/"},{"@type":"ListItem","position":2,"name":"Blog","item":"/blog/"},{"@type":"ListItem","position":3,"name":"LLM guardrails and prompt injection defence","item":"/blog/llm-guardrails-and-prompt-injection-defence/"}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"What is prompt injection?","acceptedAnswer":{"@type":"Answer","text":"Prompt injection is when text supplied to a language model causes it to follow instructions its developers did not intend. It may come directly from a user or indirectly from content the model reads, such as a document, email or web page."}},{"@type":"Question","name":"Can prompt injection be fully prevented?","acceptedAnswer":{"@type":"Answer","text":"Not with current general techniques, as models process instructions and data as one stream of text. Filters and careful prompts reduce the likelihood, so systems should also limit what a successfully manipulated model is able to do."}},{"@type":"Question","name":"What are LLM guardrails?","acceptedAnswer":{"@type":"Answer","text":"Guardrails are controls around a model that check inputs, constrain outputs and limit actions. They range from topic classifiers and schema validation to tool permissions and human approval. The controls enforced in ordinary code are the most dependable."}},{"@type":"Question","name":"Is a system prompt secret?","acceptedAnswer":{"@type":"Answer","text":"It should not be treated as secret. A model may reveal or paraphrase it when prompted in the right way. Do not place credentials or sensitive logic there, and enforce access rules in the application instead."}}]}</script>
+<!-- TODO once the domain is known: canonical, absolute og:url and og:image, absolute URLs in JSON-LD -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&family=Poppins:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+<header class="nav">
+  <div class="wrap nav-in">
+    <a class="logo" href="/" aria-label="Shivani, home"><img src="/assets/logo.svg" alt="Shivani" width="144" height="40"></a>
+    <nav id="nav-links" aria-label="Main">
+      <a href="/#services">Services</a>
+      <a href="/#skills">Skills</a>
+      <a href="/#work">Work</a>
+      <a href="/#process">Process</a>
+      <a href="/#faq">FAQ</a>
+      <a href="/blog/">Blog</a>
+      <a class="btn btn-sm" href="/#contact">Hire Me</a>
+    </nav>
+    <button id="menu-toggle" class="menu-toggle" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="nav-links"><span></span><span></span><span></span></button>
+  </div>
+</header>
+
+<main id="top">
+  <section class="page-head">
+    <div class="wrap">
+      <nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a><span aria-hidden="true">/</span><a href="/blog/">Blog</a><span aria-hidden="true">/</span><span aria-current="page">LLM guardrails and prompt injection defence</span></nav>
+      <p class="eyebrow">Guide</p>
+      <h1>LLM guardrails and prompt injection defence</h1>
+      <p class="lead">Prompt injection is text that makes a model follow instructions its developers did not intend, and no filter can reliably stop it. The dependable defence is limiting what a manipulated model can reach: permissions in code, narrow tools, checked output and human approval.</p>
+    </div>
+  </section>
+  <section class="article">
+    <div class="wrap prose">
+<h2>Two problems that are often mixed up</h2>
+<p>"Guardrails" covers two related but different concerns, and it helps to separate them:</p>
+<ul>
+<li><strong>Quality and policy.</strong> Keeping the system on topic, avoiding harmful content and returning output in the correct format. Here the threat is mostly the model's own mistakes.</li>
+<li><strong>Security.</strong> Stopping someone from using the model to reach data or trigger actions they should not. Here there is an adversary, who will adapt to your defences.</li>
+</ul>
+<p>A classifier that catches most off-topic messages may be perfectly adequate for the first concern. A control that an attacker can defeat by rewording their request is not adequate for the second. Much of the design work lies in knowing which situation you are in.</p>
+
+<h2>What prompt injection is</h2>
+<p>A language model receives its instructions and its data as one sequence of text. Delimiters and instructions such as "treat the following as data" can help, but they do not create a hard separation of the kind that parameterised queries provide against SQL injection. Text that looks like an instruction may be followed, wherever it came from.</p>
+<p>There are two broad forms:</p>
+<ul>
+<li><strong>Direct injection.</strong> A user types something intended to override your instructions, such as asking the assistant to disregard its rules or to adopt a role without them.</li>
+<li><strong>Indirect injection.</strong> The instructions are hidden in content the model reads on someone's behalf: a web page, an email, a support ticket or a <a href="/blog/what-is-rag-and-when-to-use-it/">RAG</a> document. The person using the system may be entirely innocent, and may never see the text.</li>
+</ul>
+<p>Indirect injection is usually the greater concern in agentic systems. Consider an assistant that can read email and send messages. An attacker who emails its user a hidden instruction to forward private messages has, in effect, attempted to issue a command using that user's permissions.</p>
+
+<h2>The dangerous combination</h2>
+<p>Risk rises sharply when one workflow combines three capabilities:</p>
+<ol>
+<li>It reads <strong>untrusted content</strong>.</li>
+<li>It has access to <strong>private data</strong>.</li>
+<li>It has a way to <strong>send information out or take action</strong>.</li>
+</ol>
+<p>With all three present, a successful injection can lead to data theft or unwanted actions. Removing any one of them greatly narrows what an attacker can achieve. This is a useful test to apply to every workflow, and it is often more productive than trying to perfect a filter.</p>
+
+<h2>A layered design</h2>
+<p>No single control is sufficient, so the usual approach is to layer them, while being clear about which layers are hard boundaries and which only reduce likelihood.</p>
+<div class="table-wrap"><table>
+<thead><tr><th>Layer</th><th>Examples</th><th>Strength</th></tr></thead>
+<tbody>
+<tr><td>Input checks</td><td>Length limits, injection classifiers, topic checks</td><td>Reduces likelihood; can be evaded</td></tr>
+<tr><td>Prompt design</td><td>Clear roles, marked untrusted content</td><td>Reduces likelihood; can be evaded</td></tr>
+<tr><td>Output checks</td><td>Schema validation, sanitising, sensitive data scans</td><td>Strong for format; partial for meaning</td></tr>
+<tr><td>Permissions in code</td><td>Per-user access, narrow tools, argument validation</td><td>A hard boundary if implemented correctly</td></tr>
+<tr><td>Human approval</td><td>Review before sensitive actions</td><td>Strong, but subject to human error</td></tr>
+<tr><td>Monitoring</td><td>Logs, alerts, rate limits</td><td>Detects problems and limits their scale</td></tr>
+</tbody>
+</table></div>
+
+<h2>Limit what the model can do</h2>
+<p>The most reliable defence assumes that the model will sometimes be manipulated, and makes sure that this does not matter very much. Much of this comes down to <a href="/blog/tool-calling-for-ai-agents/">how an agent's tools are designed</a>.</p>
+<ul>
+<li><strong>Use the user's permissions, not the system's.</strong> A tool that runs with a broad service account lets any user who manipulates the model reach everything that account can reach. Pass the authenticated user's identity from your application, never from model output.</li>
+<li><strong>Provide narrow tools.</strong> A <code>get_order_status</code> tool is much easier to protect than a general database query tool.</li>
+<li><strong>Validate arguments in code.</strong> Treat tool arguments like any other untrusted request: check their types, ranges, ownership and allowed destinations.</li>
+<li><strong>Filter retrieval by access rights</strong> before content reaches the model. A prompt instructing the model not to reveal certain documents is not an access control.</li>
+<li><strong>Separate risky work.</strong> A component that reads untrusted content can be given no sensitive tools, and it can return only constrained output, such as a category from a fixed list. See <a href="/blog/single-agent-vs-multi-agent-systems/">single agent vs multi-agent systems</a> for this kind of split.</li>
+<li><strong>Require approval for consequential actions.</strong> The guide on <a href="/blog/human-in-the-loop-approval-for-ai-agents/">human-in-the-loop approval</a> covers this in detail.</li>
+</ul>
+<p>The enforcement point looks like this, using placeholder functions:</p>
+<pre><code># Illustrative only. The user comes from your auth layer, never the model.
+def run_refund_tool(args, user):
+    order = get_order(args["order_id"])
+
+    if order is None or not user_can_access(user, order):
+        return tool_error("Order not available.")
+
+    if not valid_refund_amount(args["amount"], order):
+        return tool_error("Amount not permitted.")
+
+    return request_human_approval("refund", order.id, args["amount"])</code></pre>
+<p>Whatever the model was persuaded to request, this function cannot act on another user's order or exceed the permitted amount, and it can do no more than ask a person for approval.</p>
+
+<p>Agents that query databases are a clear example of this principle, and <a href="/blog/text-to-sql-agents-risks-and-safeguards/">text-to-SQL agents: risks and safeguards</a> applies it to generated SQL.</p>
+
+<h2>Handle model output as untrusted</h2>
+<p>Output deserves the same suspicion as input, because it may carry an attacker's text straight into another system.</p>
+<ul>
+<li><strong>Web rendering.</strong> Sanitise HTML generated from model output, in order to prevent cross-site scripting.</li>
+<li><strong>Data leaks through URLs.</strong> If your interface automatically loads Markdown images, a manipulated model could produce an image URL containing private data in its query string, and the browser would send it to the attacker's server just by loading the image. Restrict images and links to approved domains. A content security policy provides a further layer.</li>
+<li><strong>Downstream execution.</strong> Do not pass model output directly to a shell, an interpreter or a database. If generated code or queries are part of the design, run them with minimal permissions in a sandbox or a read-only role.</li>
+<li><strong>Structured output.</strong> Validating against a schema catches malformed data. A well-formed value can still be malicious or wrong, so the content needs checking as well.</li>
+</ul>
+
+<h2>Where classifiers and filters fit</h2>
+<p>Input and output classifiers are still useful. They can stop casual attempts, keep a product on topic, flag activity for review and reduce the amount of abuse reaching your model. They do, however, have false positives, which block legitimate users, and false negatives, which let attacks through. Rephrasing, other languages and encodings can all be used to get around them.</p>
+<p>Measure their error rates on your own traffic and test set, and consider the added latency. If a filter is the only thing between an attacker and a damaging action, redesign that part of the system so a filter miss is survivable. If you stream responses, also note that an output check on complete text cannot stop what has already been displayed; <a href="/blog/streaming-llm-responses-to-a-web-ui/">streaming LLM responses to a web UI</a> covers that delivery path.</p>
+
+<h2>Prompt design still helps</h2>
+<p>A well-written prompt will not create a security boundary, but it can improve normal behaviour and raise the effort needed for simple attacks. State the model's task and limits clearly. Mark retrieved content, tell the model that it is reference material rather than instructions, and describe what to do when it cannot help. Keep credentials and sensitive rules out of the prompt, as a system prompt may be revealed.</p>
+
+<h2>Test like an attacker</h2>
+<p>Add adversarial cases to your regular evaluation so that defences are measured and regressions show up:</p>
+<ul>
+<li>Direct attempts to override instructions, in several wordings and languages.</li>
+<li>Instructions hidden in documents, emails and web pages your system might read.</li>
+<li>Requests for another user's data, including through tools.</li>
+<li>Attempts to make the model emit links or images containing private data.</li>
+<li>Tool arguments outside the permitted range.</li>
+</ul>
+<p>Judge the outcome by the effect, not only the text: did a forbidden action occur, or did private data reach an unauthorised place? The security checks can sit in the same test process described in <a href="/blog/how-to-evaluate-a-rag-system/">how to evaluate a RAG system</a>. A passing suite shows only that those attacks failed, so periodic manual testing by someone trying to break the system remains worthwhile.</p>
+
+<h2>Plan for the failure</h2>
+<p>Assume that something will eventually get through. Keep logs that let you reconstruct what the model saw, what it requested and what ran, while handling personal data appropriately. Set rate and spending limits to contain abuse. Make sure you can disable a tool or feature quickly and can revoke credentials. Where a matter has legal or regulatory implications, seek appropriate specialist advice, as this guide is general engineering information.</p>
+<p>For help designing these controls into an application, see <a href="/services/generative-ai-llm-development/">generative AI and LLM development</a>.</p>
+      <h2>Frequently asked questions</h2>
+      <h3>What is prompt injection?</h3>
+      <p>Prompt injection is when text supplied to a language model causes it to follow instructions its developers did not intend. It may come directly from a user or indirectly from content the model reads, such as a document, email or web page.</p>
+      <h3>Can prompt injection be fully prevented?</h3>
+      <p>Not with current general techniques, as models process instructions and data as one stream of text. Filters and careful prompts reduce the likelihood, so systems should also limit what a successfully manipulated model is able to do.</p>
+      <h3>What are LLM guardrails?</h3>
+      <p>Guardrails are controls around a model that check inputs, constrain outputs and limit actions. They range from topic classifiers and schema validation to tool permissions and human approval. The controls enforced in ordinary code are the most dependable.</p>
+      <h3>Is a system prompt secret?</h3>
+      <p>It should not be treated as secret. A model may reveal or paraphrase it when prompted in the right way. Do not place credentials or sensitive logic there, and enforce access rules in the application instead.</p>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="foot-cta">
+      <div>
+        <h2>Have an AI or full stack project in mind?</h2>
+        <p>Tell me what you want to build.</p>
+      </div>
+      <div class="foot-cta-btns">
+        <a class="btn" href="/#contact">Start a conversation</a>
+        <a class="btn btn-line" href="mailto:shivanigupta4876@gmail.com">Send an email</a>
+      </div>
+    </div>
+    <div class="foot-grid">
+      <div>
+        <a href="/" aria-label="Shivani, home"><img src="/assets/logo.svg" alt="Shivani" width="144" height="40"></a>
+        <p>AI/ML engineer working across generative AI, LLMs, RAG, agentic AI and NLP, plus full stack development.</p>
+        <span class="avail">Taking new projects</span>
+      </div>
+      <div>
+        <h3>Explore</h3>
+        <ul>
+          <li><a href="/services/">Services</a></li>
+          <li><a href="/#work">Projects</a></li>
+          <li><a href="/#process">Process</a></li>
+          <li><a href="/#faq">FAQ</a></li>
+          <li><a href="/blog/">Blog</a></li>
+          <li><a href="/#contact">Contact</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Services</h3>
+        <ul>
+          <li><a href="/services/generative-ai-llm-development/">Generative AI and LLMs</a></li>
+          <li><a href="/services/rag-development/">RAG development</a></li>
+          <li><a href="/services/multi-agent-systems/">Multi-agent systems</a></li>
+          <li><a href="/services/ai-orchestration-langgraph/">Orchestration with LangGraph</a></li>
+          <li><a href="/services/nlp-development/">NLP development</a></li>
+          <li><a href="/services/full-stack-development/">Full stack development</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Contact</h3>
+        <ul>
+          <li><a href="mailto:shivanigupta4876@gmail.com">shivanigupta4876@gmail.com</a></li>
+          <li><a href="tel:+919720466504">+91 97204 66504</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="foot-bottom">&copy; <span id="year">2026</span> Shivani. All rights reserved.</div>
+  </div>
+</footer>
+<a class="wa-float" href="https://wa.me/919720466504?text=Hi%20Shivani%2C%20I%20saw%20your%20website%20and%20would%20like%20to%20talk%20about%20a%20project." target="_blank" rel="noopener" aria-label="Chat on WhatsApp"><svg viewBox="0 0 24 24" width="28" height="28" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15L2 22l5.1-1.3A10 10 0 1 0 12 2zm0 18.2a8.2 8.2 0 0 1-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1a6.700 6.700 0 0 1-3.300-2.900c-.2-.3 0-.4.1-.6l.4-.4.2-.4v-.5l-.8-1.800c-.2-.5-.4-.4-.6-.4h-.5c-.2 0-.4.1-.6.3-.2.2-.8.8-.8 2s.9 2.300 1 2.500c.1.2 1.700 2.600 4.100 3.600 1.500.7 2.100.7 2.900.6.500-.1 1.500-.6 1.700-1.200.2-.6.2-1.100.1-1.200l-.2-.2z"/></svg></a>
+<script src="/assets/js/site.js" defer></script>
+</body>
+</html>

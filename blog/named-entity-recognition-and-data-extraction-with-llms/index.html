@@ -1,0 +1,218 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NER and Data Extraction with LLMs | Shivani</title>
+<meta name="description" content="How to extract entities and structured data with LLMs: design the schema, validate output, guard against invented values and measure field-level quality.">
+<meta name="robots" content="index,follow">
+<meta name="author" content="Shivani">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<link rel="manifest" href="/site.webmanifest">
+<meta name="theme-color" content="#080b0f">
+<meta property="og:type" content="article">
+<meta property="og:title" content="NER and Data Extraction with LLMs | Shivani">
+<meta property="og:description" content="How to extract entities and structured data with LLMs: design the schema, validate output, guard against invented values and measure field-level quality.">
+<meta property="og:image" content="/assets/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Named entity recognition and data extraction with LLMs","description":"How to extract entities and structured data with LLMs: design the schema, validate output, guard against invented values and measure field-level quality.","mainEntityOfPage":"/blog/named-entity-recognition-and-data-extraction-with-llms/","author":{"@type":"Person","name":"Shivani"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"/"},{"@type":"ListItem","position":2,"name":"Blog","item":"/blog/"},{"@type":"ListItem","position":3,"name":"Named entity recognition and data extraction with LLMs","item":"/blog/named-entity-recognition-and-data-extraction-with-llms/"}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"What is the difference between NER and data extraction?","acceptedAnswer":{"@type":"Answer","text":"Named entity recognition finds and labels mentions in text, such as people or dates. Structured data extraction fills a defined record, which can involve normalising values, using context and working out relationships between them."}},{"@type":"Question","name":"Does structured output guarantee correct data?","acceptedAnswer":{"@type":"Answer","text":"No. Schema-constrained output can reduce formatting errors, but a well-formed response can still hold a wrong value. You still need business rule checks, grounding checks and evaluation against labelled documents."}},{"@type":"Question","name":"How do I stop an LLM inventing values?","acceptedAnswer":{"@type":"Answer","text":"You cannot rule it out, but you can reduce and catch it. Allow nulls, tell the model to use only the document, include examples where null is correct, ask for a supporting quote and verify that the quote exists in the source."}},{"@type":"Question","name":"Should I still use a traditional NER library?","acceptedAnswer":{"@type":"Answer","text":"Often, yes. Pretrained models and patterns can be cheap, fast and able to run locally, which suits common entity types and fixed formats. An LLM is more attractive when layouts vary or a value depends on context."}}]}</script>
+<!-- TODO once the domain is known: canonical, absolute og:url and og:image, absolute URLs in JSON-LD -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&family=Poppins:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+<header class="nav">
+  <div class="wrap nav-in">
+    <a class="logo" href="/" aria-label="Shivani, home"><img src="/assets/logo.svg" alt="Shivani" width="144" height="40"></a>
+    <nav id="nav-links" aria-label="Main">
+      <a href="/#services">Services</a>
+      <a href="/#skills">Skills</a>
+      <a href="/#work">Work</a>
+      <a href="/#process">Process</a>
+      <a href="/#faq">FAQ</a>
+      <a href="/blog/">Blog</a>
+      <a class="btn btn-sm" href="/#contact">Hire Me</a>
+    </nav>
+    <button id="menu-toggle" class="menu-toggle" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="nav-links"><span></span><span></span><span></span></button>
+  </div>
+</header>
+
+<main id="top">
+  <section class="page-head">
+    <div class="wrap">
+      <nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a><span aria-hidden="true">/</span><a href="/blog/">Blog</a><span aria-hidden="true">/</span><span aria-current="page">Named entity recognition and data extraction with LLMs</span></nav>
+      <p class="eyebrow">Guide</p>
+      <h1>Named entity recognition and data extraction with LLMs</h1>
+      <p class="lead">Use an LLM for extraction when layouts and wording vary, and patterns or pretrained NER models when they do not. Either way, reliable output depends on a clear schema, validation in code and checks that catch values missing from the source.</p>
+    </div>
+  </section>
+  <section class="article">
+    <div class="wrap prose">
+<h2>NER and extraction are related but different</h2>
+<p>Named entity recognition, or NER, finds mentions of things in text and labels their type: people, organisations, places, dates, amounts. Its output is a set of spans, each pointing to a position in the source text.</p>
+<p>Structured data extraction asks for more. It fills a defined record from a document, such as the supplier, invoice date, total and line items of an invoice. Values may need normalising, inferring from context or combining from several places. A date written in words becomes a standard format, and "the Supplier" in a contract has to be resolved to the company named in its opening paragraph.</p>
+<p>The distinction matters because the two tasks fail differently. NER can be scored by checking spans against the text. Extraction also has to be right about meaning, relationships and which of several candidates is the correct one. Both are common <a href="/services/nlp-development/">NLP development</a> tasks, and if you only need to assign a label to a whole text, <a href="/blog/text-classification-llms-vs-traditional-nlp/">text classification</a> is the simpler problem.</p>
+
+<h2>When a traditional tool is the better starting point</h2>
+<p>LLMs are not always needed. Consider these options first:</p>
+<ul>
+<li><strong>Patterns and validators</strong> suit values with a fixed format, such as email addresses, reference numbers or postcodes. They are cheap and deterministic, and a checksum or format rule can also confirm the result.</li>
+<li><strong>Pretrained NER models</strong> from open-source NLP libraries cover common entity types and run locally at low cost. Quality depends on how closely your text resembles what they were trained on.</li>
+<li><strong>Custom trained models</strong> suit domain-specific entities when labelled examples are available and the task is stable.</li>
+<li><strong>Layout-based extraction</strong> suits forms and templates whose fields always appear in the same place.</li>
+</ul>
+<p>LLMs earn their place where documents vary in layout and wording, where a value must be understood from context, or where the schema changes too often for retraining to be practical. Mixing methods is normal: a pattern can capture a reference number while an LLM interprets a free-text clause in the same document.</p>
+
+<h2>Design the schema before the prompt</h2>
+<p>The schema is the contract between the model and the rest of your system, and many extraction problems are really schema problems.</p>
+<ul>
+<li><strong>Make absence explicit.</strong> Optional fields should allow null, and instructions should say to use it when a value is not stated. If every field is required, the model is under pressure to invent something.</li>
+<li><strong>Use constrained types.</strong> Prefer enumerations, numbers and standard date formats to free text where the values are known.</li>
+<li><strong>Define every field in words.</strong> "Date" is ambiguous on an invoice that has an issue date and a due date. Name them separately and describe each one.</li>
+<li><strong>Specify formats and units.</strong> Say how to represent currency, and keep the amount and currency in separate fields, so that nothing relies on the model converting values.</li>
+<li><strong>Keep nesting modest.</strong> Deeply nested schemas are harder to review and more likely to go wrong. Consider several smaller passes for a complex document.</li>
+<li><strong>Ask for evidence.</strong> A field for the exact supporting quote gives you something to check and something to show a reviewer.</li>
+</ul>
+<pre><code># Illustrative only. A schema expressed as Python dataclasses.
+from dataclasses import dataclass
+from typing import Optional
+
+@dataclass
+class ExtractedValue:
+    value: Optional[str]    # None when the text does not state it
+    evidence: Optional[str] # exact quote supporting the value
+
+@dataclass
+class Invoice:
+    supplier_name: ExtractedValue
+    issue_date: ExtractedValue  # ISO 8601 date, for example 2026-01-31
+    due_date: ExtractedValue
+    total_amount: ExtractedValue
+    currency: ExtractedValue    # three-letter currency code</code></pre>
+
+<h2>Getting structured output from the model</h2>
+<p>Many LLM providers offer a way of requesting JSON or of constraining output to a schema, and tool calling can be used for this as well. The details differ between providers and change over time, so check the current documentation for yours. Where available, these features reduce formatting errors considerably.</p>
+<p>They do not make the content correct. A response can match the schema perfectly and still contain the wrong date. So treat validation as a series of layers:</p>
+<ol>
+<li><strong>Syntax.</strong> Does it parse?</li>
+<li><strong>Schema.</strong> Are the fields and types right?</li>
+<li><strong>Business rules.</strong> Does the due date fall after the issue date? Do the line items add up to the total?</li>
+<li><strong>Grounding.</strong> Does the value, or the quote offered to support it, appear in the source document? A normalised value such as a reformatted date may not appear literally.</li>
+</ol>
+<p>If syntax or schema validation fails, one retry that includes the specific error often resolves it. If a value breaks a business rule, send it for review, as repeatedly asking the model may only produce a different guess.</p>
+
+<h2>Guarding against invented values</h2>
+<p>The characteristic failure of LLM extraction is a value that looks plausible but is not in the document. Traditional NER rarely fails this way, since it can only label text that exists. The evidence field makes a simple check possible:</p>
+<pre><code># Illustrative only. Checks that a quote exists in the source.
+import re
+
+def normalise(text):
+    return re.sub(r"\s+", " ", text).strip().lower()
+
+def is_grounded(evidence, source_text):
+    if not evidence:
+        return False
+    return normalise(evidence) in normalise(source_text)</code></pre>
+<p>A passing check shows that the quote exists, not that it supports the value or that the value was interpreted correctly, so this is a filter and not a guarantee. Quotes may also fail for innocent reasons, such as line breaks or errors from optical character recognition, so a failure should generally route the record to review and not simply discard it.</p>
+<p>Prompts help as well: tell the model to use only the document, to return null when a value is not stated and not to apply outside knowledge. Provide examples in which null is the correct answer, because examples where every field is filled teach the opposite habit. Bear in mind that document text is untrusted input, and a document could contain instructions aimed at the model. The guide on <a href="/blog/llm-guardrails-and-prompt-injection-defence/">LLM guardrails and prompt injection defence</a> covers how to limit that risk.</p>
+
+<h2>Long documents and repeated entities</h2>
+<p>A long document may not fit in the context window, and even when it does, attention to detail can suffer. Common approaches include:</p>
+<ul>
+<li><strong>Find the section first.</strong> Locate the relevant part with search or headings, then extract from that part. The methods overlap with <a href="/blog/choosing-chunking-strategies-for-rag/">chunking for RAG</a>, although here a split entity or table is the main thing to avoid.</li>
+<li><strong>Extract per chunk and merge.</strong> Process sections separately and combine the results. You will need rules for duplicates and for conflicts between sections.</li>
+<li><strong>Run field-specific passes.</strong> Ask for fewer fields per call, in exchange for more calls.</li>
+</ul>
+<p>Merging raises the problem of entity resolution: deciding whether "Acme Ltd", "Acme" and "the Company" refer to the same organisation. Decide this in a defined step, using a reference list of known entities where you have one. A code-based match against known records is generally easier to audit than leaving it to the model.</p>
+<p>Check the input as well. PDFs and scans often lose reading order or scramble tables during text extraction, and no prompt can recover information that the parser has destroyed.</p>
+
+<h2>Measuring extraction quality</h2>
+<p>Create a labelled set from real documents and include awkward ones: unusual layouts, poor scans, documents in which a field is truly missing. Then score at the field level, because an overall average hides which fields are unreliable.</p>
+<ul>
+<li><strong>Span matching for NER.</strong> Decide in advance whether a partial match counts. Exact matching is stricter, while partial matching may be more realistic for some uses. Report which one you used.</li>
+<li><strong>Value matching for extraction.</strong> Normalise before comparing, so that different formats of the same date count as equal.</li>
+<li><strong>Precision and recall per field.</strong> Precision shows how often an extracted value is right. Recall shows how often a present value is found.</li>
+<li><strong>Correct nulls.</strong> Track separately how often the model correctly returned nothing, because invented values are often the most damaging errors.</li>
+<li><strong>Whole-record accuracy,</strong> if a downstream process needs every field in a record to be right.</li>
+</ul>
+
+<h2>Putting extraction into production</h2>
+<ul>
+<li><strong>Route by risk.</strong> Send records that fail validation, or fields where errors are costly, to a reviewer. The source quote beside the value makes this quicker.</li>
+<li><strong>Record provenance.</strong> Store the document version, the prompt and schema versions, the model and the evidence for each value, so that a bad result can be traced.</li>
+<li><strong>Feed corrections back.</strong> Reviewer changes are valuable test cases and can show which fields need better definitions.</li>
+<li><strong>Take care with personal data.</strong> Extraction often deals with names and contact details. Check where text is sent and retained, and how long logs keep it.</li>
+<li><strong>Version the schema.</strong> Downstream consumers will depend on it, so changes need the same care as any other API change.</li>
+</ul>
+      <h2>Frequently asked questions</h2>
+      <h3>What is the difference between NER and data extraction?</h3>
+      <p>Named entity recognition finds and labels mentions in text, such as people or dates. Structured data extraction fills a defined record, which can involve normalising values, using context and working out relationships between them.</p>
+      <h3>Does structured output guarantee correct data?</h3>
+      <p>No. Schema-constrained output can reduce formatting errors, but a well-formed response can still hold a wrong value. You still need business rule checks, grounding checks and evaluation against labelled documents.</p>
+      <h3>How do I stop an LLM inventing values?</h3>
+      <p>You cannot rule it out, but you can reduce and catch it. Allow nulls, tell the model to use only the document, include examples where null is correct, ask for a supporting quote and verify that the quote exists in the source.</p>
+      <h3>Should I still use a traditional NER library?</h3>
+      <p>Often, yes. Pretrained models and patterns can be cheap, fast and able to run locally, which suits common entity types and fixed formats. An LLM is more attractive when layouts vary or a value depends on context.</p>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="foot-cta">
+      <div>
+        <h2>Have an AI or full stack project in mind?</h2>
+        <p>Tell me what you want to build.</p>
+      </div>
+      <div class="foot-cta-btns">
+        <a class="btn" href="/#contact">Start a conversation</a>
+        <a class="btn btn-line" href="mailto:shivanigupta4876@gmail.com">Send an email</a>
+      </div>
+    </div>
+    <div class="foot-grid">
+      <div>
+        <a href="/" aria-label="Shivani, home"><img src="/assets/logo.svg" alt="Shivani" width="144" height="40"></a>
+        <p>AI/ML engineer working across generative AI, LLMs, RAG, agentic AI and NLP, plus full stack development.</p>
+        <span class="avail">Taking new projects</span>
+      </div>
+      <div>
+        <h3>Explore</h3>
+        <ul>
+          <li><a href="/services/">Services</a></li>
+          <li><a href="/#work">Projects</a></li>
+          <li><a href="/#process">Process</a></li>
+          <li><a href="/#faq">FAQ</a></li>
+          <li><a href="/blog/">Blog</a></li>
+          <li><a href="/#contact">Contact</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Services</h3>
+        <ul>
+          <li><a href="/services/generative-ai-llm-development/">Generative AI and LLMs</a></li>
+          <li><a href="/services/rag-development/">RAG development</a></li>
+          <li><a href="/services/multi-agent-systems/">Multi-agent systems</a></li>
+          <li><a href="/services/ai-orchestration-langgraph/">Orchestration with LangGraph</a></li>
+          <li><a href="/services/nlp-development/">NLP development</a></li>
+          <li><a href="/services/full-stack-development/">Full stack development</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Contact</h3>
+        <ul>
+          <li><a href="mailto:shivanigupta4876@gmail.com">shivanigupta4876@gmail.com</a></li>
+          <li><a href="tel:+919720466504">+91 97204 66504</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="foot-bottom">&copy; <span id="year">2026</span> Shivani. All rights reserved.</div>
+  </div>
+</footer>
+<a class="wa-float" href="https://wa.me/919720466504?text=Hi%20Shivani%2C%20I%20saw%20your%20website%20and%20would%20like%20to%20talk%20about%20a%20project." target="_blank" rel="noopener" aria-label="Chat on WhatsApp"><svg viewBox="0 0 24 24" width="28" height="28" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15L2 22l5.1-1.3A10 10 0 1 0 12 2zm0 18.2a8.2 8.2 0 0 1-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1a6.700 6.700 0 0 1-3.300-2.900c-.2-.3 0-.4.1-.6l.4-.4.2-.4v-.5l-.8-1.800c-.2-.5-.4-.4-.6-.4h-.5c-.2 0-.4.1-.6.3-.2.2-.8.8-.8 2s.9 2.300 1 2.500c.1.2 1.700 2.600 4.100 3.600 1.500.7 2.100.7 2.900.6.500-.1 1.500-.6 1.700-1.200.2-.6.2-1.100.1-1.200l-.2-.2z"/></svg></a>
+<script src="/assets/js/site.js" defer></script>
+</body>
+</html>

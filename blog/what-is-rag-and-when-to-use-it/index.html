@@ -1,0 +1,204 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>What Is RAG and When Should You Use It? | Shivani</title>
+<meta name="description" content="What retrieval-augmented generation is, how its ingestion and query pipelines work, when RAG is the right choice and which alternatives fit better.">
+<meta name="robots" content="index,follow">
+<meta name="author" content="Shivani">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<link rel="manifest" href="/site.webmanifest">
+<meta name="theme-color" content="#080b0f">
+<meta property="og:type" content="article">
+<meta property="og:title" content="What Is RAG and When Should You Use It? | Shivani">
+<meta property="og:description" content="What retrieval-augmented generation is, how its ingestion and query pipelines work, when RAG is the right choice and which alternatives fit better.">
+<meta property="og:image" content="/assets/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"What RAG is and when to use it","description":"What retrieval-augmented generation is, how its ingestion and query pipelines work, when RAG is the right choice and which alternatives fit better.","mainEntityOfPage":"/blog/what-is-rag-and-when-to-use-it/","author":{"@type":"Person","name":"Shivani"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"/"},{"@type":"ListItem","position":2,"name":"Blog","item":"/blog/"},{"@type":"ListItem","position":3,"name":"What RAG is and when to use it","item":"/blog/what-is-rag-and-when-to-use-it/"}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"What does RAG stand for?","acceptedAnswer":{"@type":"Answer","text":"RAG stands for retrieval-augmented generation. A system retrieves relevant information from a knowledge source and supplies it to a language model, which uses it to generate an answer."}},{"@type":"Question","name":"Does RAG eliminate hallucinations?","acceptedAnswer":{"@type":"Answer","text":"No. It can reduce them by grounding answers in source material, but a model can still misread or go beyond a passage, and retrieval can return the wrong content. Citations and evaluation help to manage this risk."}},{"@type":"Question","name":"Is a vector database required for RAG?","acceptedAnswer":{"@type":"Answer","text":"No. Retrieval can use keyword search, a general database with vector support or a dedicated vector store. RAG describes the pattern of retrieving before generating, not one specific technology."}},{"@type":"Question","name":"How is RAG different from search?","acceptedAnswer":{"@type":"Answer","text":"Search returns documents or passages for a person to read. RAG uses search as one step, then has a language model compose an answer from the results. Its quality therefore depends heavily on the search step."}}]}</script>
+<!-- TODO once the domain is known: canonical, absolute og:url and og:image, absolute URLs in JSON-LD -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&family=Poppins:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+<header class="nav">
+  <div class="wrap nav-in">
+    <a class="logo" href="/" aria-label="Shivani, home"><img src="/assets/logo.svg" alt="Shivani" width="144" height="40"></a>
+    <nav id="nav-links" aria-label="Main">
+      <a href="/#services">Services</a>
+      <a href="/#skills">Skills</a>
+      <a href="/#work">Work</a>
+      <a href="/#process">Process</a>
+      <a href="/#faq">FAQ</a>
+      <a href="/blog/">Blog</a>
+      <a class="btn btn-sm" href="/#contact">Hire Me</a>
+    </nav>
+    <button id="menu-toggle" class="menu-toggle" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="nav-links"><span></span><span></span><span></span></button>
+  </div>
+</header>
+
+<main id="top">
+  <section class="page-head">
+    <div class="wrap">
+      <nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a><span aria-hidden="true">/</span><a href="/blog/">Blog</a><span aria-hidden="true">/</span><span aria-current="page">What RAG is and when to use it</span></nav>
+      <p class="eyebrow">Guide</p>
+      <h1>What RAG is and when to use it</h1>
+      <p class="lead">RAG retrieves passages from your own content at question time and gives them to a language model to answer from. Use it when answers live in documents that are too large or change too often to keep in a prompt; skip it for calculations over structured data or a small, stable knowledge base.</p>
+    </div>
+  </section>
+  <section class="article">
+    <div class="wrap prose">
+<h2>The problem RAG solves</h2>
+<p>A large language model knows only what was represented in its training data, and it has no built-in access to your internal documents. Ask it about your refund policy and it may either decline or produce a plausible answer that happens to be wrong. Since models generate likely text rather than look up facts, a confident tone is no guarantee of accuracy.</p>
+<p>The most direct fix is to give the model the relevant information along with the question. Retrieval-augmented generation, or RAG, automates this. Rather than expecting the model to remember your content, the system finds the relevant passages at question time and places them in the prompt.</p>
+
+<h2>How a RAG system works</h2>
+<p>Most RAG systems consist of two pipelines. One runs ahead of time to prepare the content, and the other runs each time a question arrives.</p>
+
+<h3>The ingestion pipeline</h3>
+<ol>
+<li><strong>Load and parse.</strong> Documents are pulled from their sources and converted to clean text. PDFs, tables and scanned pages can all lose structure at this step.</li>
+<li><strong>Chunk.</strong> Long documents are split into smaller passages, so that retrieval can return just the relevant part. The guide on <a href="/blog/choosing-chunking-strategies-for-rag/">choosing chunking strategies</a> covers this decision.</li>
+<li><strong>Embed.</strong> An embedding model turns each chunk into a vector, a list of numbers positioned so that texts with similar meanings tend to sit close together.</li>
+<li><strong>Index.</strong> Vectors, text and metadata such as source, title and date are stored in a searchable index.</li>
+</ol>
+
+<h3>The query pipeline</h3>
+<ol>
+<li><strong>Process the question.</strong> The question is embedded with the same model. In a conversation, a follow-up such as "what about the second one?" may first need rewriting into a standalone question.</li>
+<li><strong>Retrieve.</strong> The system finds the chunks closest to the query, often combining vector search with keyword search. See <a href="/blog/hybrid-search-and-reranking-for-rag/">hybrid search and reranking for RAG</a>.</li>
+<li><strong>Filter and rerank.</strong> Metadata and permission filters, ideally applied during the search itself, exclude passages that are out of date or out of scope. Optionally, a reranking model then reorders the candidates.</li>
+<li><strong>Generate.</strong> The chosen passages go to the LLM with instructions to answer from them, cite them and say so when they do not contain the answer.</li>
+</ol>
+<p>In simplified form, the query path looks like this:</p>
+<pre><code>def answer(question):
+    candidates = search_index(question, limit=20)
+    passages = rerank(question, candidates)[:5]
+
+    if not passages:
+        return "No relevant source was found."
+
+    prompt = build_prompt(question, passages)
+    return call_llm(prompt)</code></pre>
+<p>The function names are placeholders and the limits are illustrative; suitable values depend on your content and should be tested. Search usually returns something even for an off-topic question, so the empty check catches little on its own. The prompt must also tell the model to decline when the passages do not answer the question.</p>
+
+<p>For how vectors work and what to look for in a store, read <a href="/blog/embeddings-and-choosing-a-vector-database/">embeddings and choosing a vector database</a>.</p>
+
+<h2>When RAG is a good fit</h2>
+<p>RAG tends to work well when several of these conditions apply:</p>
+<ul>
+<li><strong>The answer exists in your content.</strong> Documentation, policies, knowledge bases and manuals are typical sources.</li>
+<li><strong>The content changes.</strong> Updating an index is far simpler than changing a model.</li>
+<li><strong>The content is too large for one prompt.</strong> Retrieval selects a small relevant portion instead of sending everything.</li>
+<li><strong>Users need to verify answers.</strong> Because each answer is linked to specific passages, citations can be shown.</li>
+<li><strong>Access to the content is controlled.</strong> Retrieval can be filtered by what each user is allowed to see, provided the filter is enforced outside the model.</li>
+</ul>
+
+<h2>When RAG is the wrong tool</h2>
+<p>RAG is popular enough that it is sometimes applied by default. Several situations call for something else.</p>
+<ul>
+<li><strong>Questions about structured data.</strong> "What was the total for each region?" requires a calculation over all the relevant rows, which similarity search will not provide. A database query, possibly generated with an LLM and carefully constrained, is a better match.</li>
+<li><strong>A small, stable knowledge base.</strong> If everything fits comfortably in the prompt, including it directly avoids a whole retrieval system.</li>
+<li><strong>Style or behaviour problems.</strong> If the issue is how the model writes rather than what it knows, better instructions, examples or fine-tuning are more relevant.</li>
+<li><strong>Questions requiring whole-corpus reasoning.</strong> "What are the main themes across all of these reports?" is poorly served by a handful of top-matching chunks. A map-and-summarise approach or precomputed summaries may do better.</li>
+<li><strong>Real-time facts.</strong> Live values such as stock levels are often better fetched from an API through a tool call than from an index that may lag behind.</li>
+</ul>
+
+<h2>RAG compared with the alternatives</h2>
+<p>Three approaches are often confused, and they solve different problems:</p>
+<ul>
+<li><strong>Prompt context</strong> places known information directly in the prompt. It is the simplest option, but limited by the size of the model's context window and by cost.</li>
+<li><strong>RAG</strong> selects information dynamically for each question. It is suited to large or changing knowledge, but adds a pipeline to build and maintain.</li>
+<li><strong>Fine-tuning</strong> changes the model's behaviour through training examples. It can help with consistent format or tone, but it is not a reliable way to keep facts current.</li>
+</ul>
+<p>These are not mutually exclusive. A system can use a fine-tuned model with retrieved context and a fixed set of instructions in the prompt.</p>
+
+<h2>Where RAG systems commonly go wrong</h2>
+<p>When a RAG answer is poor, the cause is often located before the model is ever called. Common sources of trouble include:</p>
+<ul>
+<li><strong>Poor parsing.</strong> Broken tables and stray headers produce chunks that cannot be retrieved or understood.</li>
+<li><strong>Chunks without context.</strong> A passage reading "this limit applies to both plans" means little without the section it came from.</li>
+<li><strong>Vocabulary mismatch.</strong> Users' terms may differ from those in the documents. Query rewriting and hybrid search can help.</li>
+<li><strong>Exact-match failures.</strong> Vector search alone may miss a specific error code or part number, which is why keyword search is often added.</li>
+<li><strong>Stale or conflicting sources.</strong> Without metadata and a process for removing old content, the system may cite an outdated policy.</li>
+<li><strong>Prompt injection through documents.</strong> Retrieved text is untrusted input. If it contains instructions, the model may try to follow them, so system permissions should not depend on the model ignoring them. See <a href="/blog/llm-guardrails-and-prompt-injection-defence/">LLM guardrails and prompt injection defence</a>.</li>
+</ul>
+
+<h2>Checking that it works</h2>
+<p>Before relying on a RAG system, test it on realistic questions, including some the content cannot answer, and score retrieval and answers separately, because they fail in different ways. The guide on <a href="/blog/how-to-evaluate-a-rag-system/">how to evaluate a RAG system</a> covers the test set, the measures and how to act on the results.</p>
+
+<h2>Where to start</h2>
+<p>Begin with a representative subset of your documents and a basic pipeline, along with your question set. Then inspect what is retrieved for failing questions before adding anything sophisticated. Reranking, query rewriting and more complex chunking are all useful, but each should be added in response to a problem you have observed.</p>
+<p>If you are planning a system of this kind, the <a href="/services/rag-development/">RAG development</a> page describes what I can help with.</p>
+      <h2>Frequently asked questions</h2>
+      <h3>What does RAG stand for?</h3>
+      <p>RAG stands for retrieval-augmented generation. A system retrieves relevant information from a knowledge source and supplies it to a language model, which uses it to generate an answer.</p>
+      <h3>Does RAG eliminate hallucinations?</h3>
+      <p>No. It can reduce them by grounding answers in source material, but a model can still misread or go beyond a passage, and retrieval can return the wrong content. Citations and evaluation help to manage this risk.</p>
+      <h3>Is a vector database required for RAG?</h3>
+      <p>No. Retrieval can use keyword search, a general database with vector support or a dedicated vector store. RAG describes the pattern of retrieving before generating, not one specific technology.</p>
+      <h3>How is RAG different from search?</h3>
+      <p>Search returns documents or passages for a person to read. RAG uses search as one step, then has a language model compose an answer from the results. Its quality therefore depends heavily on the search step.</p>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="foot-cta">
+      <div>
+        <h2>Have an AI or full stack project in mind?</h2>
+        <p>Tell me what you want to build.</p>
+      </div>
+      <div class="foot-cta-btns">
+        <a class="btn" href="/#contact">Start a conversation</a>
+        <a class="btn btn-line" href="mailto:shivanigupta4876@gmail.com">Send an email</a>
+      </div>
+    </div>
+    <div class="foot-grid">
+      <div>
+        <a href="/" aria-label="Shivani, home"><img src="/assets/logo.svg" alt="Shivani" width="144" height="40"></a>
+        <p>AI/ML engineer working across generative AI, LLMs, RAG, agentic AI and NLP, plus full stack development.</p>
+        <span class="avail">Taking new projects</span>
+      </div>
+      <div>
+        <h3>Explore</h3>
+        <ul>
+          <li><a href="/services/">Services</a></li>
+          <li><a href="/#work">Projects</a></li>
+          <li><a href="/#process">Process</a></li>
+          <li><a href="/#faq">FAQ</a></li>
+          <li><a href="/blog/">Blog</a></li>
+          <li><a href="/#contact">Contact</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Services</h3>
+        <ul>
+          <li><a href="/services/generative-ai-llm-development/">Generative AI and LLMs</a></li>
+          <li><a href="/services/rag-development/">RAG development</a></li>
+          <li><a href="/services/multi-agent-systems/">Multi-agent systems</a></li>
+          <li><a href="/services/ai-orchestration-langgraph/">Orchestration with LangGraph</a></li>
+          <li><a href="/services/nlp-development/">NLP development</a></li>
+          <li><a href="/services/full-stack-development/">Full stack development</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Contact</h3>
+        <ul>
+          <li><a href="mailto:shivanigupta4876@gmail.com">shivanigupta4876@gmail.com</a></li>
+          <li><a href="tel:+919720466504">+91 97204 66504</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="foot-bottom">&copy; <span id="year">2026</span> Shivani. All rights reserved.</div>
+  </div>
+</footer>
+<a class="wa-float" href="https://wa.me/919720466504?text=Hi%20Shivani%2C%20I%20saw%20your%20website%20and%20would%20like%20to%20talk%20about%20a%20project." target="_blank" rel="noopener" aria-label="Chat on WhatsApp"><svg viewBox="0 0 24 24" width="28" height="28" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15L2 22l5.1-1.3A10 10 0 1 0 12 2zm0 18.2a8.2 8.2 0 0 1-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1a6.700 6.700 0 0 1-3.300-2.900c-.2-.3 0-.4.1-.6l.4-.4.2-.4v-.5l-.8-1.800c-.2-.5-.4-.4-.6-.4h-.5c-.2 0-.4.1-.6.3-.2.2-.8.8-.8 2s.9 2.300 1 2.500c.1.2 1.700 2.600 4.100 3.600 1.500.7 2.100.7 2.900.6.500-.1 1.500-.6 1.700-1.200.2-.6.2-1.100.1-1.200l-.2-.2z"/></svg></a>
+<script src="/assets/js/site.js" defer></script>
+</body>
+</html>

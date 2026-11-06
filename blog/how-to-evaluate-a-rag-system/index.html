@@ -1,0 +1,210 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>How to Evaluate a RAG System | Shivani</title>
+<meta name="description" content="Learn how to evaluate a RAG system: build a test set, measure retrieval and answer quality separately, read the failures and catch regressions.">
+<meta name="robots" content="index,follow">
+<meta name="author" content="Shivani">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<link rel="manifest" href="/site.webmanifest">
+<meta name="theme-color" content="#080b0f">
+<meta property="og:type" content="article">
+<meta property="og:title" content="How to Evaluate a RAG System | Shivani">
+<meta property="og:description" content="Learn how to evaluate a RAG system: build a test set, measure retrieval and answer quality separately, read the failures and catch regressions.">
+<meta property="og:image" content="/assets/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"How to evaluate a RAG system","description":"Learn how to evaluate a RAG system: build a test set, measure retrieval and answer quality separately, read the failures and catch regressions.","mainEntityOfPage":"/blog/how-to-evaluate-a-rag-system/","author":{"@type":"Person","name":"Shivani"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"/"},{"@type":"ListItem","position":2,"name":"Blog","item":"/blog/"},{"@type":"ListItem","position":3,"name":"How to evaluate a RAG system","item":"/blog/how-to-evaluate-a-rag-system/"}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"What is the difference between retrieval and answer evaluation?","acceptedAnswer":{"@type":"Answer","text":"Retrieval evaluation asks whether the right passages were found and ranked well. Answer evaluation asks whether the generated response is correct, supported by those passages and useful. Scoring them separately shows which part needs fixing."}},{"@type":"Question","name":"How many questions does a RAG test set need?","acceptedAnswer":{"@type":"Answer","text":"There is no universal number. Start with a set small enough to review by hand but broad enough to cover your main question types, then add to it as real failures appear. Be cautious about small score differences on a small set."}},{"@type":"Question","name":"Can an LLM grade RAG answers reliably?","acceptedAnswer":{"@type":"Answer","text":"It can help, especially with faithfulness and relevance checks at a scale people cannot review, but it makes mistakes and its behaviour can change with the model or prompt. Compare its judgements against human labels and spot-check them regularly."}},{"@type":"Question","name":"What should a RAG system do when the answer is not in the content?","acceptedAnswer":{"@type":"Answer","text":"It should say that it could not find an answer rather than guess. Include unanswerable questions in your test set so that this behaviour is measured directly and does not get worse unnoticed."}}]}</script>
+<!-- TODO once the domain is known: canonical, absolute og:url and og:image, absolute URLs in JSON-LD -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&family=Poppins:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+<header class="nav">
+  <div class="wrap nav-in">
+    <a class="logo" href="/" aria-label="Shivani, home"><img src="/assets/logo.svg" alt="Shivani" width="144" height="40"></a>
+    <nav id="nav-links" aria-label="Main">
+      <a href="/#services">Services</a>
+      <a href="/#skills">Skills</a>
+      <a href="/#work">Work</a>
+      <a href="/#process">Process</a>
+      <a href="/#faq">FAQ</a>
+      <a href="/blog/">Blog</a>
+      <a class="btn btn-sm" href="/#contact">Hire Me</a>
+    </nav>
+    <button id="menu-toggle" class="menu-toggle" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="nav-links"><span></span><span></span><span></span></button>
+  </div>
+</header>
+
+<main id="top">
+  <section class="page-head">
+    <div class="wrap">
+      <nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a><span aria-hidden="true">/</span><a href="/blog/">Blog</a><span aria-hidden="true">/</span><span aria-current="page">How to evaluate a RAG system</span></nav>
+      <p class="eyebrow">Guide</p>
+      <h1>How to evaluate a RAG system</h1>
+      <p class="lead">Evaluate a RAG system by running a labelled question set through it, scoring retrieval and answers separately, and tracing each failure to the stage that caused it. Repeat the run after every change so that regressions show up before users find them.</p>
+    </div>
+  </section>
+  <section class="article">
+    <div class="wrap prose">
+<h2>Why a RAG system needs its own evaluation</h2>
+<p>A <a href="/blog/what-is-rag-and-when-to-use-it/">RAG system</a> has several stages that can fail independently. A parser can garble a table, retrieval can miss the right passage, a reranker can push it down the list, and the model can misread it or go beyond it. By the time you see a poor answer, the original cause may be several steps back.</p>
+<p>Trying a handful of questions by hand does not reveal much. It tends to favour the questions you already know will work, and it gives you no way to tell whether a change helped overall or just fixed the example in front of you. A repeatable evaluation replaces that impression with evidence you can compare between versions.</p>
+
+<h2>Step 1: build a test set from real questions</h2>
+<p>The test set is the most valuable part of the evaluation, and it is worth more effort than the choice of scoring tool. Each item should contain a question, the passages that answer it and, where practical, a reference answer or a list of facts the answer must include.</p>
+<p>Real user questions are the best source when they are available, from search logs, support tickets or a pilot. If none exist yet, ask people who know the content to write questions in the way users would. Generating questions with an LLM can help to widen coverage, but such questions often echo the wording of the source passage, which makes retrieval look better than it will be in use. Review them and do not rely on them alone.</p>
+<p>Aim to cover different kinds of question rather than many variations of the same one:</p>
+<ul>
+<li><strong>Simple lookups</strong> answered by a single passage.</li>
+<li><strong>Exact-term questions</strong> that mention a product code, error message or policy name.</li>
+<li><strong>Questions spanning several passages</strong>, where the answer has to be assembled.</li>
+<li><strong>Differently worded questions</strong>, where users' terms do not match the documents.</li>
+<li><strong>Unanswerable questions</strong>, where the right behaviour is to say the content does not cover it.</li>
+<li><strong>Follow-ups in a conversation</strong>, if your product is conversational, since they depend on earlier turns.</li>
+<li><strong>Access-restricted questions</strong>, if permissions apply, to confirm that one user cannot draw on another's documents.</li>
+</ul>
+<p>Label relevance by a stable identifier where you can, but remember that re-chunking changes chunk boundaries and may invalidate chunk IDs. Labelling against a document and section, or against the required text itself, lets the test set survive changes to your <a href="/blog/choosing-chunking-strategies-for-rag/">chunking strategy</a>.</p>
+
+<h2>Step 2: measure retrieval on its own</h2>
+<p>Retrieval is usually the first place to look, because the model cannot use a passage it never receives. It is also cheap to test, since no generation is needed. Common measures include:</p>
+<ul>
+<li><strong>Recall at k.</strong> Of the relevant passages, what share appeared in the top k results? This matters most when you pass the top k to the model, because a passage outside the cut-off might as well not exist.</li>
+<li><strong>Precision at k.</strong> What share of the top k results are relevant? Low precision wastes context and gives the model more distracting material.</li>
+<li><strong>Mean reciprocal rank.</strong> How high does the first relevant result appear, averaged across questions? This suits questions that one passage can answer.</li>
+<li><strong>nDCG.</strong> A rank-weighted measure that also supports graded relevance, such as "fully answers" versus "partly useful".</li>
+</ul>
+<p>The first and third are simple enough to write yourself:</p>
+<pre><code># Illustrative only. Assumes results are ranked IDs
+# and relevant is a non-empty set of IDs.
+def recall_at_k(results, relevant, k):
+    return len(set(results[:k]) &amp; relevant) / len(relevant)
+
+def reciprocal_rank(results, relevant):
+    for rank, item in enumerate(results, start=1):
+        if item in relevant:
+            return 1 / rank
+    return 0.0</code></pre>
+<p>Score each pipeline stage where you can. If a passage is present in the first-stage candidates but missing after reranking, the problem lies in the reranker, not the index. If it is absent from the candidates altogether, look at parsing, chunking, the query or the search method. The guide on <a href="/blog/hybrid-search-and-reranking-for-rag/">hybrid search and reranking</a> covers the fixes that most often follow from this kind of finding.</p>
+
+<h2>Step 3: measure answer quality</h2>
+<p>A good retrieval score does not guarantee a good answer. Answer quality is better treated as several questions than as a single score:</p>
+<ul>
+<li><strong>Faithfulness.</strong> Is each claim in the answer supported by the supplied passages?</li>
+<li><strong>Correctness.</strong> Does the answer match the reference? An answer can be faithful to a retrieved passage and still be wrong if that passage is out of date.</li>
+<li><strong>Relevance.</strong> Does it address what was asked, instead of offering true but unrelated information?</li>
+<li><strong>Completeness.</strong> Does it include all the required facts, particularly on multi-passage questions?</li>
+<li><strong>Citation accuracy.</strong> Does each cited source really support the sentence it is attached to?</li>
+<li><strong>Refusal behaviour.</strong> Does it decline on unanswerable questions and avoid declining on answerable ones?</li>
+</ul>
+
+<h3>Human review and model-assisted grading</h3>
+<p>Human review is the most trustworthy method for most teams, but it is slow, and reviewers can disagree. Written criteria with examples of each score make their judgements more consistent, and having two people score a sample shows how clear the criteria really are.</p>
+<p>Model-assisted grading uses an LLM to compare an answer against the passages or a reference. It allows frequent runs, but the grader is itself imperfect. Before trusting its numbers, have people score a sample, run the grader on the same items and read the disagreements. Asking for one narrow judgement at a time, such as "is this sentence supported by this passage?", is generally easier to verify than asking for an overall quality rating.</p>
+<p>Simple code checks also have a place. Whether a required figure appears, whether a citation points to a retrieved passage and whether the output matches a required format can all be tested without a model at all.</p>
+
+<h2>Step 4: read the failures, not just the averages</h2>
+<p>An average can hold steady while one important question type collapses. Break results down by question type, source and any segment that matters to you, then read a sample of failures in full. For each one, trace the run and record where it first went wrong:</p>
+<div class="table-wrap"><table>
+<thead><tr><th>What you observe</th><th>Likely area</th><th>What to try</th></tr></thead>
+<tbody>
+<tr><td>Passage text is garbled</td><td>Parsing</td><td>Improve extraction for that format</td></tr>
+<tr><td>Exact terms are missed</td><td>Search method</td><td>Add keyword search</td></tr>
+<tr><td>Right passage is found but ranked low</td><td>Ranking</td><td>Add or tune a reranker</td></tr>
+<tr><td>Passage is found but lacks context</td><td>Chunking</td><td>Change boundaries or add section metadata</td></tr>
+<tr><td>Right passage is supplied but the answer is wrong</td><td>Generation</td><td>Revise the prompt or try another model</td></tr>
+<tr><td>The answer cites an old policy</td><td>Content</td><td>Remove stale sources or filter by date</td></tr>
+<tr><td>The content does not exist</td><td>Knowledge gap</td><td>Add the content or make the system decline</td></tr>
+</tbody>
+</table></div>
+<p>Keeping a tally of these causes is often the most useful output of the whole exercise, because it shows which fix is likely to help the most questions.</p>
+
+<h2>Step 5: compare changes and catch regressions</h2>
+<p>Treat the evaluation like a test suite. Change one thing at a time, such as the chunk size or the reranker, and compare the new run with the previous one question by question. Record the configuration alongside the scores, including the prompt, the models and the index version, so that results can be reproduced later.</p>
+<p>LLM output can vary between runs, so a small movement in a score may be noise. Decide in advance which results would block a release: a drop on a critical question group may matter more than a small gain in the overall average.</p>
+<p>Include latency and cost in the comparison as well. A change that improves quality slightly but makes every answer much slower may not be worth having, and only you can weigh that for your product.</p>
+
+<h2>Evaluating after launch</h2>
+<p>An offline test set only covers what you thought of. Once people are using the system, it helps to log questions, retrieved passages and answers, subject to your privacy obligations. Thumbs-up and thumbs-down ratings are useful, although they are sparse and tend to reflect strong reactions. Follow-up rephrasing, source clicks and escalation to a person can provide further signals, but each needs careful interpretation.</p>
+<p>Questions that fail in use should be reviewed, labelled and added to the test set, so that it steadily comes to reflect real usage. Content changes matter here too: an index update can alter results without any code changing, so run the evaluation after significant content updates as well.</p>
+
+<h2>Common evaluation mistakes</h2>
+<ul>
+<li><strong>Testing only answerable questions.</strong> A system that always answers will look fine until someone asks about something it does not cover.</li>
+<li><strong>Tuning against the test set until it stops being a test.</strong> Keep a held-out group of questions that you do not inspect while tuning.</li>
+<li><strong>Trusting one combined score.</strong> It hides which stage failed, and so which fix to try.</li>
+</ul>
+<p>If you need help setting up this kind of measurement or tracing where an existing pipeline loses quality, see <a href="/services/rag-development/">RAG development</a>. Retrieved text can also be hostile, so a security-minded test set should draw on the guide to <a href="/blog/llm-guardrails-and-prompt-injection-defence/">LLM guardrails and prompt injection defence</a>.</p>
+      <h2>Frequently asked questions</h2>
+      <h3>What is the difference between retrieval and answer evaluation?</h3>
+      <p>Retrieval evaluation asks whether the right passages were found and ranked well. Answer evaluation asks whether the generated response is correct, supported by those passages and useful. Scoring them separately shows which part needs fixing.</p>
+      <h3>How many questions does a RAG test set need?</h3>
+      <p>There is no universal number. Start with a set small enough to review by hand but broad enough to cover your main question types, then add to it as real failures appear. Be cautious about small score differences on a small set.</p>
+      <h3>Can an LLM grade RAG answers reliably?</h3>
+      <p>It can help, especially with faithfulness and relevance checks at a scale people cannot review, but it makes mistakes and its behaviour can change with the model or prompt. Compare its judgements against human labels and spot-check them regularly.</p>
+      <h3>What should a RAG system do when the answer is not in the content?</h3>
+      <p>It should say that it could not find an answer rather than guess. Include unanswerable questions in your test set so that this behaviour is measured directly and does not get worse unnoticed.</p>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="foot-cta">
+      <div>
+        <h2>Have an AI or full stack project in mind?</h2>
+        <p>Tell me what you want to build.</p>
+      </div>
+      <div class="foot-cta-btns">
+        <a class="btn" href="/#contact">Start a conversation</a>
+        <a class="btn btn-line" href="mailto:shivanigupta4876@gmail.com">Send an email</a>
+      </div>
+    </div>
+    <div class="foot-grid">
+      <div>
+        <a href="/" aria-label="Shivani, home"><img src="/assets/logo.svg" alt="Shivani" width="144" height="40"></a>
+        <p>AI/ML engineer working across generative AI, LLMs, RAG, agentic AI and NLP, plus full stack development.</p>
+        <span class="avail">Taking new projects</span>
+      </div>
+      <div>
+        <h3>Explore</h3>
+        <ul>
+          <li><a href="/services/">Services</a></li>
+          <li><a href="/#work">Projects</a></li>
+          <li><a href="/#process">Process</a></li>
+          <li><a href="/#faq">FAQ</a></li>
+          <li><a href="/blog/">Blog</a></li>
+          <li><a href="/#contact">Contact</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Services</h3>
+        <ul>
+          <li><a href="/services/generative-ai-llm-development/">Generative AI and LLMs</a></li>
+          <li><a href="/services/rag-development/">RAG development</a></li>
+          <li><a href="/services/multi-agent-systems/">Multi-agent systems</a></li>
+          <li><a href="/services/ai-orchestration-langgraph/">Orchestration with LangGraph</a></li>
+          <li><a href="/services/nlp-development/">NLP development</a></li>
+          <li><a href="/services/full-stack-development/">Full stack development</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Contact</h3>
+        <ul>
+          <li><a href="mailto:shivanigupta4876@gmail.com">shivanigupta4876@gmail.com</a></li>
+          <li><a href="tel:+919720466504">+91 97204 66504</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="foot-bottom">&copy; <span id="year">2026</span> Shivani. All rights reserved.</div>
+  </div>
+</footer>
+<a class="wa-float" href="https://wa.me/919720466504?text=Hi%20Shivani%2C%20I%20saw%20your%20website%20and%20would%20like%20to%20talk%20about%20a%20project." target="_blank" rel="noopener" aria-label="Chat on WhatsApp"><svg viewBox="0 0 24 24" width="28" height="28" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15L2 22l5.1-1.3A10 10 0 1 0 12 2zm0 18.2a8.2 8.2 0 0 1-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1a6.700 6.700 0 0 1-3.300-2.900c-.2-.3 0-.4.1-.6l.4-.4.2-.4v-.5l-.8-1.800c-.2-.5-.4-.4-.6-.4h-.5c-.2 0-.4.1-.6.3-.2.2-.8.8-.8 2s.9 2.300 1 2.500c.1.2 1.700 2.600 4.100 3.600 1.500.7 2.100.7 2.900.6.500-.1 1.500-.6 1.700-1.200.2-.6.2-1.100.1-1.200l-.2-.2z"/></svg></a>
+<script src="/assets/js/site.js" defer></script>
+</body>
+</html>

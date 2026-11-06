@@ -1,0 +1,218 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Agent Memory: Short-Term and Long-Term State | Shivani</title>
+<meta name="description" content="How AI agent memory works: managing state within a run, deciding what to keep long term, retrieving it, handling conflicts and securing what is stored.">
+<meta name="robots" content="index,follow">
+<meta name="author" content="Shivani">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<link rel="manifest" href="/site.webmanifest">
+<meta name="theme-color" content="#080b0f">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Agent Memory: Short-Term and Long-Term State | Shivani">
+<meta property="og:description" content="How AI agent memory works: managing state within a run, deciding what to keep long term, retrieving it, handling conflicts and securing what is stored.">
+<meta property="og:image" content="/assets/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Agent memory: short-term and long-term state","description":"How AI agent memory works: managing state within a run, deciding what to keep long term, retrieving it, handling conflicts and securing what is stored.","mainEntityOfPage":"/blog/agent-memory-short-term-and-long-term-state/","author":{"@type":"Person","name":"Shivani"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"/"},{"@type":"ListItem","position":2,"name":"Blog","item":"/blog/"},{"@type":"ListItem","position":3,"name":"Agent memory: short-term and long-term state","item":"/blog/agent-memory-short-term-and-long-term-state/"}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"What is the difference between short-term and long-term agent memory?","acceptedAnswer":{"@type":"Answer","text":"Short-term state belongs to one run or conversation and holds things such as recent messages and progress. Long-term memory lasts beyond it, holding facts, preferences or records that may be useful in later sessions."}},{"@type":"Question","name":"Does every AI agent need long-term memory?","acceptedAnswer":{"@type":"Answer","text":"No. Many agents work well with short-term state alone. Long-term memory adds work around correctness, privacy and deletion, so add it when a specific use case benefits from information carrying over between sessions."}},{"@type":"Question","name":"Is agent memory the same as RAG?","acceptedAnswer":{"@type":"Answer","text":"Not quite. They can use similar retrieval methods, but RAG usually searches a maintained body of documents, while agent memory is typically written during use and is often specific to a user or task."}},{"@type":"Question","name":"What is memory poisoning?","acceptedAnswer":{"@type":"Answer","text":"It is when malicious or false content gets saved to an agent's long-term memory and then influences later sessions. Restricting writes from untrusted content, recording provenance and limiting what a memory can trigger all reduce the risk."}}]}</script>
+<!-- TODO once the domain is known: canonical, absolute og:url and og:image, absolute URLs in JSON-LD -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&family=Poppins:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+<header class="nav">
+  <div class="wrap nav-in">
+    <a class="logo" href="/" aria-label="Shivani, home"><img src="/assets/logo.svg" alt="Shivani" width="144" height="40"></a>
+    <nav id="nav-links" aria-label="Main">
+      <a href="/#services">Services</a>
+      <a href="/#skills">Skills</a>
+      <a href="/#work">Work</a>
+      <a href="/#process">Process</a>
+      <a href="/#faq">FAQ</a>
+      <a href="/blog/">Blog</a>
+      <a class="btn btn-sm" href="/#contact">Hire Me</a>
+    </nav>
+    <button id="menu-toggle" class="menu-toggle" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="nav-links"><span></span><span></span><span></span></button>
+  </div>
+</header>
+
+<main id="top">
+  <section class="page-head">
+    <div class="wrap">
+      <nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a><span aria-hidden="true">/</span><a href="/blog/">Blog</a><span aria-hidden="true">/</span><span aria-current="page">Agent memory: short-term and long-term state</span></nav>
+      <p class="eyebrow">Guide</p>
+      <h1>Agent memory: short-term and long-term state</h1>
+      <p class="lead">Agent memory is whatever your application stores and sends back to a stateless model. Short-term state covers one run or conversation; long-term memory carries facts and preferences to later sessions, and needs rules for writing, retrieving, updating and deleting.</p>
+    </div>
+  </section>
+  <section class="article">
+    <div class="wrap prose">
+<h2>Why agents need memory at all</h2>
+<p>An LLM call is stateless. The model only knows what is included in the current request, so anything an agent appears to remember is something your application stored and chose to send again. Agent memory is therefore a software design problem: what to keep, where to put it, when to bring it back and when to get rid of it.</p>
+<p>The word "memory" gets applied to several different things, and mixing them up causes most of the confusion. The most useful first split is by lifetime:</p>
+<ul>
+<li><strong>Short-term state</strong> belongs to one run or conversation. It holds the current goal, recent messages, tool results and progress so far.</li>
+<li><strong>Long-term memory</strong> outlives the conversation. It holds facts, preferences or lessons that may be useful in a later session.</li>
+</ul>
+<p>Many agents need only the first. Add long-term memory when a real use case calls for it, because it brings considerably more risk and maintenance.</p>
+
+<h2>Short-term state: the working memory of a run</h2>
+<p>Short-term state has two jobs that are easy to blur. It supplies context to the model, and it records where the workflow has got to. Separating these helps, as they have different needs.</p>
+<p><strong>The message history</strong> is the conversational record: user messages, model replies, tool calls and tool results. <strong>Structured state</strong> holds named fields that your code can read directly, such as the selected order ID, a list of completed steps or an approval status. Routing decisions and limits should depend on structured fields, not on a model's reading of a long transcript. The guide to <a href="/blog/building-an-orchestrator-with-langgraph/">building an orchestrator with LangGraph</a> shows this kind of state in a graph-based workflow.</p>
+
+<h3>Keeping context under control</h3>
+<p>Context windows are finite, and longer contexts cost more and can distract the model. As a run grows, you have a few options:</p>
+<ul>
+<li><strong>Trim old messages.</strong> Simple and predictable, but it can lose an instruction given early on. Protect the system prompt, the goal and any open commitments.</li>
+<li><strong>Summarise older turns.</strong> This preserves more, but a summary can drop or distort a detail, and errors then persist. Keep the originals in storage in case you need them.</li>
+<li><strong>Compact tool results.</strong> A large tool response is often only needed briefly. Replace it afterwards with a short note and a reference for fetching the full version.</li>
+<li><strong>Move facts into structured state.</strong> A confirmed delivery address belongs in a field rather than somewhere in a transcript that may be trimmed.</li>
+</ul>
+<p>When you trim, keep tool calls paired with their results, since many model APIs reject or misread a history in which one is missing.</p>
+
+<h3>Checkpoints are not the same as memory</h3>
+<p>A checkpoint saves a run's state so that it can resume after a crash or a pause for <a href="/blog/human-in-the-loop-approval-for-ai-agents/">human approval</a>. It is about durability: the same run continues from where it stopped. Long-term memory is about what a future, different run should know. The two can use the same database, but they should not be treated as one concept. Loading every previous checkpoint into a new conversation is not a memory strategy.</p>
+
+<h2>Long-term memory: what it can hold</h2>
+<p>Terms borrowed from psychology offer a handy way of sorting long-term memory, although the boundaries are loose and different tools use the words differently:</p>
+<div class="table-wrap"><table>
+<thead><tr><th>Type</th><th>What it stores</th><th>Example</th><th>Typical storage</th></tr></thead>
+<tbody>
+<tr><td>Semantic</td><td>Facts and preferences</td><td>The user prefers metric units</td><td>Database rows, or a key-value or document store</td></tr>
+<tr><td>Episodic</td><td>Records of past events</td><td>A summary of an earlier session and its outcome</td><td>Searchable log, often with embeddings</td></tr>
+<tr><td>Procedural</td><td>How to do things</td><td>A refined instruction for a recurring task</td><td>Versioned prompts or configuration</td></tr>
+</tbody>
+</table></div>
+<p>Do not confuse any of these with a knowledge base. A shared body of documents that every user queries is the territory of <a href="/blog/what-is-rag-and-when-to-use-it/">RAG</a>. Retrieval techniques may overlap, but memory is usually written by the agent during use and is often specific to a person, which brings its own problems around scope, correctness and deletion.</p>
+
+<h2>Deciding what to write</h2>
+<p>Writing is where long-term memory most often goes wrong. Save everything and retrieval fills up with noise. Save carelessly and a misunderstanding becomes a lasting belief. Some practical policies:</p>
+<ul>
+<li><strong>Prefer explicit signals.</strong> "Always send me summaries in French" is a much better candidate than something the model inferred from a single message.</li>
+<li><strong>Treat inferred memories with suspicion.</strong> Mark their source and confidence, or ask the user to confirm before they are saved.</li>
+<li><strong>Choose when to write.</strong> Writing during the conversation makes memories available immediately but slows the main path. Writing in a background job allows better consolidation but introduces a delay. Either can be reasonable.</li>
+<li><strong>Exclude sensitive data by default.</strong> Decide which categories must never be stored, and enforce this in code, not only in a prompt.</li>
+<li><strong>Record provenance.</strong> Store who or what the memory came from, when, and which conversation produced it.</li>
+</ul>
+<pre><code># Illustrative only. A memory record with scope and provenance.
+from dataclasses import dataclass
+from datetime import datetime
+from typing import Optional
+
+@dataclass
+class MemoryRecord:
+    id: str
+    tenant_id: str
+    user_id: str
+    kind: str             # "preference", "fact" or "episode"
+    content: str
+    source: str           # "user_stated" or "inferred"
+    source_run_id: str
+    created_at: datetime
+    expires_at: Optional[datetime] = None
+    superseded_by: Optional[str] = None  # id of the replacement</code></pre>
+
+<h2>Retrieving the right memories</h2>
+<p>Some memories should always be present, such as a small profile of confirmed preferences. Others should be fetched only when relevant. Semantic search by embedding is a common choice for that second group, and it can usefully be combined with filters on type or date, and with a weighting that favours recent items. Exact lookup by key is simpler and more reliable where the application knows what it needs.</p>
+<p>Apply access filters in the query itself, before any similarity ranking, so that one user's memories can never appear for another. Keep the amount injected small, and label it as background information from earlier sessions, so that the model does not treat it as the user's current request.</p>
+
+<h2>Updates, conflicts and forgetting</h2>
+<p>People move, change jobs and change their minds. If a store only ever appends, an agent will eventually hold two contradictory facts with no way to choose between them. Before saving a new memory, look for existing related ones and decide whether to add, update or replace. Keeping a superseded record with a link to its replacement leaves an audit trail without letting the old version be retrieved.</p>
+<p>Forgetting should be a planned feature:</p>
+<ul>
+<li><strong>Expiry.</strong> Some information is only useful for a limited time, so it should carry an expiry date.</li>
+<li><strong>User control.</strong> Let people see, correct and delete what is held about them, where appropriate for the product.</li>
+<li><strong>Real deletion.</strong> Check that deleted content also leaves any embedding indexes, summaries, caches and backups, in line with your retention obligations.</li>
+</ul>
+
+<h2>Security risks specific to memory</h2>
+<p>Memory turns a one-off prompt injection into a persistent one. If an agent reads a malicious web page and saves an instruction from it, that instruction could influence every later session. This is often called memory poisoning, and the defences are similar to those in the guide on <a href="/blog/llm-guardrails-and-prompt-injection-defence/">LLM guardrails and prompt injection defence</a>: do not write to memory directly from untrusted content without review or restriction, record provenance, and limit what any retrieved memory can trigger. A memory should never be able to grant a permission.</p>
+
+<h2>Memory in multi-agent systems</h2>
+<p>When <a href="/blog/single-agent-vs-multi-agent-systems/">several agents</a> are involved, decide what is shared and what stays private. Passing every agent the entire history is simple, but it wastes context and leaks details an agent has no need to see. A shared structured state, with defined owners for each field, generally behaves better than a shared transcript. Concurrent writes need a clear rule as well, such as a single writer per field or a defined merge function, or updates can be silently lost.</p>
+
+<h2>Testing memory behaviour</h2>
+<ul>
+<li><strong>Recall across sessions.</strong> Tell the agent something, start a new session and check that it uses the fact when relevant.</li>
+<li><strong>Restraint.</strong> Check that it does not bring up remembered facts when they are irrelevant.</li>
+<li><strong>Updates.</strong> Change a preference and confirm that the newer value wins.</li>
+<li><strong>Isolation.</strong> Confirm that one user can never retrieve another's memories.</li>
+<li><strong>Deletion.</strong> Delete a memory and confirm that it no longer affects behaviour.</li>
+<li><strong>Long runs.</strong> Push past the point at which trimming or summarising begins, and check that the goal and constraints survive.</li>
+</ul>
+<p>If you are designing state, checkpointing and routing for an agent workflow, see <a href="/services/ai-orchestration-langgraph/">AI orchestration with LangGraph</a>.</p>
+<p>Context also has a direct effect on spending and response times, a topic covered in <a href="/blog/controlling-llm-cost-and-latency/">controlling LLM cost and latency</a>.</p>
+
+      <h2>Frequently asked questions</h2>
+      <h3>What is the difference between short-term and long-term agent memory?</h3>
+      <p>Short-term state belongs to one run or conversation and holds things such as recent messages and progress. Long-term memory lasts beyond it, holding facts, preferences or records that may be useful in later sessions.</p>
+      <h3>Does every AI agent need long-term memory?</h3>
+      <p>No. Many agents work well with short-term state alone. Long-term memory adds work around correctness, privacy and deletion, so add it when a specific use case benefits from information carrying over between sessions.</p>
+      <h3>Is agent memory the same as RAG?</h3>
+      <p>Not quite. They can use similar retrieval methods, but RAG usually searches a maintained body of documents, while agent memory is typically written during use and is often specific to a user or task.</p>
+      <h3>What is memory poisoning?</h3>
+      <p>It is when malicious or false content gets saved to an agent's long-term memory and then influences later sessions. Restricting writes from untrusted content, recording provenance and limiting what a memory can trigger all reduce the risk.</p>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="foot-cta">
+      <div>
+        <h2>Have an AI or full stack project in mind?</h2>
+        <p>Tell me what you want to build.</p>
+      </div>
+      <div class="foot-cta-btns">
+        <a class="btn" href="/#contact">Start a conversation</a>
+        <a class="btn btn-line" href="mailto:shivanigupta4876@gmail.com">Send an email</a>
+      </div>
+    </div>
+    <div class="foot-grid">
+      <div>
+        <a href="/" aria-label="Shivani, home"><img src="/assets/logo.svg" alt="Shivani" width="144" height="40"></a>
+        <p>AI/ML engineer working across generative AI, LLMs, RAG, agentic AI and NLP, plus full stack development.</p>
+        <span class="avail">Taking new projects</span>
+      </div>
+      <div>
+        <h3>Explore</h3>
+        <ul>
+          <li><a href="/services/">Services</a></li>
+          <li><a href="/#work">Projects</a></li>
+          <li><a href="/#process">Process</a></li>
+          <li><a href="/#faq">FAQ</a></li>
+          <li><a href="/blog/">Blog</a></li>
+          <li><a href="/#contact">Contact</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Services</h3>
+        <ul>
+          <li><a href="/services/generative-ai-llm-development/">Generative AI and LLMs</a></li>
+          <li><a href="/services/rag-development/">RAG development</a></li>
+          <li><a href="/services/multi-agent-systems/">Multi-agent systems</a></li>
+          <li><a href="/services/ai-orchestration-langgraph/">Orchestration with LangGraph</a></li>
+          <li><a href="/services/nlp-development/">NLP development</a></li>
+          <li><a href="/services/full-stack-development/">Full stack development</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Contact</h3>
+        <ul>
+          <li><a href="mailto:shivanigupta4876@gmail.com">shivanigupta4876@gmail.com</a></li>
+          <li><a href="tel:+919720466504">+91 97204 66504</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="foot-bottom">&copy; <span id="year">2026</span> Shivani. All rights reserved.</div>
+  </div>
+</footer>
+<a class="wa-float" href="https://wa.me/919720466504?text=Hi%20Shivani%2C%20I%20saw%20your%20website%20and%20would%20like%20to%20talk%20about%20a%20project." target="_blank" rel="noopener" aria-label="Chat on WhatsApp"><svg viewBox="0 0 24 24" width="28" height="28" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15L2 22l5.1-1.3A10 10 0 1 0 12 2zm0 18.2a8.2 8.2 0 0 1-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1a6.700 6.700 0 0 1-3.300-2.900c-.2-.3 0-.4.1-.6l.4-.4.2-.4v-.5l-.8-1.800c-.2-.5-.4-.4-.6-.4h-.5c-.2 0-.4.1-.6.3-.2.2-.8.8-.8 2s.9 2.300 1 2.500c.1.2 1.700 2.600 4.100 3.600 1.500.7 2.100.7 2.900.6.500-.1 1.500-.6 1.700-1.200.2-.6.2-1.100.1-1.200l-.2-.2z"/></svg></a>
+<script src="/assets/js/site.js" defer></script>
+</body>
+</html>

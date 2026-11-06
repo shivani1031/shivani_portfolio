@@ -1,0 +1,214 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>LangChain vs LangGraph: When to Use Each | Shivani</title>
+<meta name="description" content="Choose between LangChain and LangGraph by control flow: use components for linear LLM pipelines and a graph for state, loops, retries and human review.">
+<meta name="robots" content="index,follow">
+<meta name="author" content="Shivani">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<link rel="manifest" href="/site.webmanifest">
+<meta name="theme-color" content="#080b0f">
+<meta property="og:type" content="article">
+<meta property="og:title" content="LangChain vs LangGraph: When to Use Each | Shivani">
+<meta property="og:description" content="Choose between LangChain and LangGraph by control flow: use components for linear LLM pipelines and a graph for state, loops, retries and human review.">
+<meta property="og:image" content="/assets/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"LangChain vs LangGraph: when to use each","description":"Choose between LangChain and LangGraph by control flow: use components for linear LLM pipelines and a graph for state, loops, retries and human review.","mainEntityOfPage":"/blog/langchain-vs-langgraph-when-to-use-each/","author":{"@type":"Person","name":"Shivani"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"/"},{"@type":"ListItem","position":2,"name":"Blog","item":"/blog/"},{"@type":"ListItem","position":3,"name":"LangChain vs LangGraph: when to use each","item":"/blog/langchain-vs-langgraph-when-to-use-each/"}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Is LangGraph a replacement for LangChain?","acceptedAnswer":{"@type":"Answer","text":"Not in general. LangGraph focuses on control flow and state, while LangChain focuses on components and integrations. They can be used together, and a graph's nodes can also call plain code instead."}},{"@type":"Question","name":"Do I need LangChain to use LangGraph?","acceptedAnswer":{"@type":"Answer","text":"You do not need to build your application from LangChain's higher-level pieces. A node is essentially your own function, so it can call a provider's SDK directly. Check the current documentation for package details."}},{"@type":"Question","name":"Should a beginner start with LangChain or LangGraph?","acceptedAnswer":{"@type":"Answer","text":"Start with the simplest thing that works, often a direct model call in plain code. That shows what the libraries are doing for you. Add components when they save work, and a graph when control flow demands it."}},{"@type":"Question","name":"Can a simple RAG application use LangGraph?","acceptedAnswer":{"@type":"Answer","text":"It can, but a linear retrieve-and-answer pipeline gains little from it. A graph becomes more useful once you add query rewriting, retries, routing or human review."}}]}</script>
+<!-- TODO once the domain is known: canonical, absolute og:url and og:image, absolute URLs in JSON-LD -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&family=Poppins:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+<header class="nav">
+  <div class="wrap nav-in">
+    <a class="logo" href="/" aria-label="Shivani, home"><img src="/assets/logo.svg" alt="Shivani" width="144" height="40"></a>
+    <nav id="nav-links" aria-label="Main">
+      <a href="/#services">Services</a>
+      <a href="/#skills">Skills</a>
+      <a href="/#work">Work</a>
+      <a href="/#process">Process</a>
+      <a href="/#faq">FAQ</a>
+      <a href="/blog/">Blog</a>
+      <a class="btn btn-sm" href="/#contact">Hire Me</a>
+    </nav>
+    <button id="menu-toggle" class="menu-toggle" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="nav-links"><span></span><span></span><span></span></button>
+  </div>
+</header>
+
+<main id="top">
+  <section class="page-head">
+    <div class="wrap">
+      <nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a><span aria-hidden="true">/</span><a href="/blog/">Blog</a><span aria-hidden="true">/</span><span aria-current="page">LangChain vs LangGraph: when to use each</span></nav>
+      <p class="eyebrow">Guide</p>
+      <h1>LangChain vs LangGraph: when to use each</h1>
+      <p class="lead">Use LangChain when your application is mostly a straight line of steps and you want ready-made components for models, prompts, retrievers and tools. Use LangGraph when you need explicit control over state, branching, loops, retries or pauses for human review. They are not strict rivals, and a project can use both.</p>
+    </div>
+  </section>
+  <section class="article">
+    <div class="wrap prose">
+<h2>The short version of the difference</h2>
+<p>The two libraries answer different questions. <strong>LangChain</strong> mainly answers "how do I connect to models, prompts, retrievers and tools without writing every integration myself?" <strong>LangGraph</strong> mainly answers "how do I control what happens next, keep track of state and recover when a run does not go to plan?"</p>
+<p>That makes the choice less about which library is better and more about the shape of your program. A pipeline that always runs the same steps in the same order has little need for a graph. A process that can loop, branch, wait for a person or resume after a failure is difficult to express and operate without something that treats those behaviours as first-class.</p>
+<div class="table-wrap"><table>
+<thead><tr><th>Question</th><th>LangChain</th><th>LangGraph</th></tr></thead>
+<tbody>
+<tr><td>Main concern</td><td>Components and integrations</td><td>Control flow and state</td></tr>
+<tr><td>Natural shape</td><td>A sequence of steps</td><td>A graph that may contain cycles</td></tr>
+<tr><td>State</td><td>Usually passed along from step to step</td><td>A defined object that nodes read and update</td></tr>
+<tr><td>Recovery and pauses</td><td>Something you would generally add yourself</td><td>Supported through checkpointing and interrupts</td></tr>
+<tr><td>Good first fit</td><td>Summarising, extraction, simple RAG</td><td>Agents, routers, multi-step workflows with review</td></tr>
+</tbody>
+</table></div>
+<p>Both projects change quickly, so treat this as a description of their general purpose and check the current documentation for specific APIs. Choosing by need also holds up better over time than choosing from a feature list you read once.</p>
+
+<h2>When LangChain is the better fit</h2>
+<p>Reach for LangChain's components when the difficult part of your work is connecting things, not deciding what happens next. Common examples include:</p>
+<ul>
+<li><strong>Single-pass transformations.</strong> Summarise a document, classify a ticket or extract fields, then return the result.</li>
+<li><strong>Straightforward RAG.</strong> Retrieve passages, build a prompt and generate an answer, with no decisions in between.</li>
+<li><strong>Swapping providers.</strong> A common interface can reduce the code that changes when you try another model, although providers still differ in behaviour and features.</li>
+<li><strong>Using existing integrations.</strong> Document loaders, text splitters and vector store connectors can save writing and maintaining the same code yourself.</li>
+</ul>
+<p>The cost is an extra layer of abstraction. When something behaves unexpectedly, you may need to work out what the library sent to the model. Log the final prompts and responses from the beginning, so that you are never guessing.</p>
+
+<h2>When LangGraph is the better fit</h2>
+<p>LangGraph earns its extra concepts when the path through your program depends on what happens during the run. Look for these signs:</p>
+<ul>
+<li><strong>The next step depends on a result.</strong> A router sends a question to different handlers, or a low-confidence answer goes to a person.</li>
+<li><strong>The program needs loops.</strong> An agent calls tools until it has enough information, or a draft is revised until it passes a check. Loops also need limits, and a graph gives them an obvious place to live.</li>
+<li><strong>A run must survive interruptions.</strong> Long processes should be able to resume from a saved point without repeating completed work.</li>
+<li><strong>A person has to approve something.</strong> Pausing a run, waiting for a decision and continuing later is a state problem. <a href="/blog/human-in-the-loop-approval-for-ai-agents/">Human-in-the-loop approval</a> covers the design decisions involved.</li>
+<li><strong>Several specialised roles work together.</strong> If you have established that <a href="/blog/single-agent-vs-multi-agent-systems/">several agents are justified</a>, a graph can make the handoffs between them visible.</li>
+</ul>
+<p>The cost here is more design work up front. You define a state schema, nodes and routing, and you think about what happens when a step is run again. For a two-step pipeline, that is overhead with no return.</p>
+
+<h2>The same task in each shape</h2>
+<p>Imagine answering a support question from a knowledge base. The linear version is a plain sequence. This sample is illustrative, and the helper functions stand in for your own code or library components:</p>
+<pre><code># Illustrative only. Helper functions are placeholders.
+def answer(question):
+    passages = retrieve(question)
+    prompt = build_prompt(question, passages)
+    return call_model(prompt)</code></pre>
+<p>Now suppose the requirements change. If no good passage is found, rewrite the query and try once more. If there is still nothing, hand over to a person. The logic now has a branch, a loop and a limit, and the graph version makes those explicit. This sample is also illustrative, so check the current LangGraph documentation for exact usage:</p>
+<pre><code># Illustrative only. Node functions and check_results are placeholders.
+from langgraph.graph import StateGraph, START, END
+
+graph = StateGraph(SupportState)
+graph.add_node("retrieve", retrieve_node)
+graph.add_node("rewrite", rewrite_node)
+graph.add_node("answer", answer_node)
+graph.add_node("handoff", handoff_node)
+
+graph.add_edge(START, "retrieve")
+graph.add_conditional_edges("retrieve", check_results, {
+    "good": "answer",
+    "retry": "rewrite",
+    "give_up": "handoff",
+})
+graph.add_edge("rewrite", "retrieve")
+graph.add_edge("answer", END)
+graph.add_edge("handoff", END)
+
+app = graph.compile()</code></pre>
+<p>Here, <code>check_results</code> reads the state, including a retry counter, and returns one of the three labels. The worked example in <a href="/blog/building-an-orchestrator-with-langgraph/">building an orchestrator with LangGraph</a> goes through state, routing and checkpointing in depth.</p>
+
+<h2>Using them together</h2>
+<p>Because the two libraries work at different levels, a common arrangement is to use LangGraph for the overall flow and LangChain components inside individual nodes. A node might use a LangChain retriever or model wrapper, while the graph decides when that node runs and what happens afterwards.</p>
+<p>Neither direction is compulsory. A LangGraph node is essentially your own function, so it can call a provider's SDK directly or query your database with ordinary code. You can adopt the graph without building everything else from LangChain's higher-level pieces.</p>
+<p>Keep the boundary clean by putting business logic in plain functions and calling them from nodes. Those functions can then be tested without a graph or a model, and replacing a library later affects far less code.</p>
+
+<h2>When to use neither</h2>
+<p>Frameworks are optional. If your application makes one or two model calls with a known prompt, the provider's SDK and a few functions may be clearer than any abstraction. Plain code also has advantages when you are learning, because you see exactly what is sent and returned. <a href="/blog/tool-calling-for-ai-agents/">Tool calling</a>, for example, is much easier to reason about once you have written the loop by hand.</p>
+<p>Consider adding a library once you can name the specific problem it solves, such as a persistence layer you would otherwise write yourself, or several integrations you would otherwise maintain. "We might need it later" is a weak reason, since moving from plain functions to a graph is usually straightforward when those functions are already well separated.</p>
+
+<h2>A simple way to decide</h2>
+<ol>
+<li><strong>Draw the process on paper.</strong> Include failures, retries and any point where a person gets involved.</li>
+<li><strong>Is it a straight line?</strong> Use plain code, or LangChain components if they save real work.</li>
+<li><strong>Are there branches but no state to keep?</strong> Ordinary conditionals may be all you need.</li>
+<li><strong>Are there loops, long-running work, resumption or approval?</strong> Consider LangGraph, and write down the limits on each loop.</li>
+<li><strong>Prototype the hardest path.</strong> Test the failure or pause, not only the path where everything works.</li>
+</ol>
+
+<h2>Common mistakes</h2>
+<ul>
+<li><strong>Choosing by popularity.</strong> Neither library is a mark of a serious project. A short, readable script is often the right design.</li>
+<li><strong>Hiding logic inside prompts.</strong> If a rule must always hold, such as a retry limit or a permission check, enforce it in code or graph structure instead of asking the model.</li>
+<li><strong>Letting state grow unchecked.</strong> A state object that holds everything becomes hard to understand. Store only what later steps need.</li>
+<li><strong>Ignoring upgrades.</strong> Fast-moving libraries can change their interfaces. Pin your dependencies, keep your own wrappers thin and rely on tests to reveal what changed.</li>
+</ul>
+<p>For help designing the control layer of an agent system, see <a href="/services/ai-orchestration-langgraph/">AI orchestration with LangGraph</a>.</p>
+      <h2>Frequently asked questions</h2>
+      <h3>Is LangGraph a replacement for LangChain?</h3>
+      <p>Not in general. LangGraph focuses on control flow and state, while LangChain focuses on components and integrations. They can be used together, and a graph's nodes can also call plain code instead.</p>
+      <h3>Do I need LangChain to use LangGraph?</h3>
+      <p>You do not need to build your application from LangChain's higher-level pieces. A node is essentially your own function, so it can call a provider's SDK directly. Check the current documentation for package details.</p>
+      <h3>Should a beginner start with LangChain or LangGraph?</h3>
+      <p>Start with the simplest thing that works, often a direct model call in plain code. That shows what the libraries are doing for you. Add components when they save work, and a graph when control flow demands it.</p>
+      <h3>Can a simple RAG application use LangGraph?</h3>
+      <p>It can, but a linear retrieve-and-answer pipeline gains little from it. A graph becomes more useful once you add query rewriting, retries, routing or human review.</p>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="foot-cta">
+      <div>
+        <h2>Have an AI or full stack project in mind?</h2>
+        <p>Tell me what you want to build.</p>
+      </div>
+      <div class="foot-cta-btns">
+        <a class="btn" href="/#contact">Start a conversation</a>
+        <a class="btn btn-line" href="mailto:shivanigupta4876@gmail.com">Send an email</a>
+      </div>
+    </div>
+    <div class="foot-grid">
+      <div>
+        <a href="/" aria-label="Shivani, home"><img src="/assets/logo.svg" alt="Shivani" width="144" height="40"></a>
+        <p>AI/ML engineer working across generative AI, LLMs, RAG, agentic AI and NLP, plus full stack development.</p>
+        <span class="avail">Taking new projects</span>
+      </div>
+      <div>
+        <h3>Explore</h3>
+        <ul>
+          <li><a href="/services/">Services</a></li>
+          <li><a href="/#work">Projects</a></li>
+          <li><a href="/#process">Process</a></li>
+          <li><a href="/#faq">FAQ</a></li>
+          <li><a href="/blog/">Blog</a></li>
+          <li><a href="/#contact">Contact</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Services</h3>
+        <ul>
+          <li><a href="/services/generative-ai-llm-development/">Generative AI and LLMs</a></li>
+          <li><a href="/services/rag-development/">RAG development</a></li>
+          <li><a href="/services/multi-agent-systems/">Multi-agent systems</a></li>
+          <li><a href="/services/ai-orchestration-langgraph/">Orchestration with LangGraph</a></li>
+          <li><a href="/services/nlp-development/">NLP development</a></li>
+          <li><a href="/services/full-stack-development/">Full stack development</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Contact</h3>
+        <ul>
+          <li><a href="mailto:shivanigupta4876@gmail.com">shivanigupta4876@gmail.com</a></li>
+          <li><a href="tel:+919720466504">+91 97204 66504</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="foot-bottom">&copy; <span id="year">2026</span> Shivani. All rights reserved.</div>
+  </div>
+</footer>
+<a class="wa-float" href="https://wa.me/919720466504?text=Hi%20Shivani%2C%20I%20saw%20your%20website%20and%20would%20like%20to%20talk%20about%20a%20project." target="_blank" rel="noopener" aria-label="Chat on WhatsApp"><svg viewBox="0 0 24 24" width="28" height="28" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15L2 22l5.1-1.3A10 10 0 1 0 12 2zm0 18.2a8.2 8.2 0 0 1-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1a6.700 6.700 0 0 1-3.300-2.900c-.2-.3 0-.4.1-.6l.4-.4.2-.4v-.5l-.8-1.800c-.2-.5-.4-.4-.6-.4h-.5c-.2 0-.4.1-.6.3-.2.2-.8.8-.8 2s.9 2.300 1 2.500c.1.2 1.700 2.600 4.100 3.600 1.500.7 2.100.7 2.900.6.500-.1 1.500-.6 1.700-1.200.2-.6.2-1.100.1-1.200l-.2-.2z"/></svg></a>
+<script src="/assets/js/site.js" defer></script>
+</body>
+</html>

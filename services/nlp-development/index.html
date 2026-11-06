@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NLP Development in Python | Shivani</title>
+<meta name="description" content="NLP development in Python for classifying text, extracting information and searching documents, choosing between rules, classic ML and LLMs per task.">
+<meta name="robots" content="index,follow">
+<meta name="author" content="Shivani">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<link rel="manifest" href="/site.webmanifest">
+<meta name="theme-color" content="#080b0f">
+<meta property="og:type" content="website">
+<meta property="og:title" content="NLP Development in Python | Shivani">
+<meta property="og:description" content="NLP development in Python for classifying text, extracting information and searching documents, choosing between rules, classic ML and LLMs per task.">
+<meta property="og:image" content="/assets/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"/"},{"@type":"ListItem","position":2,"name":"Services","item":"/services/"},{"@type":"ListItem","position":3,"name":"NLP development in Python","item":"/services/nlp-development/"}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Does one method have to cover the whole project?","acceptedAnswer":{"@type":"Answer","text":"No. Decide per task. One system can use patterns for reference numbers, a trained model for routing and an LLM for free-text clauses, with a shared test set showing where each one is justified."}},{"@type":"Question","name":"How much data does an NLP project need?","acceptedAnswer":{"@type":"Answer","text":"It varies with the method and task. Rules and LLM-based approaches can begin with few examples, though a labelled test set is still important. Training a custom classifier generally calls for more labelled data."}},{"@type":"Question","name":"Can NLP handle languages other than English?","acceptedAnswer":{"@type":"Answer","text":"Often yes, but support and quality vary by language and tool. Performance should be tested separately on each language the project needs, rather than assumed."}},{"@type":"Question","name":"How is NLP related to generative AI?","acceptedAnswer":{"@type":"Answer","text":"Large language models come out of NLP research, and generative AI is now one set of tools used for NLP tasks. NLP as a field also includes non-generative methods such as classification and entity recognition."}}]}</script>
+<!-- TODO once the domain is known: canonical, absolute og:url and og:image, absolute URLs in JSON-LD -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&family=Poppins:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+<header class="nav">
+  <div class="wrap nav-in">
+    <a class="logo" href="/" aria-label="Shivani, home"><img src="/assets/logo.svg" alt="Shivani" width="144" height="40"></a>
+    <nav id="nav-links" aria-label="Main">
+      <a href="/#services">Services</a>
+      <a href="/#skills">Skills</a>
+      <a href="/#work">Work</a>
+      <a href="/#process">Process</a>
+      <a href="/#faq">FAQ</a>
+      <a href="/blog/">Blog</a>
+      <a class="btn btn-sm" href="/#contact">Hire Me</a>
+    </nav>
+    <button id="menu-toggle" class="menu-toggle" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="nav-links"><span></span><span></span><span></span></button>
+  </div>
+</header>
+
+<main id="top">
+  <section class="page-head">
+    <div class="wrap">
+      <nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a><span aria-hidden="true">/</span><a href="/services/">Services</a><span aria-hidden="true">/</span><span aria-current="page">NLP development in Python</span></nav>
+      <p class="eyebrow">Service</p>
+      <h1>NLP development in Python</h1>
+      <p class="lead">Python solutions that classify, extract, search and summarise text, using the simplest method that does the job well.</p>
+    </div>
+  </section>
+  <section class="article">
+    <div class="wrap prose">
+<h2>What it is</h2>
+<p>Natural language processing, or NLP, covers techniques that let software work with human language. Typical tasks include text classification, named entity recognition, information extraction, semantic search, sentiment analysis, summarisation and topic grouping.</p>
+<p>LLMs have made many of these tasks faster to prototype, but they have not replaced everything that came before. Rules, traditional machine learning and embeddings all remain useful, and a good solution may combine several of them.</p>
+
+<h2>When it suits a project</h2>
+<p>NLP work suits a project when valuable information is locked inside text that people currently read and sort by hand: support tickets, forms, emails, reports or reviews. It tends to work best where the desired output can be defined clearly and some example data is available.</p>
+<p>Choosing a method is largely a matter of trade-offs, which the guide on <a href="/blog/text-classification-llms-vs-traditional-nlp/">text classification with LLMs vs traditional NLP</a> explores further:</p>
+<ul>
+<li><strong>Rules and patterns</strong> suit predictable formats. They are fast, cheap and easy to explain, but brittle when language varies.</li>
+<li><strong>Traditional machine learning</strong> suits repeated tasks with labelled data, and can run at low cost once trained.</li>
+<li><strong>Embeddings</strong> suit similarity search, clustering and matching text by meaning.</li>
+<li><strong>LLMs</strong> suit varied language and tasks with little training data, at the cost of more latency, usage cost and checking.</li>
+</ul>
+
+<h2>How it is typically approached</h2>
+<ul>
+<li><strong>Frame the problem.</strong> Define the inputs, outputs, categories and how the result will be used, including what happens to uncertain cases.</li>
+<li><strong>Study real data.</strong> Look at samples for language variety, noise, duplicates and class imbalance before settling on a method.</li>
+<li><strong>Create a labelled test set.</strong> Even a modest one gives an objective way to compare methods. Clear labelling guidelines matter, because people can disagree about the correct answer too.</li>
+<li><strong>Establish a baseline.</strong> Try a simple approach first, so that any added complexity has to prove its worth.</li>
+<li><strong>Measure appropriately.</strong> Use metrics such as precision and recall per class, because overall accuracy can hide poor performance on rare categories.</li>
+<li><strong>Integrate and monitor.</strong> Wrap the solution in a service or batch job, route low-confidence results for review and watch for drift as the language in your data changes.</li>
+</ul>
+
+<h2>What I can help with</h2>
+<p>I can help with choosing a suitable method, preparing evaluation data, building the solution in Python and integrating it with your application. For pulling specific values out of text, see the guide on <a href="/blog/named-entity-recognition-and-data-extraction-with-llms/">named entity recognition and data extraction with LLMs</a>. Where a task calls for model-generated output, the work overlaps with <a href="/services/generative-ai-llm-development/">generative AI and LLM development</a>; where the goal is answering from documents, see <a href="/services/rag-development/">RAG development</a>.</p>
+      <h2>Frequently asked questions</h2>
+      <h3>Does one method have to cover the whole project?</h3>
+      <p>No. Decide per task. One system can use patterns for reference numbers, a trained model for routing and an LLM for free-text clauses, with a shared test set showing where each one is justified.</p>
+      <h3>How much data does an NLP project need?</h3>
+      <p>It varies with the method and task. Rules and LLM-based approaches can begin with few examples, though a labelled test set is still important. Training a custom classifier generally calls for more labelled data.</p>
+      <h3>Can NLP handle languages other than English?</h3>
+      <p>Often yes, but support and quality vary by language and tool. Performance should be tested separately on each language the project needs, rather than assumed.</p>
+      <h3>How is NLP related to generative AI?</h3>
+      <p>Large language models come out of NLP research, and generative AI is now one set of tools used for NLP tasks. NLP as a field also includes non-generative methods such as classification and entity recognition.</p>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="foot-cta">
+      <div>
+        <h2>Have an AI or full stack project in mind?</h2>
+        <p>Tell me what you want to build.</p>
+      </div>
+      <div class="foot-cta-btns">
+        <a class="btn" href="/#contact">Start a conversation</a>
+        <a class="btn btn-line" href="mailto:shivanigupta4876@gmail.com">Send an email</a>
+      </div>
+    </div>
+    <div class="foot-grid">
+      <div>
+        <a href="/" aria-label="Shivani, home"><img src="/assets/logo.svg" alt="Shivani" width="144" height="40"></a>
+        <p>AI/ML engineer working across generative AI, LLMs, RAG, agentic AI and NLP, plus full stack development.</p>
+        <span class="avail">Taking new projects</span>
+      </div>
+      <div>
+        <h3>Explore</h3>
+        <ul>
+          <li><a href="/services/">Services</a></li>
+          <li><a href="/#work">Projects</a></li>
+          <li><a href="/#process">Process</a></li>
+          <li><a href="/#faq">FAQ</a></li>
+          <li><a href="/blog/">Blog</a></li>
+          <li><a href="/#contact">Contact</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Services</h3>
+        <ul>
+          <li><a href="/services/generative-ai-llm-development/">Generative AI and LLMs</a></li>
+          <li><a href="/services/rag-development/">RAG development</a></li>
+          <li><a href="/services/multi-agent-systems/">Multi-agent systems</a></li>
+          <li><a href="/services/ai-orchestration-langgraph/">Orchestration with LangGraph</a></li>
+          <li><a href="/services/nlp-development/">NLP development</a></li>
+          <li><a href="/services/full-stack-development/">Full stack development</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Contact</h3>
+        <ul>
+          <li><a href="mailto:shivanigupta4876@gmail.com">shivanigupta4876@gmail.com</a></li>
+          <li><a href="tel:+919720466504">+91 97204 66504</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="foot-bottom">&copy; <span id="year">2026</span> Shivani. All rights reserved.</div>
+  </div>
+</footer>
+<a class="wa-float" href="https://wa.me/919720466504?text=Hi%20Shivani%2C%20I%20saw%20your%20website%20and%20would%20like%20to%20talk%20about%20a%20project." target="_blank" rel="noopener" aria-label="Chat on WhatsApp"><svg viewBox="0 0 24 24" width="28" height="28" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15L2 22l5.1-1.3A10 10 0 1 0 12 2zm0 18.2a8.2 8.2 0 0 1-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1a6.700 6.700 0 0 1-3.300-2.900c-.2-.3 0-.4.1-.6l.4-.4.2-.4v-.5l-.8-1.800c-.2-.5-.4-.4-.6-.4h-.5c-.2 0-.4.1-.6.3-.2.2-.8.8-.8 2s.9 2.300 1 2.500c.1.2 1.700 2.600 4.100 3.600 1.500.7 2.100.7 2.900.6.500-.1 1.500-.6 1.700-1.200.2-.6.2-1.100.1-1.200l-.2-.2z"/></svg></a>
+<script src="/assets/js/site.js" defer></script>
+</body>
+</html>

@@ -1,0 +1,233 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Human-in-the-Loop Approval for AI Agents | Shivani</title>
+<meta name="description" content="How to add human approval to agentic AI workflows: what to gate, how to pause and resume safely, what reviewers need, and how to avoid approval fatigue.">
+<meta name="robots" content="index,follow">
+<meta name="author" content="Shivani">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<link rel="manifest" href="/site.webmanifest">
+<meta name="theme-color" content="#080b0f">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Human-in-the-Loop Approval for AI Agents | Shivani">
+<meta property="og:description" content="How to add human approval to agentic AI workflows: what to gate, how to pause and resume safely, what reviewers need, and how to avoid approval fatigue.">
+<meta property="og:image" content="/assets/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Human-in-the-loop approval for AI agents","description":"How to add human approval to agentic AI workflows: what to gate, how to pause and resume safely, what reviewers need, and how to avoid approval fatigue.","mainEntityOfPage":"/blog/human-in-the-loop-approval-for-ai-agents/","author":{"@type":"Person","name":"Shivani"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"/"},{"@type":"ListItem","position":2,"name":"Blog","item":"/blog/"},{"@type":"ListItem","position":3,"name":"Human-in-the-loop approval for AI agents","item":"/blog/human-in-the-loop-approval-for-ai-agents/"}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"What is human-in-the-loop in agentic AI?","acceptedAnswer":{"@type":"Answer","text":"It means a person takes part in a workflow at defined points, usually to approve, edit or reject something an agent proposes. The agent pauses and its work continues only after that decision has been recorded."}},{"@type":"Question","name":"Which agent actions should require human approval?","acceptedAnswer":{"@type":"Answer","text":"Focus on actions that are hard to reverse, affect people outside the system, involve money or sensitive data, or have a large scope. Read-only and easily undone actions can often run without approval, depending on your risk tolerance."}},{"@type":"Question","name":"How do you pause an agent while waiting for a person?","acceptedAnswer":{"@type":"Answer","text":"Save the workflow state to durable storage, record the proposed action as a pending request and end the running process. When a decision arrives, load the state and continue. Holding a process open while waiting is fragile, since a review may take a long time."}},{"@type":"Question","name":"Does human approval make an agent safe?","acceptedAnswer":{"@type":"Answer","text":"It reduces risk but does not remove it. Reviewers can miss problems, especially when requests are frequent or poorly explained. Approval works best alongside limited tool permissions, validation in code and audit logs."}}]}</script>
+<!-- TODO once the domain is known: canonical, absolute og:url and og:image, absolute URLs in JSON-LD -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&family=Poppins:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+<header class="nav">
+  <div class="wrap nav-in">
+    <a class="logo" href="/" aria-label="Shivani, home"><img src="/assets/logo.svg" alt="Shivani" width="144" height="40"></a>
+    <nav id="nav-links" aria-label="Main">
+      <a href="/#services">Services</a>
+      <a href="/#skills">Skills</a>
+      <a href="/#work">Work</a>
+      <a href="/#process">Process</a>
+      <a href="/#faq">FAQ</a>
+      <a href="/blog/">Blog</a>
+      <a class="btn btn-sm" href="/#contact">Hire Me</a>
+    </nav>
+    <button id="menu-toggle" class="menu-toggle" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="nav-links"><span></span><span></span><span></span></button>
+  </div>
+</header>
+
+<main id="top">
+  <section class="page-head">
+    <div class="wrap">
+      <nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a><span aria-hidden="true">/</span><a href="/blog/">Blog</a><span aria-hidden="true">/</span><span aria-current="page">Human-in-the-loop approval for AI agents</span></nav>
+      <p class="eyebrow">Guide</p>
+      <h1>Human-in-the-loop approval for AI agents</h1>
+      <p class="lead">Add human approval by having the agent propose actions as data, saving the run's state and resuming only when a person decides. Reserve it for actions that are hard to reverse, reach other people or carry high stakes, so that reviewers keep reading what they approve.</p>
+    </div>
+  </section>
+  <section class="article">
+    <div class="wrap prose">
+<h2>Why approval belongs in the workflow design</h2>
+<p>An agent chooses actions based on model output, which can be mistaken or influenced by content it has read. When its tools only read information, a mistake usually costs little more than a poor answer. When it can send an email, change a record or issue a refund, the same mistake reaches the real world.</p>
+<p>A human-in-the-loop step places a person between the agent's decision and its effect. Designed well, it allows you to automate the routine work while keeping accountability for the consequential steps. Designed badly, it becomes a button people click without reading, which provides the appearance of control and little else.</p>
+
+<h2>Decide what needs approval</h2>
+<p>Asking for approval on everything wastes people's attention. Asking for none leaves you exposed. A more useful approach is to classify each tool by what could go wrong when it is used:</p>
+<ul>
+<li><strong>Reversibility.</strong> Can the effect be undone cleanly? A draft can be deleted, whereas a sent message cannot be recalled.</li>
+<li><strong>Reach.</strong> Does it affect only the person using the tool, or customers and third parties too?</li>
+<li><strong>Sensitivity.</strong> Does it involve money, personal data, access rights or legal commitments?</li>
+<li><strong>Scope.</strong> Does it touch one record, or potentially thousands?</li>
+<li><strong>Input trust.</strong> Was the decision shaped by untrusted content such as an inbound email or a web page?</li>
+</ul>
+<p>From this you can create a small number of policies. The tiers below are an example and should be adapted to your own risk assessment:</p>
+<div class="table-wrap"><table>
+<thead><tr><th>Tier</th><th>Example</th><th>Handling</th></tr></thead>
+<tbody>
+<tr><td>Read-only</td><td>Search internal documents</td><td>Runs automatically, with logging</td></tr>
+<tr><td>Reversible, low impact</td><td>Save a draft or add a label</td><td>Runs automatically, with an undo option</td></tr>
+<tr><td>External or sensitive</td><td>Send a customer email</td><td>Pauses for approval</td></tr>
+<tr><td>High impact</td><td>Delete records in bulk</td><td>Stricter approval, or not available to the agent</td></tr>
+</tbody>
+</table></div>
+<p>Policies can also depend on the arguments rather than the tool alone. Updating a single address and updating every address in a table use the same tool but carry very different risk. That rule belongs in code, where the model cannot talk its way past it.</p>
+
+<h2>The four kinds of human input</h2>
+<p>"Approve or reject" is only one interaction. Consider which of these your workflow needs:</p>
+<ul>
+<li><strong>Approve.</strong> The proposed action runs exactly as shown.</li>
+<li><strong>Edit.</strong> The person changes the proposal, for example correcting a draft reply, and the edited version then runs.</li>
+<li><strong>Reject with a reason.</strong> The action does not run, and the reason can go back to the agent so it can try another route or stop.</li>
+<li><strong>Answer a question.</strong> The agent lacks information or is uncertain, and asks a person rather than guessing.</li>
+</ul>
+<p>Decide explicitly what follows a rejection. If the agent can simply retry with small changes, a reviewer may see the same request repeatedly, so limit the retries and define a clean way to end the run.</p>
+
+<h2>Pausing and resuming reliably</h2>
+<p>A person may respond in a minute or in a few days, during which servers can restart and deployments can happen. An approval step therefore should not rely on a process waiting in memory. The usual design is:</p>
+<ol>
+<li>The agent proposes an action as structured data instead of performing it.</li>
+<li>Code checks the proposal against the policy and validates its arguments.</li>
+<li>If approval is needed, the workflow state is saved and a pending request is created.</li>
+<li>The run stops consuming resources, and the reviewer is notified.</li>
+<li>When a decision arrives, the state is reloaded and the workflow continues along the matching path.</li>
+</ol>
+<p>This is a natural fit for a graph-based orchestrator with checkpointing. The guide on <a href="/blog/building-an-orchestrator-with-langgraph/">building an orchestrator with LangGraph</a> introduces those concepts. Whichever framework you use, read its current documentation on how a resumed step behaves. Some frameworks restart the interrupted step from its beginning, so any work placed before the pause could run twice.</p>
+<p>In simplified form, the separation between proposing and executing looks like this:</p>
+<pre><code># Illustrative only. These functions stand in for your own code.
+def handle_proposal(run, proposal):
+    validate_arguments(proposal)
+
+    if requires_approval(proposal):
+        request_id = create_approval_request(
+            run_id=run.id,
+            payload=proposal,
+            expires_in=APPROVAL_WINDOW,
+        )
+        save_state(run)
+        notify_reviewers(request_id)
+        return "waiting"
+
+    return execute_tool(proposal)
+
+def handle_decision(request_id, reviewer, decision):
+    request = load_pending_request(request_id)
+    check_reviewer_may_decide(reviewer, request)
+    record_decision(request, reviewer, decision)
+
+    if decision.outcome == "approved":
+        payload = decision.final_payload()  # may be an edited version
+        validate_arguments(payload)
+        recheck_action_is_still_valid(payload)
+        execute_once(request.id, payload)
+
+    resume_run(request.run_id, decision)</code></pre>
+
+<h2>Details that make approval trustworthy</h2>
+<p>Each of these should be enforced by the application, not by instructions to the model:</p>
+<ul>
+<li><strong>Bind approval to the exact action.</strong> Approval should apply to the specific arguments the reviewer saw. If the agent changes anything, a new approval is needed. Storing a hash of the payload with the decision is one way to check this.</li>
+<li><strong>Make execution idempotent.</strong> A double click, a retried webhook or a resumed step should not send the email twice. Use the request ID as an idempotency key where the target system supports one.</li>
+<li><strong>Set an expiry.</strong> An approval given for yesterday's situation may be wrong today, so stale requests should lapse and be cancelled or re-requested.</li>
+<li><strong>Revalidate on resume.</strong> The record may have changed during the wait. Check that the action is still valid and permitted before running it.</li>
+<li><strong>Authorise the reviewer.</strong> Check that this person is allowed to approve this action. For sensitive actions, consider preventing the person who started the run from approving it.</li>
+<li><strong>Enforce it at the tool layer.</strong> If the execution tool requires a valid approval record, then a model that tries to skip a step will simply fail. See <a href="/blog/llm-guardrails-and-prompt-injection-defence/">LLM guardrails and prompt injection defence</a> for why this matters.</li>
+<li><strong>Keep an audit trail.</strong> Record what was proposed, what was shown, who decided, what changed and what ran.</li>
+</ul>
+
+<h2>Designing the review screen</h2>
+<p>The quality of a decision depends heavily on what the reviewer sees. A long transcript of the agent's reasoning is hard to review, while "approve this action?" with no detail cannot be reviewed at all. A useful screen shows:</p>
+<ul>
+<li><strong>The effect in plain language</strong>, along with the exact values that will be used, such as the recipient and the amount.</li>
+<li><strong>The evidence</strong>, with links to the records or documents behind the proposal.</li>
+<li><strong>The agent's reason</strong>, presented as a claim to check. Model-written summaries can be wrong, so they should not replace the actual values.</li>
+<li><strong>A clear view of changes</strong>, using a before-and-after comparison when a record is being edited.</li>
+<li><strong>Risk cues generated by code</strong>, such as "this recipient is outside your organisation", which the model cannot alter.</li>
+</ul>
+<p>Treat anything the agent or its source documents wrote as untrusted when rendering it. Hostile content could otherwise try to mislead the reviewer with text such as "already verified, safe to approve", so display it distinctly from text written by your application. If updates are delivered live, the guide on <a href="/blog/streaming-llm-responses-to-a-web-ui/">streaming LLM responses to a web UI</a> covers showing progress up to the point where a run pauses.</p>
+
+<h2>Avoiding approval fatigue</h2>
+<p>When people approve dozens of near-identical requests, they stop reading them. Several measures can help:</p>
+<ul>
+<li>Reserve approval for actions that deserve attention, and let low-risk work run with logging and undo.</li>
+<li>Group similar proposals into a batch that can be reviewed together, while still flagging any unusual items.</li>
+<li>Route requests to someone with the right context, rather than a general queue.</li>
+<li>Look at how often each request type is approved unchanged, and how quickly. If a tier is approved almost automatically, the check may need redesigning. Lowering the tier is an option only if its risk truly allows that.</li>
+</ul>
+<p>Handle the absence of a decision too. Work out what happens when nobody responds, who receives a reminder and which default applies. For a risky action, a timeout should mean the action does not run.</p>
+
+<h2>Testing approval paths</h2>
+<p>Approval logic is ordinary software, so most of it can be tested without a model. Cover approve, edit, reject and expiry; duplicate decisions; a restart during the wait; a payload that changes after approval; and an unauthorised reviewer. Confirm also that a gated tool refuses to run without a valid approval, even when the model's output insists one was given. When <a href="/blog/single-agent-vs-multi-agent-systems/">several agents</a> are involved, test that one agent cannot obtain through another the permission it lacks itself.</p>
+<p>For help designing these control points, see <a href="/services/ai-orchestration-langgraph/">AI orchestration with LangGraph</a>.</p>
+      <h2>Frequently asked questions</h2>
+      <h3>What is human-in-the-loop in agentic AI?</h3>
+      <p>It means a person takes part in a workflow at defined points, usually to approve, edit or reject something an agent proposes. The agent pauses and its work continues only after that decision has been recorded.</p>
+      <h3>Which agent actions should require human approval?</h3>
+      <p>Focus on actions that are hard to reverse, affect people outside the system, involve money or sensitive data, or have a large scope. Read-only and easily undone actions can often run without approval, depending on your risk tolerance.</p>
+      <h3>How do you pause an agent while waiting for a person?</h3>
+      <p>Save the workflow state to durable storage, record the proposed action as a pending request and end the running process. When a decision arrives, load the state and continue. Holding a process open while waiting is fragile, since a review may take a long time.</p>
+      <h3>Does human approval make an agent safe?</h3>
+      <p>It reduces risk but does not remove it. Reviewers can miss problems, especially when requests are frequent or poorly explained. Approval works best alongside limited tool permissions, validation in code and audit logs.</p>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="foot-cta">
+      <div>
+        <h2>Have an AI or full stack project in mind?</h2>
+        <p>Tell me what you want to build.</p>
+      </div>
+      <div class="foot-cta-btns">
+        <a class="btn" href="/#contact">Start a conversation</a>
+        <a class="btn btn-line" href="mailto:shivanigupta4876@gmail.com">Send an email</a>
+      </div>
+    </div>
+    <div class="foot-grid">
+      <div>
+        <a href="/" aria-label="Shivani, home"><img src="/assets/logo.svg" alt="Shivani" width="144" height="40"></a>
+        <p>AI/ML engineer working across generative AI, LLMs, RAG, agentic AI and NLP, plus full stack development.</p>
+        <span class="avail">Taking new projects</span>
+      </div>
+      <div>
+        <h3>Explore</h3>
+        <ul>
+          <li><a href="/services/">Services</a></li>
+          <li><a href="/#work">Projects</a></li>
+          <li><a href="/#process">Process</a></li>
+          <li><a href="/#faq">FAQ</a></li>
+          <li><a href="/blog/">Blog</a></li>
+          <li><a href="/#contact">Contact</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Services</h3>
+        <ul>
+          <li><a href="/services/generative-ai-llm-development/">Generative AI and LLMs</a></li>
+          <li><a href="/services/rag-development/">RAG development</a></li>
+          <li><a href="/services/multi-agent-systems/">Multi-agent systems</a></li>
+          <li><a href="/services/ai-orchestration-langgraph/">Orchestration with LangGraph</a></li>
+          <li><a href="/services/nlp-development/">NLP development</a></li>
+          <li><a href="/services/full-stack-development/">Full stack development</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Contact</h3>
+        <ul>
+          <li><a href="mailto:shivanigupta4876@gmail.com">shivanigupta4876@gmail.com</a></li>
+          <li><a href="tel:+919720466504">+91 97204 66504</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="foot-bottom">&copy; <span id="year">2026</span> Shivani. All rights reserved.</div>
+  </div>
+</footer>
+<a class="wa-float" href="https://wa.me/919720466504?text=Hi%20Shivani%2C%20I%20saw%20your%20website%20and%20would%20like%20to%20talk%20about%20a%20project." target="_blank" rel="noopener" aria-label="Chat on WhatsApp"><svg viewBox="0 0 24 24" width="28" height="28" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15L2 22l5.1-1.3A10 10 0 1 0 12 2zm0 18.2a8.2 8.2 0 0 1-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1a6.700 6.700 0 0 1-3.300-2.900c-.2-.3 0-.4.1-.6l.4-.4.2-.4v-.5l-.8-1.800c-.2-.5-.4-.4-.6-.4h-.5c-.2 0-.4.1-.6.3-.2.2-.8.8-.8 2s.9 2.300 1 2.500c.1.2 1.700 2.600 4.100 3.600 1.500.7 2.100.7 2.900.6.500-.1 1.500-.6 1.700-1.200.2-.6.2-1.100.1-1.200l-.2-.2z"/></svg></a>
+<script src="/assets/js/site.js" defer></script>
+</body>
+</html>

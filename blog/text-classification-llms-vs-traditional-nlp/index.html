@@ -1,0 +1,218 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Text Classification: LLMs vs Traditional NLP | Shivani</title>
+<meta name="description" content="Compare LLMs with rules, linear models, embeddings and fine-tuned transformers for text classification, and learn how to test and combine them.">
+<meta name="robots" content="index,follow">
+<meta name="author" content="Shivani">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<link rel="manifest" href="/site.webmanifest">
+<meta name="theme-color" content="#080b0f">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Text Classification: LLMs vs Traditional NLP | Shivani">
+<meta property="og:description" content="Compare LLMs with rules, linear models, embeddings and fine-tuned transformers for text classification, and learn how to test and combine them.">
+<meta property="og:image" content="/assets/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Text classification with LLMs vs traditional NLP","description":"Compare LLMs with rules, linear models, embeddings and fine-tuned transformers for text classification, and learn how to test and combine them.","mainEntityOfPage":"/blog/text-classification-llms-vs-traditional-nlp/","author":{"@type":"Person","name":"Shivani"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"/"},{"@type":"ListItem","position":2,"name":"Blog","item":"/blog/"},{"@type":"ListItem","position":3,"name":"Text classification with LLMs vs traditional NLP","item":"/blog/text-classification-llms-vs-traditional-nlp/"}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Is an LLM better than a traditional classifier?","acceptedAnswer":{"@type":"Answer","text":"Not automatically. An LLM is quick to try and often copes well with varied language, while a traditional model can be cheaper, faster and more predictable on a stable task with labelled data. Testing both on the same held-out data gives a practical answer."}},{"@type":"Question","name":"Do I need labelled data if I use an LLM?","acceptedAnswer":{"@type":"Answer","text":"You may not need any for training, but you still need a labelled test set. Without one, you have no objective way to know how well the prompt works or whether a later change made it worse."}},{"@type":"Question","name":"Can I trust the confidence score an LLM gives?","acceptedAnswer":{"@type":"Answer","text":"Not as a probability. Self-reported confidence is not necessarily calibrated, so test it against labelled data before using it as a threshold. A trained model's probabilities may need calibrating as well."}},{"@type":"Question","name":"What metrics should I use for text classification?","acceptedAnswer":{"@type":"Answer","text":"Use precision and recall per class, macro-averaged F1 and a confusion matrix. Overall accuracy can look strong on imbalanced data even when rare but important classes are handled badly."}}]}</script>
+<!-- TODO once the domain is known: canonical, absolute og:url and og:image, absolute URLs in JSON-LD -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&family=Poppins:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+<header class="nav">
+  <div class="wrap nav-in">
+    <a class="logo" href="/" aria-label="Shivani, home"><img src="/assets/logo.svg" alt="Shivani" width="144" height="40"></a>
+    <nav id="nav-links" aria-label="Main">
+      <a href="/#services">Services</a>
+      <a href="/#skills">Skills</a>
+      <a href="/#work">Work</a>
+      <a href="/#process">Process</a>
+      <a href="/#faq">FAQ</a>
+      <a href="/blog/">Blog</a>
+      <a class="btn btn-sm" href="/#contact">Hire Me</a>
+    </nav>
+    <button id="menu-toggle" class="menu-toggle" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="nav-links"><span></span><span></span><span></span></button>
+  </div>
+</header>
+
+<main id="top">
+  <section class="page-head">
+    <div class="wrap">
+      <nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a><span aria-hidden="true">/</span><a href="/blog/">Blog</a><span aria-hidden="true">/</span><span aria-current="page">Text classification with LLMs vs traditional NLP</span></nav>
+      <p class="eyebrow">Guide</p>
+      <h1>Text classification with LLMs vs traditional NLP</h1>
+      <p class="lead">Try an LLM when you have few labels or categories that change, rules for fixed formats, and a trained model for a stable, high-volume task. The reliable way to decide is to run the candidates on the same held-out test set.</p>
+    </div>
+  </section>
+  <section class="article">
+    <div class="wrap prose">
+<h2>What text classification involves</h2>
+<p>Text classification assigns one or more labels from a known set to a piece of text. Routing a support ticket, flagging a complaint, tagging a document by topic and detecting the language of a message are all classification tasks. The output is simple, which makes this one of the most common jobs in <a href="/services/nlp-development/">NLP development</a> and one of the easiest places to compare methods fairly.</p>
+<p>Before comparing methods, pin down the shape of the task, because it affects every later decision:</p>
+<ul>
+<li><strong>Single-label.</strong> Each text gets exactly one label, so the categories need to be mutually exclusive.</li>
+<li><strong>Multi-label.</strong> A text can have several labels at once, such as a review that mentions both delivery and price.</li>
+<li><strong>Hierarchical.</strong> Labels sit in a tree, such as billing and then refunds. Errors near the top of the tree usually matter more than errors near the leaves.</li>
+<li><strong>Open or changing.</strong> New categories appear regularly, which favours methods that do not need retraining for each one.</li>
+</ul>
+<p>Write a short definition and a few examples for each label. If two people cannot agree on the correct label for a sample of real texts, no model will solve that. The categories themselves need fixing first.</p>
+
+<h2>The traditional options</h2>
+<p>"Traditional" covers a range of methods, and they are not all equally simple.</p>
+<h3>Rules and keyword patterns</h3>
+<p>Regular expressions and keyword lists work well when language is predictable, such as invoice numbers or fixed form wording. They are fast and easy to explain, and they make no attempt to guess. They become hard to maintain as exceptions accumulate, and they miss paraphrases.</p>
+<h3>Linear models on word features</h3>
+<p>TF-IDF features with logistic regression or a linear support vector machine make a strong baseline. They train quickly, run cheaply on ordinary hardware and let you inspect which words influenced a decision. They do not understand word order well, so they can struggle with negation or subtle phrasing, and they need labelled examples for every class.</p>
+<pre><code># Illustrative only. A baseline using scikit-learn.
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.linear_model import LogisticRegression
+from sklearn.pipeline import make_pipeline
+
+baseline = make_pipeline(
+    TfidfVectorizer(ngram_range=(1, 2)),
+    LogisticRegression(max_iter=1000),
+)
+baseline.fit(train_texts, train_labels)
+predictions = baseline.predict(test_texts)</code></pre>
+<h3>Embeddings with a small classifier</h3>
+<p>An embedding model turns each text into a vector that reflects its meaning. Training a simple classifier on those vectors often handles paraphrase better than word features, and it usually needs less labelled data than training a language model from scratch. It is a useful middle ground, although individual decisions become harder to explain.</p>
+<h3>Fine-tuned transformer models</h3>
+<p>Fine-tuning a transformer on your own labels can capture context well and gives you a model you control. The price is more labelled data, more training effort and more infrastructure, sometimes including a GPU. It tends to make sense for a stable, high-volume task where the labelling investment will be repaid.</p>
+
+<h2>What an LLM changes</h2>
+<p>With an LLM you describe the categories in a prompt, optionally add examples, and ask for a label. That shifts the work considerably:</p>
+<ul>
+<li><strong>Little or no training data to start.</strong> You can try an idea quickly, although you still need labelled data to measure it.</li>
+<li><strong>Categories can change in the prompt.</strong> Adding a label does not need a training run, but it does need a new evaluation.</li>
+<li><strong>Varied, messy language is often handled well,</strong> including indirect phrasing and mixed topics.</li>
+<li><strong>It can give a short explanation.</strong> This can help a reviewer, but an explanation may not reflect how the label was really chosen, so treat it as a convenience and not as proof.</li>
+</ul>
+<p>The drawbacks are real too. Each call adds latency and usage cost, which can dominate at high volume. Behaviour can shift when a provider updates a model, so pin a version where the provider allows it and re-run your evaluation when it changes. Text may be sent to a third party unless the model is self-hosted, which raises privacy questions. Self-reported confidence scores from an LLM are not reliable probabilities, so they should not be used as thresholds without being tested.</p>
+
+<h2>Side-by-side comparison</h2>
+<p>These are general tendencies. Your own data can and does overturn them.</p>
+<div class="table-wrap"><table>
+<thead><tr><th>Factor</th><th>Rules</th><th>Linear or embedding model</th><th>Fine-tuned transformer</th><th>LLM with a prompt</th></tr></thead>
+<tbody>
+<tr><td>Labelled data to start</td><td>None</td><td>Moderate</td><td>Most</td><td>None for training; a test set is still needed</td></tr>
+<tr><td>Cost per prediction</td><td>Very low</td><td>Low</td><td>Low to moderate</td><td>Usually highest</td></tr>
+<tr><td>Latency</td><td>Very low</td><td>Low</td><td>Low to moderate</td><td>Usually highest</td></tr>
+<tr><td>Adding a category</td><td>New rules</td><td>New labels, retrain</td><td>New labels, retrain</td><td>Edit the prompt, re-test</td></tr>
+<tr><td>Handling varied language</td><td>Weak</td><td>Fair to good</td><td>Good</td><td>Often good</td></tr>
+<tr><td>Explaining a decision</td><td>Easy</td><td>Fairly easy for linear models</td><td>Hard</td><td>Plausible but unverified</td></tr>
+</tbody>
+</table></div>
+
+<h2>Writing a classification prompt that behaves</h2>
+<p>A classification prompt is closer to a specification than a conversation. A few habits make it more dependable:</p>
+<ul>
+<li><strong>Define each label</strong> in a sentence, and state what does not belong in it. Most errors occur between neighbouring categories.</li>
+<li><strong>Include examples of hard cases,</strong> not only obvious ones, and keep them balanced so that the prompt does not lean towards one label.</li>
+<li><strong>Provide an "other" or "unclear" label</strong> so that the model has an honest way out when nothing fits.</li>
+<li><strong>Constrain the output</strong> using a structured output feature if your provider offers one, and validate the result in your own code regardless.</li>
+<li><strong>Treat the input as data.</strong> The text being classified may contain instructions, so see <a href="/blog/llm-guardrails-and-prompt-injection-defence/">LLM guardrails and prompt injection defence</a> if it comes from untrusted users.</li>
+</ul>
+<pre><code># Illustrative only. Never trust a label without checking it.
+ALLOWED = {"billing", "technical", "account", "other"}
+
+def parse_label(raw_output):
+    label = raw_output.strip().lower()
+    return label if label in ALLOWED else "needs_review"</code></pre>
+
+<h2>Comparing methods properly</h2>
+<p>The only reliable way to choose is to run the candidates on the same held-out test set, drawn from real data and labelled against your written definitions. Do not write prompts while looking at the test set, as this inflates the result in the same way that tuning a traditional model against it would.</p>
+<p>Avoid relying on overall accuracy. If most tickets are about billing, a model that always answers "billing" can look strong while being useless. Report precision and recall for each class, a macro-averaged F1 score that weights rare classes equally, and a confusion matrix showing which labels get mixed up. Then weigh the outcomes by what mistakes actually cost: missing an urgent safety complaint is not the same as tagging a blog post slightly wrongly.</p>
+<p>Include latency and running cost at your expected volume in the comparison, and read a sample of the errors. Sometimes the disagreement reveals mistakes in your labels and not in the model.</p>
+
+<h2>Combining methods in a cascade</h2>
+<p>The choice is rarely all or nothing. A cascade sends each text to the cheapest method able to handle it:</p>
+<ol>
+<li><strong>Rules</strong> settle the unambiguous cases, such as a fixed form subject line.</li>
+<li><strong>A trained model</strong> handles the common cases when its calibrated probability is high enough.</li>
+<li><strong>An LLM</strong> takes the remaining harder cases.</li>
+<li><strong>A person</strong> reviews what is still uncertain or high-risk.</li>
+</ol>
+<p>LLMs can also help without being in the production path at all. They can draft labels for people to correct, which speeds up the creation of training data for a cheaper model. Those drafts can carry the LLM's biases, so keep a human-labelled test set that is independent of them.</p>
+
+<h2>A practical way to choose</h2>
+<ul>
+<li><strong>Stable categories, plenty of labels, high volume:</strong> start with a linear baseline, then consider embeddings or fine-tuning if it falls short.</li>
+<li><strong>Few or no labels, or categories that change often:</strong> start with an LLM, and collect its reviewed output as future training data.</li>
+<li><strong>Fixed formats:</strong> try rules first.</li>
+<li><strong>Strict privacy or offline requirements:</strong> favour a model you can run yourself.</li>
+</ul>
+<p>Whichever you choose, language and categories drift over time. Sample live predictions for review, and compare the distribution of labels over time so that a sudden shift gets noticed. If your task goes beyond assigning a label to pulling out specific values, read <a href="/blog/named-entity-recognition-and-data-extraction-with-llms/">named entity recognition and data extraction with LLMs</a>. If you are putting a classifier behind an application, <a href="/blog/adding-an-llm-feature-to-a-full-stack-app/">adding an LLM feature to a full stack app</a> covers the surrounding decisions.</p>
+      <h2>Frequently asked questions</h2>
+      <h3>Is an LLM better than a traditional classifier?</h3>
+      <p>Not automatically. An LLM is quick to try and often copes well with varied language, while a traditional model can be cheaper, faster and more predictable on a stable task with labelled data. Testing both on the same held-out data gives a practical answer.</p>
+      <h3>Do I need labelled data if I use an LLM?</h3>
+      <p>You may not need any for training, but you still need a labelled test set. Without one, you have no objective way to know how well the prompt works or whether a later change made it worse.</p>
+      <h3>Can I trust the confidence score an LLM gives?</h3>
+      <p>Not as a probability. Self-reported confidence is not necessarily calibrated, so test it against labelled data before using it as a threshold. A trained model's probabilities may need calibrating as well.</p>
+      <h3>What metrics should I use for text classification?</h3>
+      <p>Use precision and recall per class, macro-averaged F1 and a confusion matrix. Overall accuracy can look strong on imbalanced data even when rare but important classes are handled badly.</p>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="foot-cta">
+      <div>
+        <h2>Have an AI or full stack project in mind?</h2>
+        <p>Tell me what you want to build.</p>
+      </div>
+      <div class="foot-cta-btns">
+        <a class="btn" href="/#contact">Start a conversation</a>
+        <a class="btn btn-line" href="mailto:shivanigupta4876@gmail.com">Send an email</a>
+      </div>
+    </div>
+    <div class="foot-grid">
+      <div>
+        <a href="/" aria-label="Shivani, home"><img src="/assets/logo.svg" alt="Shivani" width="144" height="40"></a>
+        <p>AI/ML engineer working across generative AI, LLMs, RAG, agentic AI and NLP, plus full stack development.</p>
+        <span class="avail">Taking new projects</span>
+      </div>
+      <div>
+        <h3>Explore</h3>
+        <ul>
+          <li><a href="/services/">Services</a></li>
+          <li><a href="/#work">Projects</a></li>
+          <li><a href="/#process">Process</a></li>
+          <li><a href="/#faq">FAQ</a></li>
+          <li><a href="/blog/">Blog</a></li>
+          <li><a href="/#contact">Contact</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Services</h3>
+        <ul>
+          <li><a href="/services/generative-ai-llm-development/">Generative AI and LLMs</a></li>
+          <li><a href="/services/rag-development/">RAG development</a></li>
+          <li><a href="/services/multi-agent-systems/">Multi-agent systems</a></li>
+          <li><a href="/services/ai-orchestration-langgraph/">Orchestration with LangGraph</a></li>
+          <li><a href="/services/nlp-development/">NLP development</a></li>
+          <li><a href="/services/full-stack-development/">Full stack development</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Contact</h3>
+        <ul>
+          <li><a href="mailto:shivanigupta4876@gmail.com">shivanigupta4876@gmail.com</a></li>
+          <li><a href="tel:+919720466504">+91 97204 66504</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="foot-bottom">&copy; <span id="year">2026</span> Shivani. All rights reserved.</div>
+  </div>
+</footer>
+<a class="wa-float" href="https://wa.me/919720466504?text=Hi%20Shivani%2C%20I%20saw%20your%20website%20and%20would%20like%20to%20talk%20about%20a%20project." target="_blank" rel="noopener" aria-label="Chat on WhatsApp"><svg viewBox="0 0 24 24" width="28" height="28" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15L2 22l5.1-1.3A10 10 0 1 0 12 2zm0 18.2a8.2 8.2 0 0 1-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1a6.700 6.700 0 0 1-3.300-2.900c-.2-.3 0-.4.1-.6l.4-.4.2-.4v-.5l-.8-1.800c-.2-.5-.4-.4-.6-.4h-.5c-.2 0-.4.1-.6.3-.2.2-.8.8-.8 2s.9 2.300 1 2.500c.1.2 1.700 2.600 4.100 3.600 1.500.7 2.100.7 2.900.6.500-.1 1.500-.6 1.700-1.200.2-.6.2-1.100.1-1.200l-.2-.2z"/></svg></a>
+<script src="/assets/js/site.js" defer></script>
+</body>
+</html>

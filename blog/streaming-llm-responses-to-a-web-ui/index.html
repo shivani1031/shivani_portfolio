@@ -1,0 +1,259 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Streaming LLM Responses to a Web UI | Shivani</title>
+<meta name="description" content="How to stream LLM output from backend to browser: SSE or WebSockets, event formats, incremental rendering, cancellation, errors and proxy buffering.">
+<meta name="robots" content="index,follow">
+<meta name="author" content="Shivani">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<link rel="manifest" href="/site.webmanifest">
+<meta name="theme-color" content="#080b0f">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Streaming LLM Responses to a Web UI | Shivani">
+<meta property="og:description" content="How to stream LLM output from backend to browser: SSE or WebSockets, event formats, incremental rendering, cancellation, errors and proxy buffering.">
+<meta property="og:image" content="/assets/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Streaming LLM responses to a web UI","description":"How to stream LLM output from backend to browser: SSE or WebSockets, event formats, incremental rendering, cancellation, errors and proxy buffering.","mainEntityOfPage":"/blog/streaming-llm-responses-to-a-web-ui/","author":{"@type":"Person","name":"Shivani"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"/"},{"@type":"ListItem","position":2,"name":"Blog","item":"/blog/"},{"@type":"ListItem","position":3,"name":"Streaming LLM responses to a web UI","item":"/blog/streaming-llm-responses-to-a-web-ui/"}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Should I use SSE or WebSockets to stream LLM responses?","acceptedAnswer":{"@type":"Answer","text":"Server-sent events are often enough, because the output flows one way and they run over ordinary HTTP. WebSockets make more sense if you already use them or need frequent two-way messages during a response, such as collaborative or voice features."}},{"@type":"Question","name":"Why does my LLM stream arrive all at once in production?","acceptedAnswer":{"@type":"Answer","text":"Something between the server and browser is probably buffering the response, such as a reverse proxy, load balancer, CDN or compression layer. Test the deployed environment and check each hop's settings for streaming responses."}},{"@type":"Question","name":"Can I stream structured JSON from an LLM?","acceptedAnswer":{"@type":"Answer","text":"You can, but partial JSON is not valid until it is complete. A tolerant parser can show progress, but any logic that depends on the data should wait for the finished output and validate it against a schema."}},{"@type":"Question","name":"How do I stop generation when the user clicks stop?","acceptedAnswer":{"@type":"Answer","text":"Abort the browser request, detect the disconnect on the server and cancel the upstream model call. Check your provider's behaviour too, since closing the connection may not always stop generation or billing in the way you expect."}}]}</script>
+<!-- TODO once the domain is known: canonical, absolute og:url and og:image, absolute URLs in JSON-LD -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&family=Poppins:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+<header class="nav">
+  <div class="wrap nav-in">
+    <a class="logo" href="/" aria-label="Shivani, home"><img src="/assets/logo.svg" alt="Shivani" width="144" height="40"></a>
+    <nav id="nav-links" aria-label="Main">
+      <a href="/#services">Services</a>
+      <a href="/#skills">Skills</a>
+      <a href="/#work">Work</a>
+      <a href="/#process">Process</a>
+      <a href="/#faq">FAQ</a>
+      <a href="/blog/">Blog</a>
+      <a class="btn btn-sm" href="/#contact">Hire Me</a>
+    </nav>
+    <button id="menu-toggle" class="menu-toggle" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="nav-links"><span></span><span></span><span></span></button>
+  </div>
+</header>
+
+<main id="top">
+  <section class="page-head">
+    <div class="wrap">
+      <nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a><span aria-hidden="true">/</span><a href="/blog/">Blog</a><span aria-hidden="true">/</span><span aria-current="page">Streaming LLM responses to a web UI</span></nav>
+      <p class="eyebrow">Guide</p>
+      <h1>Streaming LLM responses to a web UI</h1>
+      <p class="lead">Send the request to your backend, stream the model's output from there as typed events, commonly in the server-sent events format, and render it incrementally in the browser. Users see progress sooner, and you take on partial failures, cancellation and proxy buffering.</p>
+    </div>
+  </section>
+  <section class="article">
+    <div class="wrap prose">
+<h2>What streaming does and does not improve</h2>
+<p>A language model generates text gradually, and a complete response can take a while. If your interface waits for the end, users look at a spinner. If it streams, they see the first words soon after generation starts and can begin reading or decide to stop.</p>
+<p>Streaming improves perceived responsiveness, not the total time taken. The delay before the first token may also still be noticeable, particularly if your backend first performs retrieval or tool calls. Showing a status such as "searching documents" during that gap is part of the same design. This guide goes deeper on the mechanics mentioned in the broader guide to <a href="/blog/adding-an-llm-feature-to-a-full-stack-app/">adding an LLM feature to a full stack app</a>.</p>
+
+<h2>The path from model to screen</h2>
+<p>A typical streamed response passes through several stages:</p>
+<ol>
+<li>The browser sends the prompt to your backend, never directly to the model provider, so that API keys stay private and your checks cannot be bypassed.</li>
+<li>The backend authenticates the user, applies limits, assembles the context and opens a streaming call to the model.</li>
+<li>As chunks of text arrive, the backend forwards them in a format of your own.</li>
+<li>The browser reads those events, updates its state and renders the text.</li>
+<li>On completion, the backend stores the final message and usage data, then signals the end of the stream.</li>
+</ol>
+<p>Use your own event format at step 3. It keeps your front-end independent of any one model provider, and it gives you a place for status updates, sources and errors.</p>
+
+<h2>Choosing a transport</h2>
+<div class="table-wrap"><table>
+<thead><tr><th>Option</th><th>Good for</th><th>Watch out for</th></tr></thead>
+<tbody>
+<tr><td>Server-sent events</td><td>One-way streams over ordinary HTTP, with a simple text format</td><td>The native <code>EventSource</code> API only makes GET requests and cannot set custom headers</td></tr>
+<tr><td>Fetch with a readable stream</td><td>POST bodies and auth headers, with direct control over parsing</td><td>You handle parsing and reconnection yourself</td></tr>
+<tr><td>WebSockets</td><td>Frequent two-way messages on a long-lived connection</td><td>More connection management and sometimes extra infrastructure work</td></tr>
+</tbody>
+</table></div>
+<p>A common choice for chat is to send a POST request using <code>fetch</code> and have the server respond in the server-sent events format, which allows a request body and an authorisation header. Long prompts should not go in a URL in any case, since URLs tend to end up in logs. If a separate step creates the run, <code>EventSource</code> can connect to a URL for that run, using cookie-based authentication.</p>
+
+<h2>Designing the events</h2>
+<p>Forwarding raw text works until you need anything else. Typed events keep the protocol clear:</p>
+<pre><code>event: status
+data: {"message": "Searching documents"}
+
+event: token
+data: {"text": "The refund "}
+
+event: sources
+data: {"items": [{"id": "doc-12", "title": "Refund policy"}]}
+
+event: done
+data: {"message_id": "m_123", "finish_reason": "stop"}</code></pre>
+<p>The example is illustrative, and the field names are yours to define. Encoding each payload as JSON matters because a raw newline in generated text would otherwise break the line-based format. A blank line ends each event. An explicit <code>done</code> event also lets the client distinguish a complete response from a connection that simply dropped.</p>
+
+<h2>The backend</h2>
+<p>The server side is essentially a generator that forwards chunks, with care taken at the edges. Here is a framework-neutral sketch using placeholder functions:</p>
+<pre><code># Illustrative only. model_stream, save_message and log_failure
+# are placeholders; model_stream is an async generator.
+import json
+
+def sse(event, payload):
+    return f"event: {event}\ndata: {json.dumps(payload)}\n\n"
+
+async def stream_answer(request, prompt):
+    parts = []
+    finished = False
+    stream = model_stream(prompt)
+    try:
+        async for text in stream:
+            if await request.is_disconnected():
+                return
+            parts.append(text)
+            yield sse("token", {"text": text})
+        finished = True
+    except Exception:
+        log_failure(request)
+        yield sse("error", {"message": "The response could not be completed."})
+    finally:
+        await stream.aclose()  # leaving the loop does not close it
+        message_id = await save_message("".join(parts), complete=finished)
+
+    if finished:
+        yield sse("done", {"message_id": message_id, "finish_reason": "stop"})</code></pre>
+<p>Details to handle:</p>
+<ul>
+<li><strong>Headers commit early.</strong> Once streaming has begun, the HTTP status has already been sent. Later failures have to be reported as events, so complete authentication and validation first.</li>
+<li><strong>Disconnects are only noticed between chunks.</strong> The check above runs when a chunk arrives, so a stalled model call also needs a timeout, and some servers offer a cancellation signal that fires sooner.</li>
+<li><strong>Do not expose raw errors.</strong> Log the detail on the server and send a safe message to the browser.</li>
+<li><strong>Use non-blocking calls.</strong> In an async server, a blocking call inside the stream can hold up other users' requests.</li>
+<li><strong>Save partial output deliberately.</strong> Decide whether stopped responses are stored and marked as incomplete.</li>
+<li><strong>Enforce limits.</strong> Set a maximum output length, a generation timeout and a per-user limit on concurrent streams, because each one holds a connection open.</li>
+</ul>
+
+<p>For how a streaming route fits into a Python service as a whole, see <a href="/blog/serving-an-llm-app-with-fastapi/">serving an LLM app with FastAPI</a>.</p>
+
+<h2>Reading the stream in the browser</h2>
+<p>Network chunks do not line up with events. One read can contain half an event or several at once, and a multi-byte character can be split across reads. The parser therefore needs a buffer, and the decoder needs to be told more data is coming:</p>
+<pre><code>// Illustrative only. parseEvent and handleEvent are your own functions.
+async function readStream(prompt, signal) {
+  const response = await fetch("/api/chat", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ prompt }),
+    signal,
+  });
+  if (!response.ok) throw new Error("Request failed");
+
+  const reader = response.body.getReader();
+  const decoder = new TextDecoder();
+  let buffer = "";
+
+  while (true) {
+    const { value, done } = await reader.read();
+    if (done) break;
+    buffer += decoder.decode(value, { stream: true });
+
+    const events = buffer.split("\n\n");
+    buffer = events.pop(); // keep any incomplete event
+    events.forEach((raw) =&gt; handleEvent(parseEvent(raw)));
+  }
+}</code></pre>
+<p>If the loop ends without a <code>done</code> event, treat the response as interrupted, even though no exception occurred.</p>
+
+<h2>Rendering partial output</h2>
+<p>Partial text brings its own interface problems:</p>
+<ul>
+<li><strong>Batch updates.</strong> Re-rendering the whole message for each small chunk can make long responses sluggish. Collect incoming text and update the display on an animation frame or a short timer.</li>
+<li><strong>Incomplete Markdown.</strong> An unclosed code fence or half a link will look broken until the rest arrives. Use a parser that tolerates this, and accept that the formatting may shift as text arrives.</li>
+<li><strong>Sanitise before rendering.</strong> Model output is untrusted. Sanitise any HTML generated from Markdown, on each update, and consider restricting links and images. <a href="/blog/llm-guardrails-and-prompt-injection-defence/">LLM guardrails and prompt injection defence</a> explains how a rendered image can leak data.</li>
+<li><strong>Respect scrolling.</strong> Follow new text only while the user is at the bottom. If they scroll up to read, stop moving the page.</li>
+<li><strong>Consider accessibility.</strong> Announcing each fragment through a live region can overwhelm screen reader users. Announcing status changes and the finished message is usually more workable. Test this with real assistive technology.</li>
+<li><strong>Prevent overflow.</strong> Long code lines should scroll inside their own block, so the page does not widen on a phone.</li>
+</ul>
+
+<h2>Cancellation and interrupted streams</h2>
+<p>A stop button should do more than hide the text. Calling <code>abort()</code> on an <code>AbortController</code> ends the browser's request, and the server should notice the disconnect and cancel the upstream call. Otherwise the model may keep generating text that nobody will read.</p>
+<p>Disconnects happen unintentionally as well, on phones especially. For short answers, showing the partial text with a retry button may be enough. For long or expensive runs, it may be better to separate the work from the connection: a background job writes numbered events to storage, and the client reads from its last seen position after reconnecting. Server-sent events support this through event IDs and the <code>Last-Event-ID</code> header sent by <code>EventSource</code> on reconnection. Agent runs that pause for review, as discussed in <a href="/blog/human-in-the-loop-approval-for-ai-agents/">human-in-the-loop approval for AI agents</a>, generally need this separation.</p>
+
+<h2>Proxies and deployment</h2>
+<p>The most common surprise is a stream that works locally and arrives all at once in production. Check each hop:</p>
+<ul>
+<li><strong>Reverse proxies and CDNs</strong> may buffer responses unless configured otherwise.</li>
+<li><strong>Compression</strong> can hold back small chunks while it collects enough data to compress.</li>
+<li><strong>Idle timeouts</strong> may close a connection during a long silence, such as a slow tool call. Sending a periodic comment line as a heartbeat can keep it open.</li>
+<li><strong>Serverless limits</strong> on duration or response streaming vary by platform, so check them against your longest expected run.</li>
+</ul>
+
+<h2>Testing a stream</h2>
+<p>Replace the model with a stub that emits a scripted sequence, including splits inside events and multi-byte characters. Then test a mid-stream error, a dropped connection with no final event, a stop click, a slow first token and very long output. Network throttling in browser developer tools is useful for this, and a final check against the deployed environment is essential.</p>
+<p>For help building this layer, see <a href="/services/full-stack-development/">full stack development for AI products</a>.</p>
+      <h2>Frequently asked questions</h2>
+      <h3>Should I use SSE or WebSockets to stream LLM responses?</h3>
+      <p>Server-sent events are often enough, because the output flows one way and they run over ordinary HTTP. WebSockets make more sense if you already use them or need frequent two-way messages during a response, such as collaborative or voice features.</p>
+      <h3>Why does my LLM stream arrive all at once in production?</h3>
+      <p>Something between the server and browser is probably buffering the response, such as a reverse proxy, load balancer, CDN or compression layer. Test the deployed environment and check each hop's settings for streaming responses.</p>
+      <h3>Can I stream structured JSON from an LLM?</h3>
+      <p>You can, but partial JSON is not valid until it is complete. A tolerant parser can show progress, but any logic that depends on the data should wait for the finished output and validate it against a schema.</p>
+      <h3>How do I stop generation when the user clicks stop?</h3>
+      <p>Abort the browser request, detect the disconnect on the server and cancel the upstream model call. Check your provider's behaviour too, since closing the connection may not always stop generation or billing in the way you expect.</p>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="foot-cta">
+      <div>
+        <h2>Have an AI or full stack project in mind?</h2>
+        <p>Tell me what you want to build.</p>
+      </div>
+      <div class="foot-cta-btns">
+        <a class="btn" href="/#contact">Start a conversation</a>
+        <a class="btn btn-line" href="mailto:shivanigupta4876@gmail.com">Send an email</a>
+      </div>
+    </div>
+    <div class="foot-grid">
+      <div>
+        <a href="/" aria-label="Shivani, home"><img src="/assets/logo.svg" alt="Shivani" width="144" height="40"></a>
+        <p>AI/ML engineer working across generative AI, LLMs, RAG, agentic AI and NLP, plus full stack development.</p>
+        <span class="avail">Taking new projects</span>
+      </div>
+      <div>
+        <h3>Explore</h3>
+        <ul>
+          <li><a href="/services/">Services</a></li>
+          <li><a href="/#work">Projects</a></li>
+          <li><a href="/#process">Process</a></li>
+          <li><a href="/#faq">FAQ</a></li>
+          <li><a href="/blog/">Blog</a></li>
+          <li><a href="/#contact">Contact</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Services</h3>
+        <ul>
+          <li><a href="/services/generative-ai-llm-development/">Generative AI and LLMs</a></li>
+          <li><a href="/services/rag-development/">RAG development</a></li>
+          <li><a href="/services/multi-agent-systems/">Multi-agent systems</a></li>
+          <li><a href="/services/ai-orchestration-langgraph/">Orchestration with LangGraph</a></li>
+          <li><a href="/services/nlp-development/">NLP development</a></li>
+          <li><a href="/services/full-stack-development/">Full stack development</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Contact</h3>
+        <ul>
+          <li><a href="mailto:shivanigupta4876@gmail.com">shivanigupta4876@gmail.com</a></li>
+          <li><a href="tel:+919720466504">+91 97204 66504</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="foot-bottom">&copy; <span id="year">2026</span> Shivani. All rights reserved.</div>
+  </div>
+</footer>
+<a class="wa-float" href="https://wa.me/919720466504?text=Hi%20Shivani%2C%20I%20saw%20your%20website%20and%20would%20like%20to%20talk%20about%20a%20project." target="_blank" rel="noopener" aria-label="Chat on WhatsApp"><svg viewBox="0 0 24 24" width="28" height="28" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15L2 22l5.1-1.3A10 10 0 1 0 12 2zm0 18.2a8.2 8.2 0 0 1-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1a6.700 6.700 0 0 1-3.300-2.900c-.2-.3 0-.4.1-.6l.4-.4.2-.4v-.5l-.8-1.800c-.2-.5-.4-.4-.6-.4h-.5c-.2 0-.4.1-.6.3-.2.2-.8.8-.8 2s.9 2.300 1 2.500c.1.2 1.700 2.600 4.100 3.600 1.500.7 2.100.7 2.900.6.500-.1 1.500-.6 1.700-1.200.2-.6.2-1.100.1-1.200l-.2-.2z"/></svg></a>
+<script src="/assets/js/site.js" defer></script>
+</body>
+</html>

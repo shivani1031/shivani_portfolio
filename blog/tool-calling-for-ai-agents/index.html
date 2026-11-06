@@ -1,0 +1,219 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tool Calling for AI Agents: Reliable Tools | Shivani</title>
+<meta name="description" content="Design reliable tools for AI agents: clear schemas and descriptions, argument validation, useful errors, idempotent side effects, limits and testing.">
+<meta name="robots" content="index,follow">
+<meta name="author" content="Shivani">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<link rel="manifest" href="/site.webmanifest">
+<meta name="theme-color" content="#080b0f">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Tool Calling for AI Agents: Reliable Tools | Shivani">
+<meta property="og:description" content="Design reliable tools for AI agents: clear schemas and descriptions, argument validation, useful errors, idempotent side effects, limits and testing.">
+<meta property="og:image" content="/assets/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Tool calling for AI agents: designing reliable tools","description":"Design reliable tools for AI agents: clear schemas and descriptions, argument validation, useful errors, idempotent side effects, limits and testing.","mainEntityOfPage":"/blog/tool-calling-for-ai-agents/","author":{"@type":"Person","name":"Shivani"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"/"},{"@type":"ListItem","position":2,"name":"Blog","item":"/blog/"},{"@type":"ListItem","position":3,"name":"Tool calling for AI agents: designing reliable tools","item":"/blog/tool-calling-for-ai-agents/"}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Does the model run the tool itself?","acceptedAnswer":{"@type":"Answer","text":"No. In standard tool calling the model returns a structured request, and your application decides whether to run it. That is why validation, permissions and approval checks belong in your code."}},{"@type":"Question","name":"How many tools should an agent have?","acceptedAnswer":{"@type":"Answer","text":"There is no fixed number. Keep the list as short as the job allows, since each tool uses context and adds another way to choose wrongly. If selection suffers, merge tools, load them by step or review the descriptions."}},{"@type":"Question","name":"What should a tool return when it fails?","acceptedAnswer":{"@type":"Answer","text":"Return a structured result saying what went wrong and whether retrying could help, along with a suggested next step where there is one. Handle temporary faults in code where possible, and keep stack traces out of the model's context."}},{"@type":"Question","name":"How do I stop an agent repeating an action?","acceptedAnswer":{"@type":"Answer","text":"Make state-changing tools idempotent, typically with a key per intended action, so that a repeat returns the first result. Add step limits and loop detection around the agent as well."}}]}</script>
+<!-- TODO once the domain is known: canonical, absolute og:url and og:image, absolute URLs in JSON-LD -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&family=Poppins:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+<header class="nav">
+  <div class="wrap nav-in">
+    <a class="logo" href="/" aria-label="Shivani, home"><img src="/assets/logo.svg" alt="Shivani" width="144" height="40"></a>
+    <nav id="nav-links" aria-label="Main">
+      <a href="/#services">Services</a>
+      <a href="/#skills">Skills</a>
+      <a href="/#work">Work</a>
+      <a href="/#process">Process</a>
+      <a href="/#faq">FAQ</a>
+      <a href="/blog/">Blog</a>
+      <a class="btn btn-sm" href="/#contact">Hire Me</a>
+    </nav>
+    <button id="menu-toggle" class="menu-toggle" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="nav-links"><span></span><span></span><span></span></button>
+  </div>
+</header>
+
+<main id="top">
+  <section class="page-head">
+    <div class="wrap">
+      <nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a><span aria-hidden="true">/</span><a href="/blog/">Blog</a><span aria-hidden="true">/</span><span aria-current="page">Tool calling for AI agents: designing reliable tools</span></nav>
+      <p class="eyebrow">Guide</p>
+      <h1>Tool calling for AI agents: designing reliable tools</h1>
+      <p class="lead">In tool calling, the model requests a tool by name and arguments, and your application decides whether to run it. Reliable tools have a narrow purpose, clear descriptions and schemas, validated arguments, errors the model can act on and side effects that are safe to repeat.</p>
+    </div>
+  </section>
+  <section class="article">
+    <div class="wrap prose">
+<h2>How tool calling works</h2>
+<p>A model cannot run code or reach your database. In tool calling, your application tells the model which tools exist, usually as a name, a description and a schema of parameters. When the model decides that one would help, it returns a structured request naming the tool and its arguments. Your code then decides whether to run it, carries it out and sends back the result. The model uses that result to continue or to finish.</p>
+<p>Exact formats vary between providers and frameworks, but the important point does not: <strong>the model proposes and your application executes.</strong> That boundary is where reliability and security are enforced. It also means that a tool's definition is effectively a piece of the prompt, and that its implementation is an API whose caller is imaginative, sometimes careless and occasionally manipulated.</p>
+
+<h2>Designing the tool's interface</h2>
+<h3>Choose a clear, narrow purpose</h3>
+<p>One tool should do one recognisable job. A general <code>manage_order</code> tool with an action parameter asks the model to make two decisions at once and makes permissions harder to separate. <code>get_order_status</code> and <code>cancel_order</code> are easier to choose between, easier to test and can be governed differently. The opposite mistake also exists: exposing every internal endpoint forces the model to assemble long chains of low-level calls. Aim for tools that match a task a user would recognise, and combine steps that always occur together.</p>
+<h3>Write descriptions for the reader that will use them</h3>
+<p>The model chooses tools largely from their names and descriptions. A good description says what the tool does, when to use it, when not to use it and what it returns. If two tools could be confused, say how they differ. Consistent naming helps too, particularly once the list grows.</p>
+<h3>Make parameters hard to get wrong</h3>
+<ul>
+<li><strong>Use enumerations</strong> for fixed sets of values rather than free text.</li>
+<li><strong>Prefer flat, simple structures.</strong> Deep nesting invites errors.</li>
+<li><strong>State formats and units</strong> in the schema, such as an ISO 8601 date or an amount in the smallest currency unit.</li>
+<li><strong>Avoid opaque values the model has no way of knowing.</strong> It should not be guessing an internal ID. Provide a lookup tool, and have your code supply whatever it already knows.</li>
+<li><strong>Do not ask the model for identity or permissions.</strong> The user's ID should come from the authenticated session, never from a model-supplied argument that could be altered.</li>
+</ul>
+<p>Here is an illustrative, generic definition; each provider and framework has its own exact format:</p>
+<pre><code>{
+  "name": "search_orders",
+  "description": "Find the current user's orders by status or date. Use before cancel_order if the order ID is unknown. Returns at most 10 orders, newest first.",
+  "parameters": {
+    "type": "object",
+    "properties": {
+      "status": {
+        "type": "string",
+        "enum": ["open", "shipped", "delivered", "cancelled"]
+      },
+      "placed_after": {
+        "type": "string",
+        "description": "Earliest order date as YYYY-MM-DD"
+      }
+    }
+  }
+}</code></pre>
+<h3>Keep the tool list as short as possible</h3>
+<p>Each additional tool takes up context and gives the model another way to choose wrongly. If an agent has accumulated too many, consider loading only those relevant to the current step or dividing responsibilities. The guide on <a href="/blog/single-agent-vs-multi-agent-systems/">single agent vs multi-agent systems</a> covers when dividing is justified, since a confused tool list is not always a reason to add more agents.</p>
+
+<h2>Validate before you execute</h2>
+<p>Treat arguments as untrusted input, including when a structured output feature is used. Check them against the schema, then apply checks that a schema cannot express: does this order belong to this user? Is the amount within limits? Is this state change allowed?</p>
+<p>Rejecting a bad call is usually better than repairing it silently. A silent "fix" can turn a wrong request into a wrong action that nobody can see.</p>
+
+<p>A tool that runs generated queries needs particular care, as explained in <a href="/blog/text-to-sql-agents-risks-and-safeguards/">text-to-SQL agents: risks and safeguards</a>.</p>
+
+<h2>Return errors the model can act on</h2>
+<p>When a tool fails, the error is an instruction for what comes next. An unhandled stack trace wastes context and can reveal internal details, while a vague "failed" tends to produce blind retries. Return a structured result that says what happened and whether trying again could help:</p>
+<pre><code># Illustrative only. A consistent result shape for every tool.
+def cancel_order(order_id, session):
+    order = find_order(order_id, session.user_id)
+    if order is None:
+        return {
+            "ok": False,
+            "error": "order_not_found",
+            "retryable": False,
+            "message": "No order with this ID for the current user. "
+                       "Use search_orders to find the right ID.",
+        }
+    if order.status == "cancelled":
+        return {"ok": True, "order_id": order.id, "status": "cancelled"}
+    if order.status != "open":
+        return {
+            "ok": False,
+            "error": "not_cancellable",
+            "retryable": False,
+            "message": f"An order that is {order.status} cannot be cancelled.",
+        }
+    apply_cancellation(order)
+    return {"ok": True, "order_id": order.id, "status": "cancelled"}</code></pre>
+<p>Separate the outcomes a tool can have. <strong>Empty</strong> is not a failure: "no matching orders" is valid information. <strong>Invalid arguments</strong> can be corrected by the model. <strong>Temporary faults</strong> such as a timeout are best retried by your code with backoff before the model ever hears about them. <strong>Permanent or policy refusals</strong> should clearly discourage another attempt.</p>
+
+<h2>Make side effects safe</h2>
+<p>Agents repeat themselves. A model may call a tool twice, a retry may follow a timeout on a request that actually succeeded, or a run may resume from a checkpoint and redo its last step. For anything that changes state, this needs handling on purpose.</p>
+<ul>
+<li><strong>Use idempotency keys.</strong> Create a key per intended action in your code, and have the operation return the original result when it sees the same key again.</li>
+<li><strong>Separate preparing from committing.</strong> A tool can draft an email or calculate a refund, and a separate step can send or apply it. This creates a natural place for review.</li>
+<li><strong>Grade tools by risk.</strong> Reads, reversible writes and irreversible actions deserve different treatment. Sensitive ones can require <a href="/blog/human-in-the-loop-approval-for-ai-agents/">human approval</a> before they run, enforced in the execution layer rather than requested in a prompt.</li>
+<li><strong>Grant the least privilege.</strong> Credentials belong to the tool layer, scoped to the current user and task, and never appear in the prompt. <a href="/blog/llm-guardrails-and-prompt-injection-defence/">LLM guardrails and prompt injection defence</a> explains why this matters so much when an agent also reads untrusted content.</li>
+</ul>
+
+<h2>Keep results useful and small</h2>
+<p>Tool results go into the context, where they use up space and influence the next decision. Return what the model needs, not a full database record. Paginate lists, say when results have been cut short, and offer a way to fetch more. An agent told "showing 10 of 240" behaves differently from one that assumes it has seen everything.</p>
+<p>Results may also contain text from outside your system, such as emails or web pages. The model cannot reliably separate data from instructions, so assume such text may try to steer it, and keep risky tools away from the same step where you can. What the agent retains from these results afterwards is a separate decision, covered in <a href="/blog/agent-memory-short-term-and-long-term-state/">agent memory: short-term and long-term state</a>.</p>
+
+<h2>Control the loop around the tools</h2>
+<p>Well-designed tools still need limits around them:</p>
+<ul>
+<li><strong>Step limits.</strong> Cap the number of model turns and tool calls per run, and handle reaching the limit gracefully.</li>
+<li><strong>Timeouts.</strong> Give each tool a timeout, as well as the run as a whole. A hanging call should not hang the agent.</li>
+<li><strong>Loop detection.</strong> Repeated identical calls that keep returning the same result are a sign to stop or escalate.</li>
+<li><strong>Parallel call rules.</strong> Some models can request several tools at once. Parallel reads are usually fine, but writes that depend on each other need ordering, or parallel calls should be turned off.</li>
+<li><strong>Tracing.</strong> Log each call's name, arguments, result, duration and outcome, with sensitive values redacted. Without this, you cannot explain what an agent did.</li>
+</ul>
+
+<h2>Testing tools at two levels</h2>
+<p><strong>Test the tool as ordinary code.</strong> Unit tests should cover valid input, invalid input, permission failures, empty results, timeouts and repeated calls. These need no model and run quickly.</p>
+<p><strong>Test how the model uses it.</strong> Build a set of realistic requests alongside the tool, and the arguments you would expect for each. Include requests that should use no tool, and pairs that could be confused. Check selection and arguments separately, and repeat the runs, because output can vary. Re-run the set whenever you edit a description, add a tool or change a model, as a one-sentence change to a description can alter behaviour elsewhere.</p>
+<p>Finally, read real traces. Patterns such as one tool being retried repeatedly or a useful tool never being chosen often point to a description or schema problem, not a model problem. For help designing agents with controlled tools and visible limits, see <a href="/services/multi-agent-systems/">multi-agent systems development</a>.</p>
+      <h2>Frequently asked questions</h2>
+      <h3>Does the model run the tool itself?</h3>
+      <p>No. In standard tool calling the model returns a structured request, and your application decides whether to run it. That is why validation, permissions and approval checks belong in your code.</p>
+      <h3>How many tools should an agent have?</h3>
+      <p>There is no fixed number. Keep the list as short as the job allows, since each tool uses context and adds another way to choose wrongly. If selection suffers, merge tools, load them by step or review the descriptions.</p>
+      <h3>What should a tool return when it fails?</h3>
+      <p>Return a structured result saying what went wrong and whether retrying could help, along with a suggested next step where there is one. Handle temporary faults in code where possible, and keep stack traces out of the model's context.</p>
+      <h3>How do I stop an agent repeating an action?</h3>
+      <p>Make state-changing tools idempotent, typically with a key per intended action, so that a repeat returns the first result. Add step limits and loop detection around the agent as well.</p>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="foot-cta">
+      <div>
+        <h2>Have an AI or full stack project in mind?</h2>
+        <p>Tell me what you want to build.</p>
+      </div>
+      <div class="foot-cta-btns">
+        <a class="btn" href="/#contact">Start a conversation</a>
+        <a class="btn btn-line" href="mailto:shivanigupta4876@gmail.com">Send an email</a>
+      </div>
+    </div>
+    <div class="foot-grid">
+      <div>
+        <a href="/" aria-label="Shivani, home"><img src="/assets/logo.svg" alt="Shivani" width="144" height="40"></a>
+        <p>AI/ML engineer working across generative AI, LLMs, RAG, agentic AI and NLP, plus full stack development.</p>
+        <span class="avail">Taking new projects</span>
+      </div>
+      <div>
+        <h3>Explore</h3>
+        <ul>
+          <li><a href="/services/">Services</a></li>
+          <li><a href="/#work">Projects</a></li>
+          <li><a href="/#process">Process</a></li>
+          <li><a href="/#faq">FAQ</a></li>
+          <li><a href="/blog/">Blog</a></li>
+          <li><a href="/#contact">Contact</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Services</h3>
+        <ul>
+          <li><a href="/services/generative-ai-llm-development/">Generative AI and LLMs</a></li>
+          <li><a href="/services/rag-development/">RAG development</a></li>
+          <li><a href="/services/multi-agent-systems/">Multi-agent systems</a></li>
+          <li><a href="/services/ai-orchestration-langgraph/">Orchestration with LangGraph</a></li>
+          <li><a href="/services/nlp-development/">NLP development</a></li>
+          <li><a href="/services/full-stack-development/">Full stack development</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Contact</h3>
+        <ul>
+          <li><a href="mailto:shivanigupta4876@gmail.com">shivanigupta4876@gmail.com</a></li>
+          <li><a href="tel:+919720466504">+91 97204 66504</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="foot-bottom">&copy; <span id="year">2026</span> Shivani. All rights reserved.</div>
+  </div>
+</footer>
+<a class="wa-float" href="https://wa.me/919720466504?text=Hi%20Shivani%2C%20I%20saw%20your%20website%20and%20would%20like%20to%20talk%20about%20a%20project." target="_blank" rel="noopener" aria-label="Chat on WhatsApp"><svg viewBox="0 0 24 24" width="28" height="28" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15L2 22l5.1-1.3A10 10 0 1 0 12 2zm0 18.2a8.2 8.2 0 0 1-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1a6.700 6.700 0 0 1-3.300-2.900c-.2-.3 0-.4.1-.6l.4-.4.2-.4v-.5l-.8-1.800c-.2-.5-.4-.4-.6-.4h-.5c-.2 0-.4.1-.6.3-.2.2-.8.8-.8 2s.9 2.300 1 2.500c.1.2 1.700 2.600 4.100 3.600 1.500.7 2.100.7 2.900.6.500-.1 1.500-.6 1.700-1.200.2-.6.2-1.100.1-1.200l-.2-.2z"/></svg></a>
+<script src="/assets/js/site.js" defer></script>
+</body>
+</html>

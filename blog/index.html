@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AI Engineering Guides and Blog | Shivani</title>
+<meta name="description" content="Technical guides on RAG, chunking, single and multi-agent systems, LangGraph orchestration and adding LLM features to full stack applications.">
+<meta name="robots" content="index,follow">
+<meta name="author" content="Shivani">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<link rel="manifest" href="/site.webmanifest">
+<meta name="theme-color" content="#080b0f">
+<meta property="og:type" content="website">
+<meta property="og:title" content="AI Engineering Guides and Blog | Shivani">
+<meta property="og:description" content="Technical guides on RAG, chunking, single and multi-agent systems, LangGraph orchestration and adding LLM features to full stack applications.">
+<meta property="og:image" content="/assets/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"/"},{"@type":"ListItem","position":2,"name":"Blog","item":"/blog/"}]}</script>
+<!-- TODO once the domain is known: canonical, absolute og:url and og:image, absolute URLs in JSON-LD -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&family=Poppins:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+<header class="nav">
+  <div class="wrap nav-in">
+    <a class="logo" href="/" aria-label="Shivani, home"><img src="/assets/logo.svg" alt="Shivani" width="144" height="40"></a>
+    <nav id="nav-links" aria-label="Main">
+      <a href="/#services">Services</a>
+      <a href="/#skills">Skills</a>
+      <a href="/#work">Work</a>
+      <a href="/#process">Process</a>
+      <a href="/#faq">FAQ</a>
+      <a href="/blog/">Blog</a>
+      <a class="btn btn-sm" href="/#contact">Hire Me</a>
+    </nav>
+    <button id="menu-toggle" class="menu-toggle" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="nav-links"><span></span><span></span><span></span></button>
+  </div>
+</header>
+
+<main id="top">
+  <section class="page-head">
+    <div class="wrap">
+      <nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a><span aria-hidden="true">/</span><span aria-current="page">Blog</span></nav>
+      <p class="eyebrow">Blog</p>
+      <h1>Technical guides on building with AI</h1>
+      <p class="lead">Practical explanations of RAG, agents, orchestration and LLM features, focused on trade-offs and design decisions.</p>
+    </div>
+  </section>
+  <section class="article">
+    <div class="wrap">
+      <div class="grid">
+        <article class="card"><h2 class="card-title"><a href="/blog/what-is-rag-and-when-to-use-it/">What RAG is and when to use it</a></h2><p>How retrieval-augmented generation lets a language model answer from your content, and how to tell whether your project needs it.</p></article>
+        <article class="card"><h2 class="card-title"><a href="/blog/single-agent-vs-multi-agent-systems/">Single agent vs multi-agent systems</a></h2><p>The trade-offs between one agent and several, the coordination patterns involved and a step-by-step way to choose.</p></article>
+        <article class="card"><h2 class="card-title"><a href="/blog/building-an-orchestrator-with-langgraph/">Building an orchestrator with LangGraph</a></h2><p>A worked support-router example covering state, nodes, conditional routing, checkpointing and human review.</p></article>
+        <article class="card"><h2 class="card-title"><a href="/blog/choosing-chunking-strategies-for-rag/">Choosing chunking strategies for RAG</a></h2><p>Fixed-size, recursive, structure-aware, semantic and parent-child chunking compared, with an experiment for choosing between them.</p></article>
+        <article class="card"><h2 class="card-title"><a href="/blog/adding-an-llm-feature-to-a-full-stack-app/">Adding an LLM feature to a full stack app</a></h2><p>The backend, interface, security, cost and rollout decisions around a model call, with a checklist to finish on.</p></article>
+        <article class="card"><h2 class="card-title"><a href="/blog/how-to-evaluate-a-rag-system/">How to evaluate a RAG system</a></h2><p>A practical method for measuring a RAG system: building a test set, scoring retrieval and answers separately, and turning failures into specific fixes.</p></article>
+        <article class="card"><h2 class="card-title"><a href="/blog/human-in-the-loop-approval-for-ai-agents/">Human-in-the-loop approval for AI agents</a></h2><p>How to pause an agent for human approval: deciding what to gate, resuming safely, showing reviewers the right information and avoiding approval fatigue.</p></article>
+        <article class="card"><h2 class="card-title"><a href="/blog/hybrid-search-and-reranking-for-rag/">Hybrid search and reranking for RAG</a></h2><p>How to combine keyword and vector search, merge their rankings with reciprocal rank fusion, and decide whether a reranker is worth its extra latency.</p></article>
+        <article class="card"><h2 class="card-title"><a href="/blog/streaming-llm-responses-to-a-web-ui/">Streaming LLM responses to a web UI</a></h2><p>A practical path from model to browser: choosing a transport, designing events, rendering partial Markdown safely, and handling cancellation, errors and proxies.</p></article>
+        <article class="card"><h2 class="card-title"><a href="/blog/llm-guardrails-and-prompt-injection-defence/">LLM guardrails and prompt injection defence</a></h2><p>What prompt injection is, why filters alone cannot stop it, and how to layer permissions, output handling, approval and testing so that a manipulated model can do little harm.</p></article>
+        <article class="card"><h2 class="card-title"><a href="/blog/text-classification-llms-vs-traditional-nlp/">Text classification with LLMs vs traditional NLP</a></h2><p>How LLMs compare with rules, linear models, embeddings and fine-tuned transformers for classifying text, how to test them fairly and when to combine them.</p></article>
+        <article class="card"><h2 class="card-title"><a href="/blog/named-entity-recognition-and-data-extraction-with-llms/">Named entity recognition and data extraction with LLMs</a></h2><p>When to use an LLM for entity and data extraction, and how to design schemas, validate output, catch invented values and measure quality field by field.</p></article>
+        <article class="card"><h2 class="card-title"><a href="/blog/agent-memory-short-term-and-long-term-state/">Agent memory: short-term and long-term state</a></h2><p>How to manage state within an agent run and decide what to keep long term, including retrieval, conflicts, forgetting and the security risks of persistent memory.</p></article>
+        <article class="card"><h2 class="card-title"><a href="/blog/tool-calling-for-ai-agents/">Tool calling for AI agents: designing reliable tools</a></h2><p>How to design tools that agents use correctly: clear descriptions and schemas, validation, actionable errors, idempotent side effects, loop limits and testing.</p></article>
+        <article class="card"><h2 class="card-title"><a href="/blog/building-a-backend-api-for-an-ai-agent-in-python/">Building a backend API for an AI agent in Python</a></h2><p>Framework-neutral concepts for a Python agent backend: modelling runs, state machines, background work, idempotency, permissions, cancellation, limits and testing.</p></article>
+        <article class="card"><h2 class="card-title"><a href="/blog/langchain-vs-langgraph-when-to-use-each/">LangChain vs LangGraph: when to use each</a></h2><p>A decision guide based on control flow: what each library is for, how they work together, the signs you have outgrown a simple chain and when to use neither.</p></article>
+        <article class="card"><h2 class="card-title"><a href="/blog/serving-an-llm-app-with-fastapi/">Serving an LLM app with FastAPI: structure and async</a></h2><p>FastAPI-specific structure and async patterns for LLM services: project layout, shared clients, avoiding a blocked event loop, concurrency limits, timeouts and disconnects.</p></article>
+        <article class="card"><h2 class="card-title"><a href="/blog/embeddings-and-choosing-a-vector-database/">Embeddings and choosing a vector database</a></h2><p>What embeddings are, how to compare embedding models on your own data and the criteria that matter when choosing a vector store, including when your existing database is enough.</p></article>
+        <article class="card"><h2 class="card-title"><a href="/blog/text-to-sql-agents-risks-and-safeguards/">Text-to-SQL agents: risks and safeguards</a></h2><p>The risks of letting an LLM write SQL and the layered safeguards that reduce them: database permissions, tenant isolation, query validation, resource limits and accuracy testing.</p></article>
+        <article class="card"><h2 class="card-title"><a href="/blog/controlling-llm-cost-and-latency/">Controlling LLM cost and latency</a></h2><p>Techniques for reducing what an LLM application spends and how long it takes: measuring by step, trimming context, model routing, caching, output limits, streaming and agent loop controls.</p></article>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="foot-cta">
+      <div>
+        <h2>Have an AI or full stack project in mind?</h2>
+        <p>Tell me what you want to build.</p>
+      </div>
+      <div class="foot-cta-btns">
+        <a class="btn" href="/#contact">Start a conversation</a>
+        <a class="btn btn-line" href="mailto:shivanigupta4876@gmail.com">Send an email</a>
+      </div>
+    </div>
+    <div class="foot-grid">
+      <div>
+        <a href="/" aria-label="Shivani, home"><img src="/assets/logo.svg" alt="Shivani" width="144" height="40"></a>
+        <p>AI/ML engineer working across generative AI, LLMs, RAG, agentic AI and NLP, plus full stack development.</p>
+        <span class="avail">Taking new projects</span>
+      </div>
+      <div>
+        <h3>Explore</h3>
+        <ul>
+          <li><a href="/services/">Services</a></li>
+          <li><a href="/#work">Projects</a></li>
+          <li><a href="/#process">Process</a></li>
+          <li><a href="/#faq">FAQ</a></li>
+          <li><a href="/blog/">Blog</a></li>
+          <li><a href="/#contact">Contact</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Services</h3>
+        <ul>
+          <li><a href="/services/generative-ai-llm-development/">Generative AI and LLMs</a></li>
+          <li><a href="/services/rag-development/">RAG development</a></li>
+          <li><a href="/services/multi-agent-systems/">Multi-agent systems</a></li>
+          <li><a href="/services/ai-orchestration-langgraph/">Orchestration with LangGraph</a></li>
+          <li><a href="/services/nlp-development/">NLP development</a></li>
+          <li><a href="/services/full-stack-development/">Full stack development</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Contact</h3>
+        <ul>
+          <li><a href="mailto:shivanigupta4876@gmail.com">shivanigupta4876@gmail.com</a></li>
+          <li><a href="tel:+919720466504">+91 97204 66504</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="foot-bottom">&copy; <span id="year">2026</span> Shivani. All rights reserved.</div>
+  </div>
+</footer>
+<a class="wa-float" href="https://wa.me/919720466504?text=Hi%20Shivani%2C%20I%20saw%20your%20website%20and%20would%20like%20to%20talk%20about%20a%20project." target="_blank" rel="noopener" aria-label="Chat on WhatsApp"><svg viewBox="0 0 24 24" width="28" height="28" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15L2 22l5.1-1.3A10 10 0 1 0 12 2zm0 18.2a8.2 8.2 0 0 1-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1a6.700 6.700 0 0 1-3.300-2.900c-.2-.3 0-.4.1-.6l.4-.4.2-.4v-.5l-.8-1.800c-.2-.5-.4-.4-.6-.4h-.5c-.2 0-.4.1-.6.3-.2.2-.8.8-.8 2s.9 2.300 1 2.500c.1.2 1.700 2.600 4.100 3.600 1.500.7 2.100.7 2.900.6.500-.1 1.500-.6 1.700-1.200.2-.6.2-1.100.1-1.200l-.2-.2z"/></svg></a>
+<script src="/assets/js/site.js" defer></script>
+</body>
+</html>

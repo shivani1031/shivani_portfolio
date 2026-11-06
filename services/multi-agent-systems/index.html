@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Multi-Agent Systems Development | Shivani</title>
+<meta name="description" content="Multi-agent systems development: specialised agents, shared state, tool access and guardrails, including when a single agent is the better choice.">
+<meta name="robots" content="index,follow">
+<meta name="author" content="Shivani">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<link rel="manifest" href="/site.webmanifest">
+<meta name="theme-color" content="#080b0f">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Multi-Agent Systems Development | Shivani">
+<meta property="og:description" content="Multi-agent systems development: specialised agents, shared state, tool access and guardrails, including when a single agent is the better choice.">
+<meta property="og:image" content="/assets/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"/"},{"@type":"ListItem","position":2,"name":"Services","item":"/services/"},{"@type":"ListItem","position":3,"name":"Multi-agent systems development","item":"/services/multi-agent-systems/"}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"What is the difference between a multi-agent system and a chatbot?","acceptedAnswer":{"@type":"Answer","text":"A chatbot describes how a user interacts with software, through conversation. A multi-agent system describes how the work is carried out internally. A chatbot may use several agents behind the scenes, or none at all."}},{"@type":"Question","name":"When is a multi-agent design worth the extra work?","acceptedAnswer":{"@type":"Answer","text":"When you can name the boundary it serves, such as separate permissions, independent subtasks or instructions that conflict. Part of the design work is checking that reason first, and keeping one agent if it does not hold up."}},{"@type":"Question","name":"How do you keep agents from taking unwanted actions?","acceptedAnswer":{"@type":"Answer","text":"Common controls include limited tool permissions, validated inputs, step limits, audit logs and human approval for sensitive actions. Instructions alone should not be relied on as a security boundary."}},{"@type":"Question","name":"Do agents have to use the same model?","acceptedAnswer":{"@type":"Answer","text":"No. Different agents can use different models, for example a faster model for routing and a more capable one for harder reasoning, provided the extra complexity is worth it."}}]}</script>
+<!-- TODO once the domain is known: canonical, absolute og:url and og:image, absolute URLs in JSON-LD -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&family=Poppins:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+<header class="nav">
+  <div class="wrap nav-in">
+    <a class="logo" href="/" aria-label="Shivani, home"><img src="/assets/logo.svg" alt="Shivani" width="144" height="40"></a>
+    <nav id="nav-links" aria-label="Main">
+      <a href="/#services">Services</a>
+      <a href="/#skills">Skills</a>
+      <a href="/#work">Work</a>
+      <a href="/#process">Process</a>
+      <a href="/#faq">FAQ</a>
+      <a href="/blog/">Blog</a>
+      <a class="btn btn-sm" href="/#contact">Hire Me</a>
+    </nav>
+    <button id="menu-toggle" class="menu-toggle" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="nav-links"><span></span><span></span><span></span></button>
+  </div>
+</header>
+
+<main id="top">
+  <section class="page-head">
+    <div class="wrap">
+      <nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a><span aria-hidden="true">/</span><a href="/services/">Services</a><span aria-hidden="true">/</span><span aria-current="page">Multi-agent systems development</span></nav>
+      <p class="eyebrow">Service</p>
+      <h1>Multi-agent systems development</h1>
+      <p class="lead">Systems in which specialised AI agents divide up a broad task, with clear responsibilities, controlled tools and visible limits.</p>
+    </div>
+  </section>
+  <section class="article">
+    <div class="wrap prose">
+<h2>What it is</h2>
+<p>An AI agent is an LLM-driven component that can decide on steps, call tools and act on the results. A multi-agent system uses several of these, each with a narrower role, its own instructions and a limited set of tools. A research agent might gather information, a retrieval agent might consult internal documents, and another agent might check the combined result.</p>
+<p>The agents need a way to coordinate. This is often handled by a supervisor or orchestrator that assigns work and tracks shared state, although other patterns, such as fixed pipelines or agents handing off to one another, are also used.</p>
+
+<h2>When it suits a project</h2>
+<p>A multi-agent design can help when a task covers distinct areas of work, when the subtasks need different tools or permissions, or when a single agent's instructions have become too long and tangled to manage. Separate roles can also be tested and improved independently.</p>
+<p>It also adds cost, latency and more places for things to fail. If a single agent with a few good tools can do the job, that is usually the better starting point. The guide <a href="/blog/single-agent-vs-multi-agent-systems/">single agent vs multi-agent systems</a> sets out this trade-off in more detail.</p>
+
+<h2>How it is typically approached</h2>
+<ul>
+<li><strong>Map the workflow.</strong> Break the task into steps and identify which truly need model judgement and which can be ordinary code.</li>
+<li><strong>Start small.</strong> Build the simplest version that could work, and split out a new agent only when there is a clear reason to do so.</li>
+<li><strong>Define the contracts.</strong> Give each agent a specific role, defined inputs and outputs, and only the tools it needs.</li>
+<li><strong>Choose a coordination pattern.</strong> Decide how work is routed and <a href="/blog/agent-memory-short-term-and-long-term-state/">what state is shared</a>. The <a href="/services/ai-orchestration-langgraph/">AI orchestration with LangGraph</a> page covers this layer.</li>
+<li><strong>Add guardrails.</strong> Set step limits, <a href="/blog/tool-calling-for-ai-agents/">validate tool inputs</a> and require <a href="/blog/human-in-the-loop-approval-for-ai-agents/">human approval</a> before sensitive or irreversible actions.</li>
+<li><strong>Make it observable.</strong> Trace each agent's decisions and tool calls, because debugging a multi-step run without a trace is very difficult.</li>
+<li><strong>Evaluate the whole and the parts.</strong> Test individual agents and complete runs, since each part can look fine while the combined result is poor.</li>
+</ul>
+
+<h2>What I can help with</h2>
+<p>I can help with deciding whether a multi-agent design is justified, designing roles and coordination, implementing the system in Python and LangGraph, and building the interface people use to interact with it. Knowledge access is often supplied through <a href="/services/rag-development/">RAG</a>.</p>
+      <h2>Frequently asked questions</h2>
+      <h3>What is the difference between a multi-agent system and a chatbot?</h3>
+      <p>A chatbot describes how a user interacts with software, through conversation. A multi-agent system describes how the work is carried out internally. A chatbot may use several agents behind the scenes, or none at all.</p>
+      <h3>When is a multi-agent design worth the extra work?</h3>
+      <p>When you can name the boundary it serves, such as separate permissions, independent subtasks or instructions that conflict. Part of the design work is checking that reason first, and keeping one agent if it does not hold up.</p>
+      <h3>How do you keep agents from taking unwanted actions?</h3>
+      <p>Common controls include limited tool permissions, validated inputs, step limits, audit logs and human approval for sensitive actions. Instructions alone should not be relied on as a security boundary.</p>
+      <h3>Do agents have to use the same model?</h3>
+      <p>No. Different agents can use different models, for example a faster model for routing and a more capable one for harder reasoning, provided the extra complexity is worth it.</p>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="foot-cta">
+      <div>
+        <h2>Have an AI or full stack project in mind?</h2>
+        <p>Tell me what you want to build.</p>
+      </div>
+      <div class="foot-cta-btns">
+        <a class="btn" href="/#contact">Start a conversation</a>
+        <a class="btn btn-line" href="mailto:shivanigupta4876@gmail.com">Send an email</a>
+      </div>
+    </div>
+    <div class="foot-grid">
+      <div>
+        <a href="/" aria-label="Shivani, home"><img src="/assets/logo.svg" alt="Shivani" width="144" height="40"></a>
+        <p>AI/ML engineer working across generative AI, LLMs, RAG, agentic AI and NLP, plus full stack development.</p>
+        <span class="avail">Taking new projects</span>
+      </div>
+      <div>
+        <h3>Explore</h3>
+        <ul>
+          <li><a href="/services/">Services</a></li>
+          <li><a href="/#work">Projects</a></li>
+          <li><a href="/#process">Process</a></li>
+          <li><a href="/#faq">FAQ</a></li>
+          <li><a href="/blog/">Blog</a></li>
+          <li><a href="/#contact">Contact</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Services</h3>
+        <ul>
+          <li><a href="/services/generative-ai-llm-development/">Generative AI and LLMs</a></li>
+          <li><a href="/services/rag-development/">RAG development</a></li>
+          <li><a href="/services/multi-agent-systems/">Multi-agent systems</a></li>
+          <li><a href="/services/ai-orchestration-langgraph/">Orchestration with LangGraph</a></li>
+          <li><a href="/services/nlp-development/">NLP development</a></li>
+          <li><a href="/services/full-stack-development/">Full stack development</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Contact</h3>
+        <ul>
+          <li><a href="mailto:shivanigupta4876@gmail.com">shivanigupta4876@gmail.com</a></li>
+          <li><a href="tel:+919720466504">+91 97204 66504</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="foot-bottom">&copy; <span id="year">2026</span> Shivani. All rights reserved.</div>
+  </div>
+</footer>
+<a class="wa-float" href="https://wa.me/919720466504?text=Hi%20Shivani%2C%20I%20saw%20your%20website%20and%20would%20like%20to%20talk%20about%20a%20project." target="_blank" rel="noopener" aria-label="Chat on WhatsApp"><svg viewBox="0 0 24 24" width="28" height="28" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15L2 22l5.1-1.3A10 10 0 1 0 12 2zm0 18.2a8.2 8.2 0 0 1-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1a6.700 6.700 0 0 1-3.300-2.900c-.2-.3 0-.4.1-.6l.4-.4.2-.4v-.5l-.8-1.800c-.2-.5-.4-.4-.6-.4h-.5c-.2 0-.4.1-.6.3-.2.2-.8.8-.8 2s.9 2.300 1 2.500c.1.2 1.700 2.600 4.100 3.600 1.500.7 2.100.7 2.900.6.500-.1 1.500-.6 1.700-1.200.2-.6.2-1.100.1-1.200l-.2-.2z"/></svg></a>
+<script src="/assets/js/site.js" defer></script>
+</body>
+</html>

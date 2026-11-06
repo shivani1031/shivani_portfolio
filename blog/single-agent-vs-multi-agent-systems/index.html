@@ -1,0 +1,212 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Single Agent vs Multi-Agent Systems | Shivani</title>
+<meta name="description" content="Compare single agent and multi-agent systems: how each works, the real trade-offs in cost, latency and debugging, and how to choose a design for your task.">
+<meta name="robots" content="index,follow">
+<meta name="author" content="Shivani">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<link rel="manifest" href="/site.webmanifest">
+<meta name="theme-color" content="#080b0f">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Single Agent vs Multi-Agent Systems | Shivani">
+<meta property="og:description" content="Compare single agent and multi-agent systems: how each works, the real trade-offs in cost, latency and debugging, and how to choose a design for your task.">
+<meta property="og:image" content="/assets/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Single agent vs multi-agent systems","description":"Compare single agent and multi-agent systems: how each works, the real trade-offs in cost, latency and debugging, and how to choose a design for your task.","mainEntityOfPage":"/blog/single-agent-vs-multi-agent-systems/","author":{"@type":"Person","name":"Shivani"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"/"},{"@type":"ListItem","position":2,"name":"Blog","item":"/blog/"},{"@type":"ListItem","position":3,"name":"Single agent vs multi-agent systems","item":"/blog/single-agent-vs-multi-agent-systems/"}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Is a multi-agent system more accurate than a single agent?","acceptedAnswer":{"@type":"Answer","text":"Not inherently. Focused roles and independent review can help on some tasks, but additional steps and handoffs also introduce new errors. The only reliable way to know is to evaluate both designs on your task."}},{"@type":"Question","name":"How many agents should a system have?","acceptedAnswer":{"@type":"Answer","text":"As few as the task allows. There is no ideal number. Each added agent should have a clear responsibility and a demonstrated benefit that outweighs its added cost and complexity."}},{"@type":"Question","name":"Can a single agent call sub-agents?","acceptedAnswer":{"@type":"Answer","text":"Yes. A common pattern exposes a specialist agent to a main agent as if it were a tool. This is effectively a simple supervisor design, and it can be a gentle first step beyond a single agent."}},{"@type":"Question","name":"Do multi-agent systems need a framework?","acceptedAnswer":{"@type":"Answer","text":"No. They can be written in plain code. A framework becomes more attractive when you need features such as explicit state management, persistence, branching and human review, and do not want to build them yourself."}}]}</script>
+<!-- TODO once the domain is known: canonical, absolute og:url and og:image, absolute URLs in JSON-LD -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&family=Poppins:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+<header class="nav">
+  <div class="wrap nav-in">
+    <a class="logo" href="/" aria-label="Shivani, home"><img src="/assets/logo.svg" alt="Shivani" width="144" height="40"></a>
+    <nav id="nav-links" aria-label="Main">
+      <a href="/#services">Services</a>
+      <a href="/#skills">Skills</a>
+      <a href="/#work">Work</a>
+      <a href="/#process">Process</a>
+      <a href="/#faq">FAQ</a>
+      <a href="/blog/">Blog</a>
+      <a class="btn btn-sm" href="/#contact">Hire Me</a>
+    </nav>
+    <button id="menu-toggle" class="menu-toggle" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="nav-links"><span></span><span></span><span></span></button>
+  </div>
+</header>
+
+<main id="top">
+  <section class="page-head">
+    <div class="wrap">
+      <nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a><span aria-hidden="true">/</span><a href="/blog/">Blog</a><span aria-hidden="true">/</span><span aria-current="page">Single agent vs multi-agent systems</span></nav>
+      <p class="eyebrow">Guide</p>
+      <h1>Single agent vs multi-agent systems</h1>
+      <p class="lead">Start with a single agent unless you can name a specific reason to split, such as conflicting instructions, separate permissions or subtasks that can run independently. Multi-agent designs add model calls, handoffs and new failure modes, so each split has to justify them.</p>
+    </div>
+  </section>
+  <section class="article">
+    <div class="wrap prose">
+<h2>What counts as an agent?</h2>
+<p>The word "agent" is used loosely, so a working definition helps. Here, an agent is a system in which a language model chooses at least some of its own actions, usually by calling tools in a loop. It decides on a step, observes the result and then decides what to do next until the task is complete or a limit is reached.</p>
+<p>That differs from a fixed workflow, where the code determines the order of the steps and the model simply fills in parts of them. Many reliable AI features are workflows rather than agents, so check whether you need autonomy at all before comparing agent designs.</p>
+
+<h2>How a single agent works</h2>
+<p>A single agent has one set of instructions, one loop and access to all the tools, so <a href="/blog/tool-calling-for-ai-agents/">how those tools are designed</a> matters a great deal. A simplified version looks like this:</p>
+<pre><code>def run_agent(task, tools, max_steps=10):
+    messages = [system_prompt(tools), task]
+
+    for _ in range(max_steps):
+        reply = call_llm(messages)
+        if not reply.tool_calls:
+            return reply.text
+        results = run_tools(reply.tool_calls)
+        messages += [reply, results]
+
+    return "Stopped: step limit reached."</code></pre>
+<p>This is illustrative rather than tied to a particular library. The structure is small: one loop, a set of tools and a stopping condition.</p>
+<p>All the context is in one place, there is no communication between components to get wrong, and a run's history can be read from start to finish. Its weaknesses tend to appear as the scope grows. Instructions become long and contradictory, the model has to choose among too many tools, and the accumulated context becomes large and noisy.</p>
+
+<h2>How a multi-agent system works</h2>
+<p>A multi-agent system divides the work among several agents, each with narrower instructions and its own tools. Common coordination patterns include:</p>
+<ul>
+<li><strong>Supervisor.</strong> A central agent or orchestrator assigns tasks to specialists and combines their results. This is easy to reason about, though the supervisor can become a bottleneck.</li>
+<li><strong>Handoff.</strong> An agent transfers control to another when the task moves outside its area, as in routing a conversation from general support to a billing specialist.</li>
+<li><strong>Pipeline.</strong> Agents run in a fixed order, each working on the output of the one before it. This is predictable, but inflexible.</li>
+<li><strong>Parallel fan-out.</strong> Several agents work on independent subtasks at once, and their results are merged. This can reduce overall waiting time when subtasks really are independent.</li>
+<li><strong>Critic and worker.</strong> One agent produces a result and another reviews it, looping until it passes or a limit is reached.</li>
+</ul>
+
+<h2>An example of the same task in both designs</h2>
+<p>Imagine a tool that answers questions about a company's products and can also update a customer's order. A single agent would hold the product search and order tools together, with one set of instructions covering both. That may work well. A multi-agent version might give product questions to an agent with read-only search, and order changes to a second agent with write access and an approval step. The second design separates permissions more cleanly and lets each set of instructions stay short, but it needs routing logic and a handoff that preserves the conversation. Neither is correct in the abstract; the details of the task decide.</p>
+
+<h2>The trade-offs</h2>
+<div class="table-wrap"><table>
+<thead><tr><th>Concern</th><th>Single agent</th><th>Multi-agent</th></tr></thead>
+<tbody>
+<tr><td>Build effort</td><td>Lower at first</td><td>Higher, as coordination must be designed</td></tr>
+<tr><td>Context</td><td>Shared but can grow noisy</td><td>Focused, but details can be lost in handoffs</td></tr>
+<tr><td>Model calls</td><td>Generally fewer</td><td>Generally more, raising cost</td></tr>
+<tr><td>Latency</td><td>Usually simpler to control</td><td>Slower in sequence, possibly faster in parallel</td></tr>
+<tr><td>Permissions</td><td>All tools in one place</td><td>Can be separated per agent</td></tr>
+<tr><td>Debugging</td><td>One history to read</td><td>Needs tracing across agents</td></tr>
+<tr><td>Testing</td><td>Fewer interactions to test</td><td>Parts testable separately, plus integration tests</td></tr>
+</tbody>
+</table></div>
+<p><strong>Errors compound.</strong> If an early agent misunderstands the task, later agents may build confidently on that mistake, and summarised handoffs can remove the very detail that would have revealed the problem. Each step also has its own chance of going wrong, so more steps means more ways for a run to fail.</p>
+
+<h2>When a single agent is enough</h2>
+<p>Stay with one agent when:</p>
+<ul>
+<li>The task falls within a single domain and has a manageable set of tools.</li>
+<li>Steps depend closely on one another and benefit from shared context.</li>
+<li>Low latency or cost matters a great deal.</li>
+<li>You are still discovering what users need, and simple changes are valuable.</li>
+</ul>
+<p>Before splitting up an agent that is struggling, try improving what it already has. Clearer instructions, better tool descriptions, fewer overlapping tools and context trimming often solve the problem at a much lower cost.</p>
+
+<h2>When multiple agents are justified</h2>
+<p>Consider a multi-agent design when you can point to a specific reason:</p>
+<ul>
+<li><strong>Distinct expertise.</strong> Subtasks need instructions that conflict or would be unwieldy if combined.</li>
+<li><strong>Separate permissions.</strong> One part reads untrusted content while another can take sensitive actions. Keeping those apart can limit the damage from a <a href="/blog/llm-guardrails-and-prompt-injection-defence/">prompt injection</a>, although it does not remove the risk.</li>
+<li><strong>Independent subtasks.</strong> Work can be done in parallel and merged without much coordination.</li>
+<li><strong>Different models.</strong> Some steps can use a faster model, while others need a more capable one.</li>
+<li><strong>Independent review.</strong> A separate critic with fresh context may catch problems the producing agent overlooks.</li>
+<li><strong>Team ownership.</strong> Separate groups need to develop and test different capabilities independently.</li>
+</ul>
+
+<h2>A practical way to decide</h2>
+<ol>
+<li><strong>Can it be a plain workflow?</strong> If the steps are known in advance, write them as code and call the model only where needed.</li>
+<li><strong>Try one agent.</strong> Give it a small set of well-described tools and evaluate it against realistic tasks.</li>
+<li><strong>Find the specific failure.</strong> Use traces to establish whether the problem is wrong tool choice, context overload, conflicting instructions or something else.</li>
+<li><strong>Fix it in the simplest way.</strong> Many problems will not require a new agent.</li>
+<li><strong>Split only along a clear boundary.</strong> If a split is justified, separate out the one responsibility causing trouble, then evaluate again to confirm the change helped.</li>
+</ol>
+
+<h2>If you do go multi-agent</h2>
+<p>A few habits help regardless of the pattern you choose:</p>
+<ul>
+<li><strong>Use structured handoffs.</strong> Pass defined fields rather than loose summaries wherever possible, and keep references to the original source material.</li>
+<li><strong>Set hard limits.</strong> Cap steps, loops and spending per run, and define what happens when a cap is reached.</li>
+<li><strong>Trace everything.</strong> Record each agent's input, output, tool calls and routing decisions.</li>
+<li><strong>Control side effects.</strong> Validate tool inputs in code, and require <a href="/blog/human-in-the-loop-approval-for-ai-agents/">human approval</a> for actions that are sensitive or difficult to reverse.</li>
+<li><strong>Prefer explicit orchestration.</strong> A clear control layer makes behaviour easier to test. See <a href="/blog/building-an-orchestrator-with-langgraph/">building an orchestrator with LangGraph</a>.</li>
+</ul>
+<p>For help assessing or building a design, see <a href="/services/multi-agent-systems/">multi-agent systems development</a>.</p>
+<p>Choosing a library for this layer is a separate decision, and <a href="/blog/langchain-vs-langgraph-when-to-use-each/">LangChain vs LangGraph</a> compares two common options by the control flow you need.</p>
+
+      <h2>Frequently asked questions</h2>
+      <h3>Is a multi-agent system more accurate than a single agent?</h3>
+      <p>Not inherently. Focused roles and independent review can help on some tasks, but additional steps and handoffs also introduce new errors. The only reliable way to know is to evaluate both designs on your task.</p>
+      <h3>How many agents should a system have?</h3>
+      <p>As few as the task allows. There is no ideal number. Each added agent should have a clear responsibility and a demonstrated benefit that outweighs its added cost and complexity.</p>
+      <h3>Can a single agent call sub-agents?</h3>
+      <p>Yes. A common pattern exposes a specialist agent to a main agent as if it were a tool. This is effectively a simple supervisor design, and it can be a gentle first step beyond a single agent.</p>
+      <h3>Do multi-agent systems need a framework?</h3>
+      <p>No. They can be written in plain code. A framework becomes more attractive when you need features such as explicit state management, persistence, branching and human review, and do not want to build them yourself.</p>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="foot-cta">
+      <div>
+        <h2>Have an AI or full stack project in mind?</h2>
+        <p>Tell me what you want to build.</p>
+      </div>
+      <div class="foot-cta-btns">
+        <a class="btn" href="/#contact">Start a conversation</a>
+        <a class="btn btn-line" href="mailto:shivanigupta4876@gmail.com">Send an email</a>
+      </div>
+    </div>
+    <div class="foot-grid">
+      <div>
+        <a href="/" aria-label="Shivani, home"><img src="/assets/logo.svg" alt="Shivani" width="144" height="40"></a>
+        <p>AI/ML engineer working across generative AI, LLMs, RAG, agentic AI and NLP, plus full stack development.</p>
+        <span class="avail">Taking new projects</span>
+      </div>
+      <div>
+        <h3>Explore</h3>
+        <ul>
+          <li><a href="/services/">Services</a></li>
+          <li><a href="/#work">Projects</a></li>
+          <li><a href="/#process">Process</a></li>
+          <li><a href="/#faq">FAQ</a></li>
+          <li><a href="/blog/">Blog</a></li>
+          <li><a href="/#contact">Contact</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Services</h3>
+        <ul>
+          <li><a href="/services/generative-ai-llm-development/">Generative AI and LLMs</a></li>
+          <li><a href="/services/rag-development/">RAG development</a></li>
+          <li><a href="/services/multi-agent-systems/">Multi-agent systems</a></li>
+          <li><a href="/services/ai-orchestration-langgraph/">Orchestration with LangGraph</a></li>
+          <li><a href="/services/nlp-development/">NLP development</a></li>
+          <li><a href="/services/full-stack-development/">Full stack development</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Contact</h3>
+        <ul>
+          <li><a href="mailto:shivanigupta4876@gmail.com">shivanigupta4876@gmail.com</a></li>
+          <li><a href="tel:+919720466504">+91 97204 66504</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="foot-bottom">&copy; <span id="year">2026</span> Shivani. All rights reserved.</div>
+  </div>
+</footer>
+<a class="wa-float" href="https://wa.me/919720466504?text=Hi%20Shivani%2C%20I%20saw%20your%20website%20and%20would%20like%20to%20talk%20about%20a%20project." target="_blank" rel="noopener" aria-label="Chat on WhatsApp"><svg viewBox="0 0 24 24" width="28" height="28" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15L2 22l5.1-1.3A10 10 0 1 0 12 2zm0 18.2a8.2 8.2 0 0 1-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1a6.700 6.700 0 0 1-3.300-2.900c-.2-.3 0-.4.1-.6l.4-.4.2-.4v-.5l-.8-1.800c-.2-.5-.4-.4-.6-.4h-.5c-.2 0-.4.1-.6.3-.2.2-.8.8-.8 2s.9 2.300 1 2.500c.1.2 1.700 2.600 4.100 3.600 1.500.7 2.100.7 2.900.6.500-.1 1.500-.6 1.700-1.200.2-.6.2-1.100.1-1.200l-.2-.2z"/></svg></a>
+<script src="/assets/js/site.js" defer></script>
+</body>
+</html>
