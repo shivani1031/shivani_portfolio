@@ -2,21 +2,26 @@ document.addEventListener('DOMContentLoaded', function () {
   var form = document.getElementById('contact-form');
   if (!form) return;
   var status = form.querySelector('.form-status');
-  var button = form.querySelector('button[type="submit"]');
-  var fallback = 'Sorry, the message could not be sent. Please email shivanigupta4876@gmail.com or call +91 97204 66504.';
+  var whatsappNumber = '919720466504';
   form.addEventListener('submit', function (e) {
     e.preventDefault();
     if (!form.reportValidity()) return;
-    button.disabled = true;
-    status.textContent = 'Sending...';
-    fetch(form.dataset.endpoint, { method: 'POST', body: new FormData(form) })
-      .then(function (r) { return r.json(); })
-      .then(function (d) {
-        if (!d.ok) throw new Error();
-        status.textContent = d.message;
-        form.reset();
-      })
-      .catch(function () { status.textContent = fallback; })
-      .finally(function () { button.disabled = false; });
+    var data = new FormData(form);
+    if (data.get('company_website')) return;
+    var text = 'New enquiry from the website\n\n' +
+      'Name: ' + data.get('name') + '\n' +
+      'Email: ' + data.get('email') + '\n' +
+      'Phone: ' + (data.get('phone') || 'Not given') + '\n' +
+      'Service: ' + (data.get('service') || 'Not given') + '\n\n' +
+      data.get('message');
+    var url = 'https://wa.me/' + whatsappNumber + '?text=' + encodeURIComponent(text);
+    var link = document.createElement('a');
+    link.href = url;
+    link.target = '_blank';
+    link.rel = 'noopener';
+    link.textContent = 'Open WhatsApp';
+    status.textContent = 'Almost done: press Send in WhatsApp to reach Shivani. Not opened? ';
+    status.appendChild(link);
+    window.open(url, '_blank', 'noopener');
   });
 });
