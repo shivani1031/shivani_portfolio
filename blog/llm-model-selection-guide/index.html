@@ -1,0 +1,225 @@
+<!doctype html>
+<html lang="en">
+<head>
+<script async src="https://www.googletagmanager.com/gtm.js?id=GTM-THN7RV8R"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+</script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="canonical" href="https://shivanigupta.store/blog/llm-model-selection-guide/">
+<title>LLM Model Selection: Test Against Your Task | Shivani</title>
+<meta name="description" content="How to choose an LLM: set your hard constraints, build a test set from real work, score candidates side by side and keep the model replaceable in your code.">
+<meta name="robots" content="index,follow">
+<meta name="author" content="Shivani">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<link rel="manifest" href="/site.webmanifest">
+<meta name="theme-color" content="#080b0f">
+<meta property="og:type" content="article">
+<meta property="og:title" content="LLM Model Selection: Test Against Your Task | Shivani">
+<meta property="og:description" content="How to choose an LLM: set your hard constraints, build a test set from real work, score candidates side by side and keep the model replaceable in your code.">
+<meta property="og:url" content="https://shivanigupta.store/blog/llm-model-selection-guide/">
+<meta property="og:image" content="https://shivanigupta.store/assets/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"How to choose an LLM by testing it against your task","description":"How to choose an LLM: set your hard constraints, build a test set from real work, score candidates side by side and keep the model replaceable in your code.","mainEntityOfPage":"https://shivanigupta.store/blog/llm-model-selection-guide/","datePublished":"2026-11-06","dateModified":"2026-11-06","author":{"@type":"Person","name":"Shivani"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://shivanigupta.store/"},{"@type":"ListItem","position":2,"name":"Blog","item":"https://shivanigupta.store/blog/"},{"@type":"ListItem","position":3,"name":"How to choose an LLM by testing it against your task","item":"https://shivanigupta.store/blog/llm-model-selection-guide/"}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"What is the best LLM for my application?","acceptedAnswer":{"@type":"Answer","text":"No single model is best across all tasks. The right one is the simplest model that passes your own tests within your data, latency and budget constraints. Testing a short list on real examples will tell you more than any general ranking."}},{"@type":"Question","name":"How many test cases do I need to compare LLMs?","acceptedAnswer":{"@type":"Answer","text":"It depends on how close the candidates are and how varied the task is. A few dozen well-chosen cases can eliminate a clearly weak option, while separating close finishers needs more. Coverage of hard and edge cases matters more than a target number."}},{"@type":"Question","name":"Are LLM benchmarks useless?","acceptedAnswer":{"@type":"Answer","text":"No. They are useful for spotting candidates and for following broad changes in capability. They are weak evidence about your task, though, because the data, the prompts and the scoring all differ from yours, so treat them as a starting point."}},{"@type":"Question","name":"How often should I re-evaluate my model choice?","acceptedAnswer":{"@type":"Answer","text":"Re-run your test set when a provider announces a deprecation, when a credible new option appears, when costs or volumes change substantially or when production quality slips. An automated test set makes these checks routine rather than a project."}}]}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&family=Poppins:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+<header class="nav">
+  <div class="wrap nav-in">
+    <a class="logo" href="/" aria-label="Shivani, home"><img src="/assets/logo.svg" alt="Shivani" width="144" height="40"></a>
+    <nav id="nav-links" aria-label="Main">
+      <a href="/#services">Services</a>
+      <a href="/#skills">Skills</a>
+      <a href="/#work">Work</a>
+      <a href="/#process">Process</a>
+      <a href="/#faq">FAQ</a>
+      <a href="/blog/">Blog</a>
+      <a class="btn btn-sm" href="/#contact">Hire Me</a>
+    </nav>
+    <button id="menu-toggle" class="menu-toggle" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="nav-links"><span></span><span></span><span></span></button>
+  </div>
+</header>
+
+<main id="top">
+  <section class="page-head">
+    <div class="wrap">
+      <nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a><span aria-hidden="true">/</span><a href="/blog/">Blog</a><span aria-hidden="true">/</span><span aria-current="page">How to choose an LLM by testing it against your task</span></nav>
+      <p class="eyebrow">Guide</p>
+      <h1>How to choose an LLM by testing it against your task</h1>
+      <p class="lead">Choose an LLM by testing a shortlist on your own task. Rule out models that fail your hard constraints, build a test set from real examples, score each candidate on quality, latency and cost per successful result, then pick the simplest one that meets your bar. Public rankings can suggest candidates, but they cannot make this decision for you.</p>
+    </div>
+  </section>
+  <section class="article">
+    <div class="wrap prose">
+<h2>Why general rankings do not settle it</h2>
+<p>Benchmarks and leaderboards measure performance on someone else's tasks, under someone else's conditions. A model that leads on coding puzzles tells you little about how it will extract clauses from your contracts, or handle support tickets in Hindi and English mixed together. Rankings also move quickly, which is why this guide names no vendors or prices: any list here would date, and it would answer the wrong question.</p>
+<p>The durable skill is a repeatable selection process. Once you have it, a new model release becomes a routine test run rather than a debate.</p>
+
+<h2>Step 1: define the job precisely</h2>
+<p>"We need a good model" cannot be tested. Write down what goes in, what must come out and what a failure costs. A useful description might read: "Given a customer email of up to a page, return one of nine categories and a one-line reason. A wrong category sends the ticket to the wrong team, which is annoying but recoverable."</p>
+<p>Also separate the steps. A pipeline that classifies, retrieves and drafts contains several jobs, and they need not share a model. Selecting per step is often more useful than searching for one model that does everything. For the routing mechanics, see <a href="/blog/controlling-llm-cost-and-latency/">controlling LLM cost and latency</a>.</p>
+
+<h2>Step 2: apply hard constraints first</h2>
+<p>Some requirements are pass or fail, and checking them first saves testing effort. Read the current documentation and terms for each item, as these details change:</p>
+<ul>
+<li><strong>Data handling.</strong> Where is data processed, how long is it retained and may it be used for training? Does this meet your contractual and legal obligations?</li>
+<li><strong>Deployment.</strong> Must it run in your cloud, on your own hardware or offline? This may decide between hosted APIs and open-weight models.</li>
+<li><strong>Licence.</strong> For open-weight models, read the actual licence and any restrictions on commercial use rather than assuming "open" means unrestricted.</li>
+<li><strong>Required features.</strong> Tool calling, structured output, image input or a particular language may be essential.</li>
+<li><strong>Context limits.</strong> Check both the input window and the maximum output length against your largest realistic request.</li>
+<li><strong>Rate limits.</strong> Compare your account's limits with your expected peak traffic.</li>
+</ul>
+<p>Whatever survives forms your longlist. Narrow it to three or four candidates of different sizes, including at least one smaller option. Testing only top-tier models means you never learn whether a cheaper one would have been enough.</p>
+
+<h2>Step 3: build a test set from real work</h2>
+<p>This is the most valuable part of the process, and it outlasts any one decision. Collect real inputs where you can, with personal data removed or handled in line with your obligations. Aim for coverage rather than a particular size:</p>
+<ul>
+<li>Ordinary cases in roughly the proportion you expect them.</li>
+<li>Hard cases that an expert would need to think about.</li>
+<li>Edge cases, such as very long, very short, badly formatted or mixed-language inputs.</li>
+<li>Cases where the correct behaviour is to refuse or say the answer is unknown.</li>
+<li>Past failures, which should stay in the set permanently.</li>
+</ul>
+<p>A few dozen well-chosen cases are often enough to eliminate a poor candidate. Separating two close finishers takes more, because a small difference on a small set may just be noise. Write down what a correct answer looks like before you see any model output, otherwise you risk grading in favour of whichever style you happen to like. For retrieval pipelines, the same discipline applies with extra measures, set out in <a href="/blog/how-to-evaluate-a-rag-system/">how to evaluate a RAG system</a>.</p>
+
+<h2>Step 4: decide how to score</h2>
+<p>Use the most objective scoring the task allows:</p>
+<div class="table-wrap"><table>
+<thead><tr><th>Task type</th><th>Scoring method</th><th>Watch out for</th></tr></thead>
+<tbody>
+<tr><td>Classification</td><td>Accuracy, plus per-class errors</td><td>Rare classes hidden by an overall score</td></tr>
+<tr><td>Extraction</td><td>Field-level comparison with expected values</td><td>Over-strict matching of equivalent values</td></tr>
+<tr><td>Structured output</td><td>Schema validity and correct content</td><td>Valid JSON holding wrong values</td></tr>
+<tr><td>Generated text</td><td>Rubric scored by people, or by a checked LLM judge</td><td>Reviewer bias and judge errors</td></tr>
+<tr><td>Agent tasks</td><td>Task completed, tools used correctly, steps taken</td><td>Success reached through unsafe actions</td></tr>
+</tbody>
+</table></div>
+<p>When people review generated text, hide which model produced each answer and shuffle the order. Knowing the name of a model invites bias, however well-meaning the reviewer. If you use an LLM as a judge, check its verdicts against a sample of human ones before trusting them.</p>
+
+<h2>Step 5: run a fair comparison</h2>
+<p>Give every candidate a reasonable chance, and record more than the answers. A simple harness is enough, as in this illustrative sketch:</p>
+<pre><code># Illustrative only. call_model and score are placeholders for your code.
+import statistics
+import time
+
+def evaluate(model, cases, repeats=3):
+    results = []
+    for case in cases:
+        for _ in range(repeats):
+            start = time.perf_counter()
+            reply = call_model(model, case["input"])
+            results.append({
+                "case": case["id"],
+                "passed": score(reply.text, case["expected"]),
+                "seconds": time.perf_counter() - start,
+                "tokens_in": reply.tokens_in,
+                "tokens_out": reply.tokens_out,
+            })
+    return {
+        "pass_rate": statistics.mean(r["passed"] for r in results),
+        "median_seconds": statistics.median(r["seconds"] for r in results),
+        "results": results,
+    }</code></pre>
+<p>The repeat count is an arbitrary example. A few details affect whether the comparison is fair:</p>
+<ul>
+<li><strong>Adapt the prompt modestly for each model.</strong> A prompt tuned for one may undersell another. Give each candidate a similar amount of tuning, using a separate development set, so you are not fitting the prompt to the test itself. <a href="/blog/prompt-engineering-for-production-llm-apps/">Prompt engineering for production LLM apps</a> covers how to manage those versions.</li>
+<li><strong>Repeat runs.</strong> Outputs vary between calls, even at low temperature settings, so a single run can flatter or punish a model.</li>
+<li><strong>Measure from where you will deploy.</strong> Latency depends on region, load and time of day. Run tests at more than one time, and look at slow requests as well as the median.</li>
+<li><strong>Use streaming measures where relevant.</strong> In a chat product, time to first token may matter as much as total time. Record both.</li>
+</ul>
+
+<h2>Step 6: compare on cost per successful result</h2>
+<p>Price per token is a misleading basis for comparison. What matters is the cost of getting an acceptable result, including what failure costs you. A cheaper model that needs retries, longer prompts or human correction may end up more expensive overall. Calculate it from your recorded token counts and each provider's current price list, then add the cost of handling failures.</p>
+<p>Bring the results together in one table and decide using a rule you set in advance. A sensible one is this: of the models that clear your quality bar and your latency limit, choose the cheapest and simplest to operate. A higher score above the bar is only worth paying for if users or the business would actually notice. Also look at the failures themselves, not just the rates. Two models with similar scores may fail in very different ways, and a confident wrong answer usually does more damage than a refusal.</p>
+
+<h2>Step 7: keep the model replaceable</h2>
+<p>Your choice has a limited shelf life. Models get deprecated, prices change and better options appear, so design for replacement:</p>
+<ul>
+<li>Put model calls behind a small interface of your own, and keep model names in configuration.</li>
+<li>Store prompts per model, so a change can be tracked and rolled back.</li>
+<li>Pin to a dated or versioned model identifier where one is offered, since an alias may change its behaviour under you.</li>
+<li>Run the test set in your deployment pipeline, and whenever you consider a change.</li>
+<li>Check that features you rely on, such as tool calling or structured output, behave the same way on an alternative.</li>
+</ul>
+<p>Before a full switch, consider running the new model on a copy of live traffic without showing its output, then releasing it to a small share of users while monitoring it. <a href="/blog/llm-observability-and-tracing/">LLM observability and tracing</a> covers what to record. An offline test set never fully matches production, so keep adding interesting real failures to it.</p>
+
+<h2>Should you self-host?</h2>
+<p>Self-hosting an open-weight model is a decision about operations as much as about models. It can address data residency, offline use or control over versions. In return you take on hardware, scaling, updates and monitoring. Do not assume it will be cheaper, as that depends on your volume and on how fully the hardware is used. Evaluate the model for quality first, using the same test set, and then work out the running costs from your own traffic.</p>
+<p>If you would like help setting up a test harness or designing a model layer, see <a href="/services/generative-ai-llm-development/">generative AI and LLM development</a>.</p>
+      <h2>Frequently asked questions</h2>
+      <h3>What is the best LLM for my application?</h3>
+      <p>No single model is best across all tasks. The right one is the simplest model that passes your own tests within your data, latency and budget constraints. Testing a short list on real examples will tell you more than any general ranking.</p>
+      <h3>How many test cases do I need to compare LLMs?</h3>
+      <p>It depends on how close the candidates are and how varied the task is. A few dozen well-chosen cases can eliminate a clearly weak option, while separating close finishers needs more. Coverage of hard and edge cases matters more than a target number.</p>
+      <h3>Are LLM benchmarks useless?</h3>
+      <p>No. They are useful for spotting candidates and for following broad changes in capability. They are weak evidence about your task, though, because the data, the prompts and the scoring all differ from yours, so treat them as a starting point.</p>
+      <h3>How often should I re-evaluate my model choice?</h3>
+      <p>Re-run your test set when a provider announces a deprecation, when a credible new option appears, when costs or volumes change substantially or when production quality slips. An automated test set makes these checks routine rather than a project.</p>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="foot-cta">
+      <div>
+        <h2>Have an AI or full stack project in mind?</h2>
+        <p>Tell me what you want to build.</p>
+      </div>
+      <div class="foot-cta-btns">
+        <a class="btn" href="/#contact">Start a conversation</a>
+        <a class="btn btn-line" href="mailto:shivanigupta4876@gmail.com">Send an email</a>
+      </div>
+    </div>
+    <div class="foot-grid">
+      <div>
+        <a href="/" aria-label="Shivani, home"><img src="/assets/logo.svg" alt="Shivani" width="144" height="40"></a>
+        <p>AI/ML engineer working across generative AI, LLMs, RAG, agentic AI and NLP, plus full stack development.</p>
+        <span class="avail">Taking new projects</span>
+      </div>
+      <div>
+        <h3>Explore</h3>
+        <ul>
+          <li><a href="/services/">Services</a></li>
+          <li><a href="/#work">Projects</a></li>
+          <li><a href="/#process">Process</a></li>
+          <li><a href="/#faq">FAQ</a></li>
+          <li><a href="/blog/">Blog</a></li>
+          <li><a href="/#contact">Contact</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Services</h3>
+        <ul>
+          <li><a href="/services/generative-ai-llm-development/">Generative AI and LLMs</a></li>
+          <li><a href="/services/rag-development/">RAG development</a></li>
+          <li><a href="/services/multi-agent-systems/">Multi-agent systems</a></li>
+          <li><a href="/services/ai-orchestration-langgraph/">Orchestration with LangGraph</a></li>
+          <li><a href="/services/nlp-development/">NLP development</a></li>
+          <li><a href="/services/full-stack-development/">Full stack development</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Contact</h3>
+        <ul>
+          <li><a href="mailto:shivanigupta4876@gmail.com">shivanigupta4876@gmail.com</a></li>
+          <li><a href="tel:+919720466504">+91 97204 66504</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="foot-bottom">&copy; <span id="year">2026</span> Shivani. All rights reserved.</div>
+  </div>
+</footer>
+<a class="wa-float" href="https://wa.me/919720466504?text=Hi%20Shivani%2C%20I%20saw%20your%20website%20and%20would%20like%20to%20talk%20about%20a%20project." target="_blank" rel="noopener" aria-label="Chat on WhatsApp"><svg viewBox="0 0 24 24" width="28" height="28" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15L2 22l5.1-1.3A10 10 0 1 0 12 2zm0 18.2a8.2 8.2 0 0 1-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1a6.700 6.700 0 0 1-3.300-2.900c-.2-.3 0-.4.1-.6l.4-.4.2-.4v-.5l-.8-1.800c-.2-.5-.4-.4-.6-.4h-.5c-.2 0-.4.1-.6.3-.2.2-.8.8-.8 2s.9 2.300 1 2.500c.1.2 1.700 2.600 4.100 3.600 1.500.7 2.100.7 2.900.6.500-.1 1.500-.6 1.700-1.200.2-.6.2-1.100.1-1.200l-.2-.2z"/></svg></a>
+<script src="/assets/js/site.js" defer></script>
+</body>
+</html>

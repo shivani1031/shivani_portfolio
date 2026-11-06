@@ -1,0 +1,209 @@
+<!doctype html>
+<html lang="en">
+<head>
+<script async src="https://www.googletagmanager.com/gtm.js?id=GTM-THN7RV8R"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+</script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="canonical" href="https://shivanigupta.store/blog/when-not-to-use-ai-agents/">
+<title>When Not to Use AI Agents: Simpler Options | Shivani</title>
+<meta name="description" content="Skip an AI agent when steps are known, results must be repeatable or failures are costly. Here is what to build instead, from plain code to fixed workflows.">
+<meta name="robots" content="index,follow">
+<meta name="author" content="Shivani">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<link rel="manifest" href="/site.webmanifest">
+<meta name="theme-color" content="#080b0f">
+<meta property="og:type" content="article">
+<meta property="og:title" content="When Not to Use AI Agents: Simpler Options | Shivani">
+<meta property="og:description" content="Skip an AI agent when steps are known, results must be repeatable or failures are costly. Here is what to build instead, from plain code to fixed workflows.">
+<meta property="og:url" content="https://shivanigupta.store/blog/when-not-to-use-ai-agents/">
+<meta property="og:image" content="https://shivanigupta.store/assets/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"When not to use AI agents, and what to build instead","description":"Skip an AI agent when steps are known, results must be repeatable or failures are costly. Here is what to build instead, from plain code to fixed workflows.","mainEntityOfPage":"https://shivanigupta.store/blog/when-not-to-use-ai-agents/","datePublished":"2026-11-06","dateModified":"2026-11-06","author":{"@type":"Person","name":"Shivani"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://shivanigupta.store/"},{"@type":"ListItem","position":2,"name":"Blog","item":"https://shivanigupta.store/blog/"},{"@type":"ListItem","position":3,"name":"When not to use AI agents, and what to build instead","item":"https://shivanigupta.store/blog/when-not-to-use-ai-agents/"}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"What is the difference between an AI agent and a workflow?","acceptedAnswer":{"@type":"Answer","text":"In a workflow, your code sets the order of steps, and a model may perform some of them. In an agent, the model chooses the next step at run time. Workflows are more predictable, while agents handle paths that cannot be planned in advance."}},{"@type":"Question","name":"Are AI agents overkill for a chatbot?","acceptedAnswer":{"@type":"Answer","text":"Often, yes. A chatbot that answers from documents or calls one known service can usually be built with retrieval or a single tool call. A loop becomes useful only when a request needs several steps that cannot be predicted in advance."}},{"@type":"Question","name":"Can I start with a workflow and move to an agent later?","acceptedAnswer":{"@type":"Answer","text":"Yes, and it is often the sensible order. A workflow gives you a test set, tools and a baseline for comparison. If you later find requests it cannot handle, you can add a bounded agent step for those cases."}},{"@type":"Question","name":"How do I know if my agent should be a workflow?","acceptedAnswer":{"@type":"Answer","text":"Review traces from real runs. If most of them make the same tool calls in the same order, the model is not making a useful decision, and fixed code will probably serve you better at lower cost and with easier testing."}}]}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&family=Poppins:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+<header class="nav">
+  <div class="wrap nav-in">
+    <a class="logo" href="/" aria-label="Shivani, home"><img src="/assets/logo.svg" alt="Shivani" width="144" height="40"></a>
+    <nav id="nav-links" aria-label="Main">
+      <a href="/#services">Services</a>
+      <a href="/#skills">Skills</a>
+      <a href="/#work">Work</a>
+      <a href="/#process">Process</a>
+      <a href="/#faq">FAQ</a>
+      <a href="/blog/">Blog</a>
+      <a class="btn btn-sm" href="/#contact">Hire Me</a>
+    </nav>
+    <button id="menu-toggle" class="menu-toggle" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="nav-links"><span></span><span></span><span></span></button>
+  </div>
+</header>
+
+<main id="top">
+  <section class="page-head">
+    <div class="wrap">
+      <nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a><span aria-hidden="true">/</span><a href="/blog/">Blog</a><span aria-hidden="true">/</span><span aria-current="page">When not to use AI agents, and what to build instead</span></nav>
+      <p class="eyebrow">Guide</p>
+      <h1>When not to use AI agents, and what to build instead</h1>
+      <p class="lead">Do not use an AI agent when the steps are known in advance, when results must be exact and repeatable, or when nobody can check its work. In those cases plain code, a fixed workflow or a single LLM call will usually be cheaper, faster and easier to test. An agent earns its cost only when the path truly depends on what is discovered along the way.</p>
+    </div>
+  </section>
+  <section class="article">
+    <div class="wrap prose">
+<h2>What you pay for with an agent</h2>
+<p>An agent lets a model decide its next step at run time. That flexibility is useful, and it is also the source of every cost that comes with it. If the model chooses the path, then the path varies between runs. Testing has to cover behaviour rather than fixed steps, failures are harder to reproduce, the number of model calls is unpredictable, and each tool becomes something that may be called at the wrong moment with the wrong arguments.</p>
+<p>So the useful question is not "could an agent do this?", because it often could. The question is whether this task needs a decision made at run time, and whether that benefit outweighs those costs. <a href="/blog/what-is-agentic-ai/">What is agentic AI?</a> sets out the definitions and the positive case. This guide examines the other side, with concrete replacements.</p>
+
+<h2>Start at the bottom of the ladder</h2>
+<p>It helps to think of the options as a ladder, and to climb only as far as a test shows you need to:</p>
+<ol>
+<li><strong>Ordinary software.</strong> Rules, queries, forms and scheduled jobs, with no model at all.</li>
+<li><strong>Traditional machine learning.</strong> A classifier or forecasting model, trained for one narrow prediction.</li>
+<li><strong>A single LLM call.</strong> One prompt with validated output, placed inside normal code.</li>
+<li><strong>Retrieval plus an LLM.</strong> The same call, supplied with relevant documents.</li>
+<li><strong>A fixed workflow with several LLM steps.</strong> Your code sets the order, and the model does the language work within each step.</li>
+<li><strong>An agent.</strong> The model chooses tools and steps in a loop, within limits.</li>
+<li><strong>Several agents.</strong> Separate agents with their own tools or permissions, coordinating with one another.</li>
+</ol>
+<p>Each rung adds variability and operating work. Moving up is usually straightforward once you have evidence of the need, and the simpler version leaves you with a test set and a baseline to compare against.</p>
+
+<h2>Seven situations where simpler software wins</h2>
+
+<h3>You can draw the flowchart</h3>
+<p>If you can write down the steps, including the branches, then write them in code. An invoice process that reads a document, extracts fields, checks them against a purchase order and sends exceptions to a person has an LLM-shaped step in the middle, but the order of operations never needs to be reinvented. Asking a model to rediscover the same sequence on each run adds risk and gains nothing.</p>
+
+<h3>Results must be exact or repeatable</h3>
+<p>Tax calculations, pricing, eligibility and compliance checks need one correct outcome and an explanation that holds up later. Put those rules in code that you can test and version. A model can help to collect the inputs or explain the outcome in plain language, while code makes the decision.</p>
+
+<h3>It is really one transformation</h3>
+<p>Summarising a document, drafting a reply, classifying a ticket and extracting fields are each one input and one output. They contain no decision about what to do next, so a loop has nothing to add. A single call with <a href="/blog/structured-output-from-llms/">structured output</a> is often the entire feature. If the task is classification on plentiful labelled data, compare it first with a <a href="/blog/text-classification-llms-vs-traditional-nlp/">traditional NLP model</a>.</p>
+
+<h3>It is really a question over documents</h3>
+<p>If users want answers from a known body of content, a retrieval pipeline with one generation step is usually enough. Add a loop only when you can point to questions that a fixed pipeline fails on and that a second search would solve.</p>
+
+<h3>Nobody can tell whether it worked</h3>
+<p>An agent needs a way to judge success, and so do you. If there is no reliable check of a result, and no one has time to review it, then errors will accumulate unseen. Automating the task may not be sensible yet, whatever the implementation. <a href="/blog/how-to-scope-an-ai-project/">How to scope an AI project</a> covers defining that measure before building.</p>
+
+<h3>Mistakes are costly and hard to undo</h3>
+<p>Payments, deletions, messages to customers and changes to live systems raise the stakes on each decision. If a review step would have to cover every action anyway, consider whether the model should only draft a proposal, with a normal application handling the approved action. This keeps the useful part and removes most of the risk.</p>
+
+<h3>Time or budget limits are tight</h3>
+<p>Interactive features with a strict response time do not sit well with a variable number of model and tool calls. The same is true of very high-volume, low-value tasks, where even a small per-item cost multiplies. A fixed path has a predictable upper limit, which you can design around.</p>
+
+<h2>One task, built without an agent</h2>
+<p>Take a hypothetical support inbox. The goal is to label each email, look up the related order and prepare a draft reply for a person to send. It is tempting to give an agent tools called <code>lookup_order</code>, <code>classify</code> and <code>draft_reply</code> and let it get on with things. But the sequence is the same every time, so code can own it:</p>
+<pre><code># Illustrative only. Helpers are placeholders; the labels are examples.
+LABELS = {"refund", "delivery", "account", "other"}
+
+def handle_email(email):
+    label = classify_email(email.text)      # one LLM call
+    if label not in LABELS:
+        label = "other"
+
+    order = None
+    order_id = find_order_number(email.text)  # a regular expression
+    if order_id:
+        order = get_order(order_id, email.sender)  # a normal query
+
+    if label == "other":
+        return send_to_person(email)
+
+    draft = draft_reply(email.text, label, order)  # one LLM call
+    return queue_for_review(email, label, draft)</code></pre>
+<p>This version makes at most two model calls per email, so its cost has a clear upper limit. Each step can be tested alone, and a failure points to one line. The order lookup is an ordinary query that cannot wander, and sending stays with a person. The model still provides the two things that code handles poorly, which are reading language and writing it.</p>
+<p>The trade-off is real, however. Should a new kind of request need a step this flow lacks, someone has to change the code. That is usually acceptable, and if such requests become common and varied, you will have evidence for adding some flexibility.</p>
+
+<h2>Warning signs in a proposal</h2>
+<p>Some phrases suggest that an agent has been chosen before the problem was understood:</p>
+<ul>
+<li><strong>"Let's make it agentic" with no named decision.</strong> Ask which specific choice the model will make at run time. If nobody can say, the design has no need for one.</li>
+<li><strong>Every run makes the same tool calls.</strong> Check your traces. If the path barely changes, the loop is doing no useful work and can be written out as a workflow. <a href="/blog/llm-observability-and-tracing/">LLM observability and tracing</a> shows how to capture those runs.</li>
+<li><strong>Prompts that spell out the steps.</strong> A system prompt saying "first do A, then B, then C" is a program written in a language that does not guarantee execution.</li>
+<li><strong>Multiple agents for tidiness.</strong> Dividing work into a team of named roles may look organised, while adding coordination that a function call would not need. The comparison of <a href="/blog/single-agent-vs-multi-agent-systems/">single agent vs multi-agent systems</a> covers when a split is justified.</li>
+<li><strong>A demo as evidence.</strong> A run that succeeded once says little about how often it succeeds across varied inputs.</li>
+</ul>
+
+<h2>When an agent is the right answer</h2>
+<p>None of this means agents are a mistake. They suit work where the next step really does follow from the last result, such as investigating a problem across several systems, where listing all the paths in advance is impractical, mistakes can be caught and a slower response is acceptable. Even then, an agent can be one bounded step inside a larger fixed workflow rather than the whole system, and graph-based tools described in <a href="/blog/building-an-orchestrator-with-langgraph/">building an orchestrator with LangGraph</a> make that combination practical.</p>
+
+<h2>A quick way to decide</h2>
+<p>Take twenty or thirty real examples of the task, and write out by hand the steps each one needed. If nearly all follow one path, or a few known paths, build a workflow. If the paths truly differ and depend on what was found, try a small agent, and compare it with the simpler baseline on the same examples, including cost and time. Keep the agent only if it wins by enough to justify running it.</p>
+<p>If you are weighing up an agent for a specific task, the <a href="/services/multi-agent-systems/">multi-agent systems</a> page describes how I can help, including when the honest recommendation is a simpler design.</p>
+      <h2>Frequently asked questions</h2>
+      <h3>What is the difference between an AI agent and a workflow?</h3>
+      <p>In a workflow, your code sets the order of steps, and a model may perform some of them. In an agent, the model chooses the next step at run time. Workflows are more predictable, while agents handle paths that cannot be planned in advance.</p>
+      <h3>Are AI agents overkill for a chatbot?</h3>
+      <p>Often, yes. A chatbot that answers from documents or calls one known service can usually be built with retrieval or a single tool call. A loop becomes useful only when a request needs several steps that cannot be predicted in advance.</p>
+      <h3>Can I start with a workflow and move to an agent later?</h3>
+      <p>Yes, and it is often the sensible order. A workflow gives you a test set, tools and a baseline for comparison. If you later find requests it cannot handle, you can add a bounded agent step for those cases.</p>
+      <h3>How do I know if my agent should be a workflow?</h3>
+      <p>Review traces from real runs. If most of them make the same tool calls in the same order, the model is not making a useful decision, and fixed code will probably serve you better at lower cost and with easier testing.</p>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="foot-cta">
+      <div>
+        <h2>Have an AI or full stack project in mind?</h2>
+        <p>Tell me what you want to build.</p>
+      </div>
+      <div class="foot-cta-btns">
+        <a class="btn" href="/#contact">Start a conversation</a>
+        <a class="btn btn-line" href="mailto:shivanigupta4876@gmail.com">Send an email</a>
+      </div>
+    </div>
+    <div class="foot-grid">
+      <div>
+        <a href="/" aria-label="Shivani, home"><img src="/assets/logo.svg" alt="Shivani" width="144" height="40"></a>
+        <p>AI/ML engineer working across generative AI, LLMs, RAG, agentic AI and NLP, plus full stack development.</p>
+        <span class="avail">Taking new projects</span>
+      </div>
+      <div>
+        <h3>Explore</h3>
+        <ul>
+          <li><a href="/services/">Services</a></li>
+          <li><a href="/#work">Projects</a></li>
+          <li><a href="/#process">Process</a></li>
+          <li><a href="/#faq">FAQ</a></li>
+          <li><a href="/blog/">Blog</a></li>
+          <li><a href="/#contact">Contact</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Services</h3>
+        <ul>
+          <li><a href="/services/generative-ai-llm-development/">Generative AI and LLMs</a></li>
+          <li><a href="/services/rag-development/">RAG development</a></li>
+          <li><a href="/services/multi-agent-systems/">Multi-agent systems</a></li>
+          <li><a href="/services/ai-orchestration-langgraph/">Orchestration with LangGraph</a></li>
+          <li><a href="/services/nlp-development/">NLP development</a></li>
+          <li><a href="/services/full-stack-development/">Full stack development</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Contact</h3>
+        <ul>
+          <li><a href="mailto:shivanigupta4876@gmail.com">shivanigupta4876@gmail.com</a></li>
+          <li><a href="tel:+919720466504">+91 97204 66504</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="foot-bottom">&copy; <span id="year">2026</span> Shivani. All rights reserved.</div>
+  </div>
+</footer>
+<a class="wa-float" href="https://wa.me/919720466504?text=Hi%20Shivani%2C%20I%20saw%20your%20website%20and%20would%20like%20to%20talk%20about%20a%20project." target="_blank" rel="noopener" aria-label="Chat on WhatsApp"><svg viewBox="0 0 24 24" width="28" height="28" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15L2 22l5.1-1.3A10 10 0 1 0 12 2zm0 18.2a8.2 8.2 0 0 1-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1a6.700 6.700 0 0 1-3.300-2.900c-.2-.3 0-.4.1-.6l.4-.4.2-.4v-.5l-.8-1.800c-.2-.5-.4-.4-.6-.4h-.5c-.2 0-.4.1-.6.3-.2.2-.8.8-.8 2s.9 2.300 1 2.500c.1.2 1.700 2.600 4.100 3.600 1.500.7 2.100.7 2.900.6.500-.1 1.500-.6 1.700-1.200.2-.6.2-1.100.1-1.200l-.2-.2z"/></svg></a>
+<script src="/assets/js/site.js" defer></script>
+</body>
+</html>

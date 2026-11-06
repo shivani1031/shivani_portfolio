@@ -1,0 +1,232 @@
+<!doctype html>
+<html lang="en">
+<head>
+<script async src="https://www.googletagmanager.com/gtm.js?id=GTM-THN7RV8R"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+</script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="canonical" href="https://shivanigupta.store/blog/react-frontend-for-llm-chat-apps/">
+<title>React Frontend for LLM Chat Apps: UI Concerns | Shivani</title>
+<meta name="description" content="What a React chat UI for an LLM must handle: message state, rendering untrusted Markdown, scrolling, stop and retry, tool activity, errors and accessibility.">
+<meta name="robots" content="index,follow">
+<meta name="author" content="Shivani">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<link rel="manifest" href="/site.webmanifest">
+<meta name="theme-color" content="#080b0f">
+<meta property="og:type" content="article">
+<meta property="og:title" content="React Frontend for LLM Chat Apps: UI Concerns | Shivani">
+<meta property="og:description" content="What a React chat UI for an LLM must handle: message state, rendering untrusted Markdown, scrolling, stop and retry, tool activity, errors and accessibility.">
+<meta property="og:url" content="https://shivanigupta.store/blog/react-frontend-for-llm-chat-apps/">
+<meta property="og:image" content="https://shivanigupta.store/assets/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Building a React frontend for LLM chat apps","description":"What a React chat UI for an LLM must handle: message state, rendering untrusted Markdown, scrolling, stop and retry, tool activity, errors and accessibility.","mainEntityOfPage":"https://shivanigupta.store/blog/react-frontend-for-llm-chat-apps/","datePublished":"2026-11-06","dateModified":"2026-11-06","author":{"@type":"Person","name":"Shivani"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://shivanigupta.store/"},{"@type":"ListItem","position":2,"name":"Blog","item":"https://shivanigupta.store/blog/"},{"@type":"ListItem","position":3,"name":"Building a React frontend for LLM chat apps","item":"https://shivanigupta.store/blog/react-frontend-for-llm-chat-apps/"}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Can I call an LLM API directly from React?","acceptedAnswer":{"@type":"Answer","text":"Not with a real secret key. Anything shipped to the browser can be read by users, so the key could be copied and abused. Send requests through your backend, which can also authenticate users, apply limits and record usage."}},{"@type":"Question","name":"Is react-markdown safe for rendering LLM output?","acceptedAnswer":{"@type":"Answer","text":"Its documentation describes it as safe by default, since it does not use dangerouslySetInnerHTML and does not render raw HTML unless configured to. Plugins and custom components can change that, and you still need your own policy for links and images."}},{"@type":"Question","name":"How do I stop re-renders during streaming in React?","acceptedAnswer":{"@type":"Answer","text":"Batch incoming chunks and commit them on an animation frame or a short timer. Memoise finished messages and keep their object identity stable, so that only the active message updates. Confirm the effect with the React Profiler on a long conversation."}},{"@type":"Question","name":"Should a chat app use a library or custom components?","acceptedAnswer":{"@type":"Answer","text":"A library can speed up streaming and state handling, while custom components give more control over rendering and unusual flows. Decide according to how standard your interface is, and check that any library supports stopping, tools and your backend's event format."}}]}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&family=Poppins:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+<header class="nav">
+  <div class="wrap nav-in">
+    <a class="logo" href="/" aria-label="Shivani, home"><img src="/assets/logo.svg" alt="Shivani" width="144" height="40"></a>
+    <nav id="nav-links" aria-label="Main">
+      <a href="/#services">Services</a>
+      <a href="/#skills">Skills</a>
+      <a href="/#work">Work</a>
+      <a href="/#process">Process</a>
+      <a href="/#faq">FAQ</a>
+      <a href="/blog/">Blog</a>
+      <a class="btn btn-sm" href="/#contact">Hire Me</a>
+    </nav>
+    <button id="menu-toggle" class="menu-toggle" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="nav-links"><span></span><span></span><span></span></button>
+  </div>
+</header>
+
+<main id="top">
+  <section class="page-head">
+    <div class="wrap">
+      <nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a><span aria-hidden="true">/</span><a href="/blog/">Blog</a><span aria-hidden="true">/</span><span aria-current="page">Building a React frontend for LLM chat apps</span></nav>
+      <p class="eyebrow">Guide</p>
+      <h1>Building a React frontend for LLM chat apps</h1>
+      <p class="lead">A React frontend for an LLM chat app needs more than a message list. Model each message with an explicit status, keep API keys on the server, render model output as untrusted Markdown, keep streaming updates cheap, and design for stopping, retrying, errors, tool activity, scrolling and screen readers. Most of the work lies in these states rather than in the happy path.</p>
+    </div>
+  </section>
+  <section class="article">
+    <div class="wrap prose">
+<h2>What makes a chat interface different</h2>
+<p>A typical form submits a request and shows a result. A chat turn stays in progress: text arrives gradually, may be interrupted, may pause while a tool runs and may end in an error after half an answer is already on screen. Replies also vary in length and quality, and users need a way to respond to that.</p>
+<p>This guide concentrates on React state and interface decisions. The transport layer, including server-sent events, buffering and parsing, is covered in <a href="/blog/streaming-llm-responses-to-a-web-ui/">streaming LLM responses to a web UI</a>, so it appears here only as a placeholder function. The wider architecture is in <a href="/blog/adding-an-llm-feature-to-a-full-stack-app/">adding an LLM feature to a full stack app</a>.</p>
+<p>One rule comes before all the others: the browser talks to your backend, and your backend talks to the model. A key in client code can be read by anyone who opens developer tools.</p>
+
+<h2>Model messages as data with a status</h2>
+<p>An array of strings will not get you far. Give each message a stable ID, a role and an explicit status, so that each state can be drawn deliberately:</p>
+<ul>
+<li><strong>pending:</strong> sent, with nothing received yet.</li>
+<li><strong>streaming:</strong> text is arriving.</li>
+<li><strong>complete:</strong> finished normally.</li>
+<li><strong>stopped:</strong> the user cancelled, so the partial text is kept and marked as such.</li>
+<li><strong>failed:</strong> an error occurred, possibly after some text had arrived.</li>
+</ul>
+<p>Use the ID, not the array index, as the React key. Consider storing parts rather than one string as well. An assistant turn may contain text, a tool call, a citation and more text, and a list of typed parts renders far more cleanly than markers embedded in a string.</p>
+<p>Keep this logic in a hook or a reducer, away from the components. Here is an illustrative sketch. It omits persistence and batching, and <code>readStream</code> stands in for your own transport function:</p>
+<pre><code>// Illustrative only. readStream is a placeholder for your transport code.
+import { useRef, useState } from "react";
+
+export function useChat() {
+  const [messages, setMessages] = useState([]);
+  const controllerRef = useRef(null);
+
+  const update = (id, change) =&gt;
+    setMessages((all) =&gt;
+      all.map((m) =&gt; (m.id === id ? { ...m, ...change(m) } : m))
+    );
+
+  async function send(text) {
+    const replyId = crypto.randomUUID();
+    const controller = new AbortController();
+    controllerRef.current = controller;
+
+    setMessages((all) =&gt; [
+      ...all,
+      { id: crypto.randomUUID(), role: "user", text, status: "complete" },
+      { id: replyId, role: "assistant", text: "", status: "pending" },
+    ]);
+
+    try {
+      await readStream(text, controller.signal, (chunk) =&gt;
+        update(replyId, (m) =&gt; ({ text: m.text + chunk, status: "streaming" }))
+      );
+      update(replyId, () =&gt; ({ status: "complete" }));
+    } catch (error) {
+      const status = error.name === "AbortError" ? "stopped" : "failed";
+      update(replyId, () =&gt; ({ status }));
+    }
+  }
+
+  const stop = () =&gt; controllerRef.current?.abort();
+  return { messages, send, stop };
+}</code></pre>
+<p>The functional form of <code>setMessages</code> matters here, because chunks arrive after the render that started the request, and a value captured at that time would be out of date.</p>
+
+<h2>Keep streaming updates cheap</h2>
+<p>If every chunk re-renders the whole conversation and re-parses every message's Markdown, long chats will start to lag. Some practical measures help:</p>
+<ul>
+<li><strong>Batch incoming text.</strong> Hold chunks in a ref and commit them to state on an animation frame or a short timer. A reader will not notice the difference, and React does far less work.</li>
+<li><strong>Memoise finished messages.</strong> Wrap the message component in <code>React.memo</code> and keep each message object's identity stable when it has not changed, so that only the active message re-renders.</li>
+<li><strong>Virtualise very long histories,</strong> or load older messages on demand, once profiling shows a need. Variable message heights and streaming make virtualisation fiddly, so do not add it by default.</li>
+</ul>
+<p>Measure with the React Profiler on a long conversation, using a slower device if you can. A short demo chat will hide these issues.</p>
+
+<h2>Render model output as untrusted</h2>
+<p>Model output may include text that an attacker planted in a document or a web page. Avoid <code>dangerouslySetInnerHTML</code> with unsanitised output. The <code>react-markdown</code> library builds React elements from a syntax tree and, according to its documentation, does not render raw HTML by default. That safe default can be undone by plugins such as <code>rehype-raw</code>, by custom components or by an insecure URL transform, so review each addition.</p>
+<p>Links and images need particular thought. A Markdown image triggers a request as soon as it renders, which can leak data through its URL. The <a href="/blog/llm-guardrails-and-prompt-injection-defence/">guide to LLM guardrails and prompt injection defence</a> explains that attack. In practice, use a custom image component that allows only approved domains or shows a link instead. Open external links with <code>rel="noopener noreferrer"</code>, and consider showing the destination clearly, because a model can write misleading link text.</p>
+<p>Partial Markdown is the other problem. An unclosed code fence may make the rest of a message appear as code until the closing marks arrive, and the layout can jump as a table takes shape. Render code blocks with a stable container, keep their horizontal scrolling inside the block and consider delaying syntax highlighting until the block has finished.</p>
+
+<h2>Scrolling that respects the reader</h2>
+<p>Following new text is useful until someone wants to read something further up. Forcing them back to the bottom on every chunk makes the app feel hostile. A reasonable set of rules is:</p>
+<ul>
+<li>Follow new output only while the user is at or very near the bottom.</li>
+<li>Stop following as soon as they scroll up.</li>
+<li>Show a "jump to latest" button while they are away from the bottom.</li>
+<li>When they send a message, scroll to show it.</li>
+<li>When loading older messages, preserve the current position so the content does not jump.</li>
+</ul>
+
+<h2>The input box and controls</h2>
+<p>The composer is where people spend most of their time, so small details matter:</p>
+<ul>
+<li><strong>Keyboard behaviour.</strong> Enter to send and Shift+Enter for a new line is a common convention, but check <code>isComposing</code> so that Enter does not send a message while someone is confirming text in an input method editor, as used for Japanese or Chinese. Think through how Enter behaves on mobile too.</li>
+<li><strong>Stop and send.</strong> Swap the send button for a stop button during generation. Stopping should abort the request, and the backend should cancel the model call as well.</li>
+<li><strong>Drafts.</strong> Do not lose a long message because a request failed. Restore the text to the composer, or offer a retry on the failed message.</li>
+<li><strong>Height.</strong> Let the text area grow up to a limit, then scroll. On phones, check that the on-screen keyboard does not cover it.</li>
+</ul>
+
+<h2>Showing tools and waiting time</h2>
+<p>Agents can go quiet while a tool runs. A generic spinner tells the user nothing, whereas a line such as "Searching the documentation" shows that something is happening. Send these as structured events from the backend, written in plain language, and do not show raw tool arguments to users unless they are meant to see them. They may contain internal identifiers.</p>
+<p>When an agent needs permission, render a proper confirmation with the exact action and its details, not a line of chat that the user answers by typing "yes". The review screen advice in <a href="/blog/human-in-the-loop-approval-for-ai-agents/">human-in-the-loop approval for AI agents</a> applies directly. If the product cites sources, make each citation link to the passage itself, so that people can check the claim.</p>
+
+<h2>Errors, retries and honesty</h2>
+<p>A failure after some text has arrived is not the same as a failure before anything arrived. Keep the partial text, label it as incomplete and offer a retry. Different errors also deserve different messages: "you have reached your limit" requires different action from "the service is unavailable", and neither should appear as a raw stack trace.</p>
+<p>Decide what retry and regenerate do to the history. Replacing an answer is simple, while keeping both versions as branches is more complex and only worth doing if users need it. Also consider how the product conveys uncertainty. A short, accurate note saying that answers can be wrong, placed near the output, is more useful than a long disclaimer on a separate page.</p>
+
+<h2>Accessibility</h2>
+<p>MDN lists chat logs as an example of the ARIA <code>log</code> role, which has an implicit polite live setting and needs an accessible name, for instance through <code>aria-label</code>. However, applying it directly to a streaming message may announce many tiny fragments. A common approach is to announce status changes, and then the finished message, through a separate live region. Test with an actual screen reader, since behaviour differs between products.</p>
+<p>Also make sure that every control works from the keyboard, that focus returns to the composer sensibly after sending, that icon buttons have labels and that animated cursors respect <code>prefers-reduced-motion</code>.</p>
+
+<h2>Testing the states</h2>
+<p>Replace the backend with a scripted stub that can produce any sequence on demand, and write a component test for each state: no response yet, a very long reply, an error mid-stream, a stop click and a malicious link or image in the output. Then try the result on a phone with a throttled connection. For help building this kind of interface, see <a href="/services/full-stack-development/">full stack development</a>.</p>
+      <h2>Frequently asked questions</h2>
+      <h3>Can I call an LLM API directly from React?</h3>
+      <p>Not with a real secret key. Anything shipped to the browser can be read by users, so the key could be copied and abused. Send requests through your backend, which can also authenticate users, apply limits and record usage.</p>
+      <h3>Is react-markdown safe for rendering LLM output?</h3>
+      <p>Its documentation describes it as safe by default, since it does not use dangerouslySetInnerHTML and does not render raw HTML unless configured to. Plugins and custom components can change that, and you still need your own policy for links and images.</p>
+      <h3>How do I stop re-renders during streaming in React?</h3>
+      <p>Batch incoming chunks and commit them on an animation frame or a short timer. Memoise finished messages and keep their object identity stable, so that only the active message updates. Confirm the effect with the React Profiler on a long conversation.</p>
+      <h3>Should a chat app use a library or custom components?</h3>
+      <p>A library can speed up streaming and state handling, while custom components give more control over rendering and unusual flows. Decide according to how standard your interface is, and check that any library supports stopping, tools and your backend's event format.</p>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="foot-cta">
+      <div>
+        <h2>Have an AI or full stack project in mind?</h2>
+        <p>Tell me what you want to build.</p>
+      </div>
+      <div class="foot-cta-btns">
+        <a class="btn" href="/#contact">Start a conversation</a>
+        <a class="btn btn-line" href="mailto:shivanigupta4876@gmail.com">Send an email</a>
+      </div>
+    </div>
+    <div class="foot-grid">
+      <div>
+        <a href="/" aria-label="Shivani, home"><img src="/assets/logo.svg" alt="Shivani" width="144" height="40"></a>
+        <p>AI/ML engineer working across generative AI, LLMs, RAG, agentic AI and NLP, plus full stack development.</p>
+        <span class="avail">Taking new projects</span>
+      </div>
+      <div>
+        <h3>Explore</h3>
+        <ul>
+          <li><a href="/services/">Services</a></li>
+          <li><a href="/#work">Projects</a></li>
+          <li><a href="/#process">Process</a></li>
+          <li><a href="/#faq">FAQ</a></li>
+          <li><a href="/blog/">Blog</a></li>
+          <li><a href="/#contact">Contact</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Services</h3>
+        <ul>
+          <li><a href="/services/generative-ai-llm-development/">Generative AI and LLMs</a></li>
+          <li><a href="/services/rag-development/">RAG development</a></li>
+          <li><a href="/services/multi-agent-systems/">Multi-agent systems</a></li>
+          <li><a href="/services/ai-orchestration-langgraph/">Orchestration with LangGraph</a></li>
+          <li><a href="/services/nlp-development/">NLP development</a></li>
+          <li><a href="/services/full-stack-development/">Full stack development</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Contact</h3>
+        <ul>
+          <li><a href="mailto:shivanigupta4876@gmail.com">shivanigupta4876@gmail.com</a></li>
+          <li><a href="tel:+919720466504">+91 97204 66504</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="foot-bottom">&copy; <span id="year">2026</span> Shivani. All rights reserved.</div>
+  </div>
+</footer>
+<a class="wa-float" href="https://wa.me/919720466504?text=Hi%20Shivani%2C%20I%20saw%20your%20website%20and%20would%20like%20to%20talk%20about%20a%20project." target="_blank" rel="noopener" aria-label="Chat on WhatsApp"><svg viewBox="0 0 24 24" width="28" height="28" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15L2 22l5.1-1.3A10 10 0 1 0 12 2zm0 18.2a8.2 8.2 0 0 1-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1a6.700 6.700 0 0 1-3.300-2.900c-.2-.3 0-.4.1-.6l.4-.4.2-.4v-.5l-.8-1.800c-.2-.5-.4-.4-.6-.4h-.5c-.2 0-.4.1-.6.3-.2.2-.8.8-.8 2s.9 2.300 1 2.500c.1.2 1.700 2.600 4.100 3.600 1.500.7 2.100.7 2.900.6.500-.1 1.500-.6 1.700-1.200.2-.6.2-1.100.1-1.200l-.2-.2z"/></svg></a>
+<script src="/assets/js/site.js" defer></script>
+</body>
+</html>

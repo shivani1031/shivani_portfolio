@@ -61,6 +61,11 @@ The site describes the services on offer and publishes general technical guides.
 - [FastAPI vs Flask for AI backends](/blog/fastapi-vs-flask-for-ai-backends/): Why FastAPI is the usual default for new LLM backends, and when Flask is still the right choice.
 - [Sentiment analysis with Python: approaches and trade-offs](/blog/sentiment-analysis-with-python/): VADER, TF-IDF classifiers, pretrained transformers and LLMs compared, with a fair way to test them on your own data.
 - [Testing AI agents: how to handle non-deterministic behaviour](/blog/testing-ai-agents/): Four test layers, from a scripted fake model to repeated scenarios judged by pass rate, with assertions on behaviour rather than wording.
+- [AI agent security risks and the controls that address them](/blog/ai-agent-security-risks/): Risks of tool-using agents beyond prompt injection, including identity, secrets, network access, code execution, third-party tools and memory, with a control for each.
+- [How to choose an LLM by testing it against your task](/blog/llm-model-selection-guide/): A seven-step way to choose a model through hard constraints, your own test set, fair scoring and keeping the model replaceable.
+- [Building a React frontend for LLM chat apps](/blog/react-frontend-for-llm-chat-apps/): Message state, render performance, untrusted Markdown, scrolling, the composer, tool activity, errors and accessibility in a React chat UI.
+- [SQL agents vs RAG: choosing by the shape of your data](/blog/sql-agents-vs-rag/): Choosing by question and data shape, handling awkward in-between data, and routing between the two.
+- [When not to use AI agents, and what to build instead](/blog/when-not-to-use-ai-agents/): A ladder of simpler options, seven situations where simpler software wins, and a worked hypothetical built without an agent.
 
 ## Projects
 

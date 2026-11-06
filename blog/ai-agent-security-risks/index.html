@@ -1,0 +1,221 @@
+<!doctype html>
+<html lang="en">
+<head>
+<script async src="https://www.googletagmanager.com/gtm.js?id=GTM-THN7RV8R"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+</script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="canonical" href="https://shivanigupta.store/blog/ai-agent-security-risks/">
+<title>AI Agent Security Risks and Controls | Shivani</title>
+<meta name="description" content="The main security risks of tool-using AI agents, from excess permissions and leaked secrets to poisoned memory, and the controls that contain each one.">
+<meta name="robots" content="index,follow">
+<meta name="author" content="Shivani">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<link rel="manifest" href="/site.webmanifest">
+<meta name="theme-color" content="#080b0f">
+<meta property="og:type" content="article">
+<meta property="og:title" content="AI Agent Security Risks and Controls | Shivani">
+<meta property="og:description" content="The main security risks of tool-using AI agents, from excess permissions and leaked secrets to poisoned memory, and the controls that contain each one.">
+<meta property="og:url" content="https://shivanigupta.store/blog/ai-agent-security-risks/">
+<meta property="og:image" content="https://shivanigupta.store/assets/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"AI agent security risks and the controls that address them","description":"The main security risks of tool-using AI agents, from excess permissions and leaked secrets to poisoned memory, and the controls that contain each one.","mainEntityOfPage":"https://shivanigupta.store/blog/ai-agent-security-risks/","datePublished":"2026-11-06","dateModified":"2026-11-06","author":{"@type":"Person","name":"Shivani"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://shivanigupta.store/"},{"@type":"ListItem","position":2,"name":"Blog","item":"https://shivanigupta.store/blog/"},{"@type":"ListItem","position":3,"name":"AI agent security risks and the controls that address them","item":"https://shivanigupta.store/blog/ai-agent-security-risks/"}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Is prompt injection the biggest security risk for AI agents?","acceptedAnswer":{"@type":"Answer","text":"It is a serious one, but it is only one way that an agent can end up requesting something harmful. Bugs and misreadings can cause the same requests. Controls on identity, network access and execution limit the damage whatever the cause."}},{"@type":"Question","name":"Should an AI agent have its own service account?","acceptedAnswer":{"@type":"Answer","text":"A dedicated identity is better than sharing a human's or an application's account, and it makes logs clearer. It should not hold more access than the user being served, so combine it with delegated, per-user permissions wherever possible."}},{"@type":"Question","name":"How should I store API keys used by an agent?","acceptedAnswer":{"@type":"Answer","text":"Keep them in a secrets manager and let tool code load them at the point of use. Keys should not appear in prompts, tool results or traces. Prefer short-lived, narrowly scoped credentials to long-lived ones where the service supports them."}},{"@type":"Question","name":"Is a Docker container a safe sandbox for agent-generated code?","acceptedAnswer":{"@type":"Answer","text":"It helps, but a default container is not a complete boundary because it shares the host's kernel. Remove network access and credentials, run as non-root and set resource limits. Consider stronger isolation, such as a virtual machine, for higher-risk work."}}]}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&family=Poppins:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+<header class="nav">
+  <div class="wrap nav-in">
+    <a class="logo" href="/" aria-label="Shivani, home"><img src="/assets/logo.svg" alt="Shivani" width="144" height="40"></a>
+    <nav id="nav-links" aria-label="Main">
+      <a href="/#services">Services</a>
+      <a href="/#skills">Skills</a>
+      <a href="/#work">Work</a>
+      <a href="/#process">Process</a>
+      <a href="/#faq">FAQ</a>
+      <a href="/blog/">Blog</a>
+      <a class="btn btn-sm" href="/#contact">Hire Me</a>
+    </nav>
+    <button id="menu-toggle" class="menu-toggle" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="nav-links"><span></span><span></span><span></span></button>
+  </div>
+</header>
+
+<main id="top">
+  <section class="page-head">
+    <div class="wrap">
+      <nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a><span aria-hidden="true">/</span><a href="/blog/">Blog</a><span aria-hidden="true">/</span><span aria-current="page">AI agent security risks and the controls that address them</span></nav>
+      <p class="eyebrow">Guide</p>
+      <h1>AI agent security risks and the controls that address them</h1>
+      <p class="lead">The main security risks of a tool-using AI agent are excessive permissions, misused credentials, leaked secrets, unsafe code execution, untrusted tools, poisoned memory and runaway actions. Control them outside the model: give each run a narrow, short-lived identity, restrict where it can connect, sandbox execution, vet tools, and log every action so you can stop and investigate it.</p>
+    </div>
+  </section>
+  <section class="article">
+    <div class="wrap prose">
+<h2>Why tools change the threat model</h2>
+<p>A chatbot that says something wrong produces a bad sentence. An agent that gets something wrong can produce a bad transaction, because it holds credentials and calls real systems. The security question therefore moves from "what might the model say?" to "what could this process do, with these permissions, if its judgement failed?"</p>
+<p>Manipulation is only one way for that judgement to fail. The <a href="/blog/llm-guardrails-and-prompt-injection-defence/">guide to LLM guardrails and prompt injection defence</a> covers how injection works, how to treat output and where classifiers fit, so I will not repeat it here. This guide takes the next step: assume the model will sometimes request the wrong thing, whether through an attack, a misreading or a bug, and look at the infrastructure around it.</p>
+<p>The OWASP Top 10 for LLM Applications names this class of problem Excessive Agency (LLM06:2025) and gives three root causes: too much functionality, too many permissions and too much autonomy. That is a helpful starting frame, and the risks below are largely specific forms of it.</p>
+
+<h2>The risks at a glance</h2>
+<div class="table-wrap"><table>
+<thead><tr><th>Risk</th><th>What goes wrong</th><th>Main control</th></tr></thead>
+<tbody>
+<tr><td>Over-broad identity</td><td>The agent acts with more access than the user it serves</td><td>Per-run, per-user credentials</td></tr>
+<tr><td>Secret exposure</td><td>Keys reach prompts, logs or model providers</td><td>Keep secrets in the tool layer</td></tr>
+<tr><td>Open network access</td><td>Data leaves to an unexpected destination</td><td>Outbound allowlist</td></tr>
+<tr><td>Code execution</td><td>Generated code reaches the host or the network</td><td>Disposable sandbox</td></tr>
+<tr><td>Third-party tools</td><td>A tool or server is malicious, or changes later</td><td>Vetting and version pinning</td></tr>
+<tr><td>Poisoned memory</td><td>Bad content persists and affects later runs</td><td>Provenance and scoped memory</td></tr>
+<tr><td>Agent-to-agent trust</td><td>One agent launders a request through another</td><td>Check authority at each tool</td></tr>
+<tr><td>Runaway activity</td><td>Loops consume budget or flood a downstream system</td><td>Limits and a stop switch</td></tr>
+</tbody>
+</table></div>
+
+<h2>Over-broad identity</h2>
+<p>The most common design shortcut is one service account shared by every run. It is convenient, and it turns the agent into a confused deputy: a privileged program that can be led into using its authority on behalf of someone who does not have that authority. If a junior employee can ask the agent about any department's records because the service account can read them all, you have an access control hole, whether or not anyone attacks it.</p>
+<p>Three practices narrow this considerably:</p>
+<ul>
+<li><strong>Act as the user where you can.</strong> Delegated credentials, such as OAuth tokens with limited scopes, mean the downstream system applies its existing permissions.</li>
+<li><strong>Issue credentials per run.</strong> A token that expires soon after the task ends is of much less value if it leaks than a long-lived key.</li>
+<li><strong>Separate read and write.</strong> An agent that mostly reads should not carry write access for the occasional update. Give the write path its own credential, requested only when needed.</li>
+</ul>
+<p>Here is the shape of this, with placeholder helpers. It is illustrative rather than a complete implementation:</p>
+<pre><code># Illustrative only. issue_token and crm_client are placeholders.
+def get_crm_client(run, action):
+    scope = "crm.write" if action in WRITE_ACTIONS else "crm.read"
+    token = issue_token(
+        subject=run.user_id,   # from your auth layer, not from the model
+        scope=scope,
+        ttl_seconds=300,
+    )
+    return crm_client(token)</code></pre>
+<p>The five-minute lifetime here is an arbitrary example, so choose one that matches your longest legitimate step.</p>
+
+<h2>Secrets in the wrong place</h2>
+<p>Anything placed in a prompt can be repeated by the model, stored in a trace and sent to your model provider. So the model should never need to see an API key. Your tool code holds the secret and the model refers only to the tool's name.</p>
+<p>The less obvious leak is through results. A tool that returns a whole configuration object, a raw HTTP error with its headers or a stack trace containing a connection string puts that material into the conversation, and from there into your logs. Return only the fields the task needs, and scrub tool results before they enter the context. Apply the same scrubbing to your tracing pipeline, because <a href="/blog/llm-observability-and-tracing/">LLM observability</a> often captures full prompts and responses, which makes the trace store a sensitive system in its own right. It needs access controls and a retention period.</p>
+
+<h2>Open network access</h2>
+<p>An agent with a general HTTP tool can send data anywhere and can also reach internal addresses your firewall assumes are private, including cloud metadata endpoints. This is server-side request forgery with a language model choosing the URL.</p>
+<p>Prefer named tools for specific services over a general fetch tool. Where general access is really needed, enforce an allowlist in code and, ideally, again at a network proxy, since an application-level check can be bypassed by anything else running in the same environment.</p>
+<pre><code># Illustrative only. A real check must also cover redirects and DNS.
+from urllib.parse import urlparse
+
+ALLOWED_HOSTS = {"api.example.com", "docs.example.com"}
+
+def check_url(url):
+    parts = urlparse(url)
+    if parts.scheme != "https" or parts.hostname not in ALLOWED_HOSTS:
+        raise PermissionError("Destination not allowed")
+    return url</code></pre>
+<p>As the comment notes, this sketch alone is not enough. An allowed host that redirects elsewhere defeats it unless each redirect is checked as well.</p>
+
+<h2>Generated code and shell access</h2>
+<p>If an agent runs code, treat that code as coming from a stranger. Restricting Python's built-ins or filtering for dangerous strings is not a sandbox, because there are too many routes around such checks. Isolation has to come from the operating system or from a separate machine:</p>
+<ul>
+<li>Run each job in a disposable container or virtual machine, destroyed afterwards. Note that ordinary containers share the host's kernel, so higher-risk workloads may call for stronger isolation.</li>
+<li>Run as a non-root user with no credentials mounted.</li>
+<li>Default to no network, and open only the destinations a job requires.</li>
+<li>Set limits on CPU, memory, disk and run time.</li>
+<li>Pass files in and out through a defined path, and treat whatever comes out as untrusted.</li>
+</ul>
+
+<h2>Third-party tools and servers</h2>
+<p>Each tool you connect is code you are trusting, and its description is text your model will read. A protocol such as the one described in <a href="/blog/model-context-protocol-for-ai-agents/">Model Context Protocol for AI agents</a> makes connecting tools easy, which makes it important to ask who wrote them. The risks are familiar from software supply chains, with one addition:</p>
+<ul>
+<li><strong>Malicious or careless packages.</strong> Review the source and permissions as you would for any dependency.</li>
+<li><strong>Silent changes.</strong> A tool that was harmless when you reviewed it may change. Pin versions and re-review on update, including the descriptions.</li>
+<li><strong>Instructions in tool metadata.</strong> Descriptions and results flow into the model's context, so a malicious one can try to influence how other tools are used.</li>
+</ul>
+<p>Keep an inventory of connected tools, and expose only those a given agent needs. Fewer tools mean less to review and fewer ways for a mistake to matter, a point <a href="/blog/tool-calling-for-ai-agents/">tool calling for AI agents</a> makes from the reliability side.</p>
+
+<h2>Poisoned memory</h2>
+<p>Long-term memory turns a one-off problem into a lasting one. If an agent saves a false "fact" from a web page or an email, it may act on that fact in later sessions, long after the source has gone and possibly for other users.</p>
+<p>Record where each memory came from and when. Treat anything derived from external content as lower trust, keep memories scoped to the user or tenant they belong to, and give people a way to inspect and delete them. <a href="/blog/agent-memory-short-term-and-long-term-state/">Agent memory</a> covers the design of these stores more generally.</p>
+
+<h2>Trust between agents</h2>
+<p>In a multi-agent system, one agent's output is another's input. A researcher that reads untrusted pages may pass along text that a privileged agent then acts upon. A request from a colleague agent should not carry authority of its own. Each tool should check the original user's permissions and the policy for that action, regardless of which agent asked.</p>
+
+<h2>Runaway activity and stopping an agent</h2>
+<p>Not every incident has an attacker. A retry loop can send hundreds of emails or exhaust an API quota. Set limits on steps, spend and rate per run, per user and per tool, and enforce them outside the model. For actions with consequences, add <a href="/blog/human-in-the-loop-approval-for-ai-agents/">human approval</a> as a further check.</p>
+<p>Plan the response before you need it. You should be able to disable one tool, one user's runs or the whole agent without a deployment, revoke its credentials, and reconstruct what happened from an append-only log of each tool call, its arguments, the identity used and the result. Test this as a drill, because a stop switch nobody has tried is only a hopeful assumption.</p>
+
+<h2>Where to start</h2>
+<p>List every tool the agent has. For each, write down whose identity it uses, what the worst plausible call would do and how you would find out. That list usually shows the first fixes. For help designing agents with these boundaries, see <a href="/services/multi-agent-systems/">multi-agent systems</a>.</p>
+      <h2>Frequently asked questions</h2>
+      <h3>Is prompt injection the biggest security risk for AI agents?</h3>
+      <p>It is a serious one, but it is only one way that an agent can end up requesting something harmful. Bugs and misreadings can cause the same requests. Controls on identity, network access and execution limit the damage whatever the cause.</p>
+      <h3>Should an AI agent have its own service account?</h3>
+      <p>A dedicated identity is better than sharing a human's or an application's account, and it makes logs clearer. It should not hold more access than the user being served, so combine it with delegated, per-user permissions wherever possible.</p>
+      <h3>How should I store API keys used by an agent?</h3>
+      <p>Keep them in a secrets manager and let tool code load them at the point of use. Keys should not appear in prompts, tool results or traces. Prefer short-lived, narrowly scoped credentials to long-lived ones where the service supports them.</p>
+      <h3>Is a Docker container a safe sandbox for agent-generated code?</h3>
+      <p>It helps, but a default container is not a complete boundary because it shares the host's kernel. Remove network access and credentials, run as non-root and set resource limits. Consider stronger isolation, such as a virtual machine, for higher-risk work.</p>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="foot-cta">
+      <div>
+        <h2>Have an AI or full stack project in mind?</h2>
+        <p>Tell me what you want to build.</p>
+      </div>
+      <div class="foot-cta-btns">
+        <a class="btn" href="/#contact">Start a conversation</a>
+        <a class="btn btn-line" href="mailto:shivanigupta4876@gmail.com">Send an email</a>
+      </div>
+    </div>
+    <div class="foot-grid">
+      <div>
+        <a href="/" aria-label="Shivani, home"><img src="/assets/logo.svg" alt="Shivani" width="144" height="40"></a>
+        <p>AI/ML engineer working across generative AI, LLMs, RAG, agentic AI and NLP, plus full stack development.</p>
+        <span class="avail">Taking new projects</span>
+      </div>
+      <div>
+        <h3>Explore</h3>
+        <ul>
+          <li><a href="/services/">Services</a></li>
+          <li><a href="/#work">Projects</a></li>
+          <li><a href="/#process">Process</a></li>
+          <li><a href="/#faq">FAQ</a></li>
+          <li><a href="/blog/">Blog</a></li>
+          <li><a href="/#contact">Contact</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Services</h3>
+        <ul>
+          <li><a href="/services/generative-ai-llm-development/">Generative AI and LLMs</a></li>
+          <li><a href="/services/rag-development/">RAG development</a></li>
+          <li><a href="/services/multi-agent-systems/">Multi-agent systems</a></li>
+          <li><a href="/services/ai-orchestration-langgraph/">Orchestration with LangGraph</a></li>
+          <li><a href="/services/nlp-development/">NLP development</a></li>
+          <li><a href="/services/full-stack-development/">Full stack development</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Contact</h3>
+        <ul>
+          <li><a href="mailto:shivanigupta4876@gmail.com">shivanigupta4876@gmail.com</a></li>
+          <li><a href="tel:+919720466504">+91 97204 66504</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="foot-bottom">&copy; <span id="year">2026</span> Shivani. All rights reserved.</div>
+  </div>
+</footer>
+<a class="wa-float" href="https://wa.me/919720466504?text=Hi%20Shivani%2C%20I%20saw%20your%20website%20and%20would%20like%20to%20talk%20about%20a%20project." target="_blank" rel="noopener" aria-label="Chat on WhatsApp"><svg viewBox="0 0 24 24" width="28" height="28" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15L2 22l5.1-1.3A10 10 0 1 0 12 2zm0 18.2a8.2 8.2 0 0 1-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1a6.700 6.700 0 0 1-3.300-2.900c-.2-.3 0-.4.1-.6l.4-.4.2-.4v-.5l-.8-1.800c-.2-.5-.4-.4-.6-.4h-.5c-.2 0-.4.1-.6.3-.2.2-.8.8-.8 2s.9 2.300 1 2.500c.1.2 1.700 2.600 4.100 3.600 1.500.7 2.100.7 2.900.6.500-.1 1.500-.6 1.700-1.200.2-.6.2-1.100.1-1.200l-.2-.2z"/></svg></a>
+<script src="/assets/js/site.js" defer></script>
+</body>
+</html>

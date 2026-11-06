@@ -1,0 +1,213 @@
+<!doctype html>
+<html lang="en">
+<head>
+<script async src="https://www.googletagmanager.com/gtm.js?id=GTM-THN7RV8R"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+</script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="canonical" href="https://shivanigupta.store/blog/sql-agents-vs-rag/">
+<title>SQL Agents vs RAG: Which Fits Your Data? | Shivani</title>
+<meta name="description" content="SQL agents answer questions over structured rows; RAG answers from documents. how to choose by question type, when to combine them and how to route.">
+<meta name="robots" content="index,follow">
+<meta name="author" content="Shivani">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<link rel="manifest" href="/site.webmanifest">
+<meta name="theme-color" content="#080b0f">
+<meta property="og:type" content="article">
+<meta property="og:title" content="SQL Agents vs RAG: Which Fits Your Data? | Shivani">
+<meta property="og:description" content="SQL agents answer questions over structured rows; RAG answers from documents. how to choose by question type, when to combine them and how to route.">
+<meta property="og:url" content="https://shivanigupta.store/blog/sql-agents-vs-rag/">
+<meta property="og:image" content="https://shivanigupta.store/assets/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"SQL agents vs RAG: choosing by the shape of your data","description":"SQL agents answer questions over structured rows; RAG answers from documents. how to choose by question type, when to combine them and how to route.","mainEntityOfPage":"https://shivanigupta.store/blog/sql-agents-vs-rag/","datePublished":"2026-11-06","dateModified":"2026-11-06","author":{"@type":"Person","name":"Shivani"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://shivanigupta.store/"},{"@type":"ListItem","position":2,"name":"Blog","item":"https://shivanigupta.store/blog/"},{"@type":"ListItem","position":3,"name":"SQL agents vs RAG: choosing by the shape of your data","item":"https://shivanigupta.store/blog/sql-agents-vs-rag/"}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Can RAG answer questions about data in a database?","acceptedAnswer":{"@type":"Answer","text":"It can handle lookups of individual records converted to text, but it is unreliable for totals, counts and exhaustive lists because retrieval returns only a few matching items. Use a database query whenever the answer depends on considering all the relevant rows."}},{"@type":"Question","name":"Is a SQL agent more accurate than RAG?","acceptedAnswer":{"@type":"Answer","text":"Neither is more accurate in general, because they answer different kinds of question. A database calculates exactly what the query asks, but the query may misinterpret the question. RAG can be accurate about written content, but it depends on finding the right passages."}},{"@type":"Question","name":"Can I use a SQL agent and RAG together?","acceptedAnswer":{"@type":"Answer","text":"Yes. A router can send each question to the database, the documents or both, and then an LLM can write the answer from the results. Apply the user's permissions on both paths, and test the routing step separately."}},{"@type":"Question","name":"Do I need a vector database for a SQL agent?","acceptedAnswer":{"@type":"Answer","text":"Generally not, because a SQL agent queries your existing tables. Embeddings can still help with finding relevant tables in a large schema, or matching similar past questions to example queries, but they are an optional aid rather than a requirement."}}]}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&family=Poppins:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+<header class="nav">
+  <div class="wrap nav-in">
+    <a class="logo" href="/" aria-label="Shivani, home"><img src="/assets/logo.svg" alt="Shivani" width="144" height="40"></a>
+    <nav id="nav-links" aria-label="Main">
+      <a href="/#services">Services</a>
+      <a href="/#skills">Skills</a>
+      <a href="/#work">Work</a>
+      <a href="/#process">Process</a>
+      <a href="/#faq">FAQ</a>
+      <a href="/blog/">Blog</a>
+      <a class="btn btn-sm" href="/#contact">Hire Me</a>
+    </nav>
+    <button id="menu-toggle" class="menu-toggle" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="nav-links"><span></span><span></span><span></span></button>
+  </div>
+</header>
+
+<main id="top">
+  <section class="page-head">
+    <div class="wrap">
+      <nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a><span aria-hidden="true">/</span><a href="/blog/">Blog</a><span aria-hidden="true">/</span><span aria-current="page">SQL agents vs RAG: choosing by the shape of your data</span></nav>
+      <p class="eyebrow">Guide</p>
+      <h1>SQL agents vs RAG: choosing by the shape of your data</h1>
+      <p class="lead">Use a SQL agent when the answer must be computed from structured rows, such as totals, counts and filtered lists. Use RAG when it lives in the text of documents, such as policies, manuals and tickets. If your questions span both, combine them with a router. The deciding factor is the shape of the question and the data, not which technique is newer.</p>
+    </div>
+  </section>
+  <section class="article">
+    <div class="wrap prose">
+<h2>The core difference</h2>
+<p>The two approaches do different kinds of work. A <strong>SQL agent</strong> translates a question into a database query, runs it and explains the result. The database does the reasoning, so the figure comes from a calculation over the relevant rows. <strong>RAG</strong> searches for passages that resemble the question and asks a model to compose an answer from them, so the answer depends on what a handful of retrieved passages say.</p>
+<p>A small example shows why this matters. Take the question "What was our total refund value last quarter?" Suppose you embed each order row as text and use RAG. The search returns perhaps twenty similar-looking rows, and the model adds up what it was given. The result is a confident total based on a tiny sample of the data, and nothing in the answer reveals that. A SQL query covers every matching row.</p>
+<p>The reverse fails too. "What is our refund policy for damaged goods?" has no meaningful answer in a table of orders, and storing long documents in a text column and matching keywords with <code>LIKE</code> gives you a poor imitation of search.</p>
+
+<h2>A side-by-side comparison</h2>
+<div class="table-wrap"><table>
+<thead><tr><th>Consideration</th><th>SQL agent</th><th>RAG</th></tr></thead>
+<tbody>
+<tr><td>Best data</td><td>Tables with a defined schema</td><td>Documents and other free text</td></tr>
+<tr><td>Typical question</td><td>How many, how much, which ones, ranked how</td><td>What does it say, why, how do I</td></tr>
+<tr><td>Coverage</td><td>Every row matching the query</td><td>The top passages retrieved</td></tr>
+<tr><td>Typical failure</td><td>A valid query answers the wrong question</td><td>The right passage is missed or misread</td></tr>
+<tr><td>Evidence to show</td><td>The query and the resulting rows</td><td>Citations to the source passages</td></tr>
+<tr><td>Freshness</td><td>Live, if querying the source or a replica</td><td>As recent as the last index update</td></tr>
+<tr><td>Main preparation</td><td>Schema descriptions and business definitions</td><td>Parsing, chunking and indexing</td></tr>
+<tr><td>Main security work</td><td>Query limits and row-level access</td><td>Permission filters during retrieval</td></tr>
+</tbody>
+</table></div>
+
+<h2>Sort your real questions first</h2>
+<p>Before choosing, collect a sample of the questions people actually ask, perhaps from support logs or by asking users directly, and label each one. Three labels are usually enough: answered by computing over rows, answered by reading text, or needing both. The proportions often settle the matter, and they will also show you questions that neither approach can answer because the data does not exist.</p>
+<p>Some phrases give useful hints, although they are not rules:</p>
+<ul>
+<li><strong>Likely SQL:</strong> "total", "average", "how many", "top ten", "compared with last month", "list all customers who".</li>
+<li><strong>Likely RAG:</strong> "what does the contract say", "how do I", "explain", "what is the process for".</li>
+<li><strong>Likely both:</strong> "which of our delayed orders qualify for compensation under the policy?"</li>
+</ul>
+<p>Watch the word "all" in particular. "List every contract that mentions a termination fee" looks like a document question, but it demands complete coverage, which top-matching retrieval does not offer. It may be better to <a href="/blog/named-entity-recognition-and-data-extraction-with-llms/">extract those fields from each contract</a> into a table in advance, then query the table.</p>
+
+<h2>When a SQL agent is the better choice</h2>
+<ul>
+<li><strong>Answers require aggregation or complete coverage.</strong> Sums, counts, groupings and exhaustive lists all rely on seeing every row.</li>
+<li><strong>The data is live and already well modelled.</strong> Clear tables, keys and consistent values make queries much easier to generate correctly.</li>
+<li><strong>Users want to explore.</strong> Business questions vary too much for a fixed set of reports, and follow-up questions are natural.</li>
+</ul>
+<p>The catch is that a query can run perfectly and still be wrong. If "active customer" has a specific meaning in your business, and the model guesses another, the number will look entirely reasonable. Give the agent definitions and a curated set of views, and consider a semantic layer where metrics have one approved definition. Then treat the database as a security boundary. <a href="/blog/text-to-sql-agents-risks-and-safeguards/">Text-to-SQL agents: risks and safeguards</a> covers read-only roles, query validation and resource limits in detail, and those safeguards are not optional.</p>
+<p>Also ask whether you need an agent at all. If most questions fit a handful of known shapes, parameterised queries exposed as <a href="/blog/tool-calling-for-ai-agents/">narrow tools</a> are safer and easier to test than free-form SQL generation.</p>
+
+<h2>When RAG is the better choice</h2>
+<ul>
+<li><strong>The knowledge is written down in prose.</strong> Policies, manuals, wikis and contracts are the natural sources.</li>
+<li><strong>The answer is contained in a few passages.</strong> Retrieval works when a small amount of text can resolve the question.</li>
+<li><strong>Users need to check the source.</strong> Citations let them read the original wording, which matters for policy or legal text.</li>
+</ul>
+<p>RAG's failures tend to come from the content and the search step, and the <a href="/blog/what-is-rag-and-when-to-use-it/">guide to what RAG is and when to use it</a> walks through them. Its measures also differ from a SQL agent's, which is covered in <a href="/blog/how-to-evaluate-a-rag-system/">how to evaluate a RAG system</a>.</p>
+
+<h2>Awkward data in between</h2>
+<p>Real data rarely divides so tidily. A few cases come up often:</p>
+<ul>
+<li><strong>Free text inside a database.</strong> Tickets and product descriptions have both columns and prose. Filter on the columns, then search the text. Metadata filters in a retriever handle simple cases, while a database with vector support, as discussed in <a href="/blog/pgvector-vs-dedicated-vector-databases/">pgvector vs dedicated vector databases</a>, can combine both in one query.</li>
+<li><strong>Tables inside documents.</strong> A PDF price table is structured data in an unstructured container. <a href="/blog/rag-for-pdfs-and-tables/">RAG for PDFs and tables</a> describes the options, including extracting tables to a store you can query if people need to compute over them.</li>
+<li><strong>Spreadsheets.</strong> A single lookup may be fine as text, but any calculation should be done by loading the sheet into a queryable form.</li>
+<li><strong>Numbers quoted in reports.</strong> "What did the annual report say about revenue?" is a RAG question about a statement. "What was revenue?" may be a database question. The two can disagree, so decide which source is authoritative.</li>
+</ul>
+
+<h2>Combining the two with a router</h2>
+<p>When questions fall on both sides, a common design exposes each capability separately and chooses between them per question. The simplest form makes one classification call and then runs a fixed path. It is illustrative, with placeholder functions:</p>
+<pre><code># Illustrative only. All helper functions are placeholders.
+ROUTES = {"data", "documents", "both", "unclear"}
+
+def answer(question, user):
+    route = classify_question(question)
+    if route not in ROUTES:
+        route = "unclear"
+
+    if route == "unclear":
+        return ask_for_clarification(question)
+
+    context = {}
+    if route in {"data", "both"}:
+        context["rows"] = run_safe_query(question, user)
+    if route in {"documents", "both"}:
+        context["passages"] = retrieve_passages(question, user)
+
+    return write_answer(question, context)</code></pre>
+<p>Note that <code>user</code> comes from your application and goes to both paths, so that permissions apply on each side. A wrong route gives a wrong answer however good the later steps are, so add routing to your test set as a score of its own, and allow an "unclear" outcome rather than forcing a guess.</p>
+<p>Some questions need steps that depend on one another, for instance reading a policy to find a threshold and then querying for orders over it. A fixed router cannot do this, whereas an agent that chooses tools in a loop can, at the cost of more calls and more ways to go wrong. <a href="/blog/agentic-rag-explained/">Agentic RAG</a> explains that trade-off. Begin with the fixed path and move to a loop only for questions you have seen it fail on.</p>
+
+<h2>Testing each path</h2>
+<p>Test the two paths differently. For SQL, write questions with known answers checked by hand, and compare results rather than query text, because different queries can be equally correct. For RAG, score retrieval and the final answer separately. For both, include questions that should produce "I cannot answer that from the available data".</p>
+<p>Show your evidence in the interface too. A generated query with its row count, or a citation beside a claim, lets people catch mistakes that an automated test missed.</p>
+<p>If you are deciding how to approach a mix of documents and databases, the <a href="/services/rag-development/">RAG development</a> page describes what I can help with.</p>
+      <h2>Frequently asked questions</h2>
+      <h3>Can RAG answer questions about data in a database?</h3>
+      <p>It can handle lookups of individual records converted to text, but it is unreliable for totals, counts and exhaustive lists because retrieval returns only a few matching items. Use a database query whenever the answer depends on considering all the relevant rows.</p>
+      <h3>Is a SQL agent more accurate than RAG?</h3>
+      <p>Neither is more accurate in general, because they answer different kinds of question. A database calculates exactly what the query asks, but the query may misinterpret the question. RAG can be accurate about written content, but it depends on finding the right passages.</p>
+      <h3>Can I use a SQL agent and RAG together?</h3>
+      <p>Yes. A router can send each question to the database, the documents or both, and then an LLM can write the answer from the results. Apply the user's permissions on both paths, and test the routing step separately.</p>
+      <h3>Do I need a vector database for a SQL agent?</h3>
+      <p>Generally not, because a SQL agent queries your existing tables. Embeddings can still help with finding relevant tables in a large schema, or matching similar past questions to example queries, but they are an optional aid rather than a requirement.</p>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="foot-cta">
+      <div>
+        <h2>Have an AI or full stack project in mind?</h2>
+        <p>Tell me what you want to build.</p>
+      </div>
+      <div class="foot-cta-btns">
+        <a class="btn" href="/#contact">Start a conversation</a>
+        <a class="btn btn-line" href="mailto:shivanigupta4876@gmail.com">Send an email</a>
+      </div>
+    </div>
+    <div class="foot-grid">
+      <div>
+        <a href="/" aria-label="Shivani, home"><img src="/assets/logo.svg" alt="Shivani" width="144" height="40"></a>
+        <p>AI/ML engineer working across generative AI, LLMs, RAG, agentic AI and NLP, plus full stack development.</p>
+        <span class="avail">Taking new projects</span>
+      </div>
+      <div>
+        <h3>Explore</h3>
+        <ul>
+          <li><a href="/services/">Services</a></li>
+          <li><a href="/#work">Projects</a></li>
+          <li><a href="/#process">Process</a></li>
+          <li><a href="/#faq">FAQ</a></li>
+          <li><a href="/blog/">Blog</a></li>
+          <li><a href="/#contact">Contact</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Services</h3>
+        <ul>
+          <li><a href="/services/generative-ai-llm-development/">Generative AI and LLMs</a></li>
+          <li><a href="/services/rag-development/">RAG development</a></li>
+          <li><a href="/services/multi-agent-systems/">Multi-agent systems</a></li>
+          <li><a href="/services/ai-orchestration-langgraph/">Orchestration with LangGraph</a></li>
+          <li><a href="/services/nlp-development/">NLP development</a></li>
+          <li><a href="/services/full-stack-development/">Full stack development</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Contact</h3>
+        <ul>
+          <li><a href="mailto:shivanigupta4876@gmail.com">shivanigupta4876@gmail.com</a></li>
+          <li><a href="tel:+919720466504">+91 97204 66504</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="foot-bottom">&copy; <span id="year">2026</span> Shivani. All rights reserved.</div>
+  </div>
+</footer>
+<a class="wa-float" href="https://wa.me/919720466504?text=Hi%20Shivani%2C%20I%20saw%20your%20website%20and%20would%20like%20to%20talk%20about%20a%20project." target="_blank" rel="noopener" aria-label="Chat on WhatsApp"><svg viewBox="0 0 24 24" width="28" height="28" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15L2 22l5.1-1.3A10 10 0 1 0 12 2zm0 18.2a8.2 8.2 0 0 1-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1a6.700 6.700 0 0 1-3.300-2.900c-.2-.3 0-.4.1-.6l.4-.4.2-.4v-.5l-.8-1.800c-.2-.5-.4-.4-.6-.4h-.5c-.2 0-.4.1-.6.3-.2.2-.8.8-.8 2s.9 2.300 1 2.500c.1.2 1.700 2.600 4.100 3.600 1.500.7 2.100.7 2.900.6.500-.1 1.500-.6 1.700-1.200.2-.6.2-1.100.1-1.200l-.2-.2z"/></svg></a>
+<script src="/assets/js/site.js" defer></script>
+</body>
+</html>
