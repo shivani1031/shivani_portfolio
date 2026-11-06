@@ -1,0 +1,199 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="canonical" href="https://shivanigupta.store/blog/rag-vs-fine-tuning/">
+<title>RAG vs Fine-Tuning: Which Should You Choose? | Shivani</title>
+<meta name="description" content="RAG changes what a model can see; fine-tuning changes how it behaves. How to diagnose your problem, compare the trade-offs and decide when to combine them.">
+<meta name="robots" content="index,follow">
+<meta name="author" content="Shivani">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<link rel="manifest" href="/site.webmanifest">
+<meta name="theme-color" content="#080b0f">
+<meta property="og:type" content="article">
+<meta property="og:title" content="RAG vs Fine-Tuning: Which Should You Choose? | Shivani">
+<meta property="og:description" content="RAG changes what a model can see; fine-tuning changes how it behaves. How to diagnose your problem, compare the trade-offs and decide when to combine them.">
+<meta property="og:url" content="https://shivanigupta.store/blog/rag-vs-fine-tuning/">
+<meta property="og:image" content="https://shivanigupta.store/assets/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"RAG vs fine-tuning: which to choose","description":"RAG changes what a model can see; fine-tuning changes how it behaves. How to diagnose your problem, compare the trade-offs and decide when to combine them.","mainEntityOfPage":"https://shivanigupta.store/blog/rag-vs-fine-tuning/","datePublished":"2026-11-06","dateModified":"2026-11-06","author":{"@type":"Person","name":"Shivani"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://shivanigupta.store/"},{"@type":"ListItem","position":2,"name":"Blog","item":"https://shivanigupta.store/blog/"},{"@type":"ListItem","position":3,"name":"RAG vs fine-tuning: which to choose","item":"https://shivanigupta.store/blog/rag-vs-fine-tuning/"}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Is RAG cheaper than fine-tuning?","acceptedAnswer":{"@type":"Answer","text":"It depends on your volume, provider and content. RAG has indexing, search and extra prompt costs on each request, while fine-tuning has dataset and training costs and may change the price per request. Estimate both using current prices."}},{"@type":"Question","name":"Can fine-tuning replace RAG?","acceptedAnswer":{"@type":"Answer","text":"Generally not when answers depend on specific or changing facts. A tuned model cannot cite a source or reflect an update without further training, and it cannot apply per-user access rules to what it learned."}},{"@type":"Question","name":"Can I use RAG and fine-tuning together?","acceptedAnswer":{"@type":"Answer","text":"Yes. Retrieval can supply the facts while the tuned model handles format, labels or tone. Make the training examples include retrieved passages so that they resemble real requests, and add one technique at a time."}},{"@type":"Question","name":"How do I know which one my problem needs?","acceptedAnswer":{"@type":"Answer","text":"Paste the correct facts into the prompt by hand and try again. If the output becomes good, the model needed knowledge, which points to retrieval. If it stays poor, look at the prompt, examples or model."}}]}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&family=Poppins:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+<header class="nav">
+  <div class="wrap nav-in">
+    <a class="logo" href="/" aria-label="Shivani, home"><img src="/assets/logo.svg" alt="Shivani" width="144" height="40"></a>
+    <nav id="nav-links" aria-label="Main">
+      <a href="/#services">Services</a>
+      <a href="/#skills">Skills</a>
+      <a href="/#work">Work</a>
+      <a href="/#process">Process</a>
+      <a href="/#faq">FAQ</a>
+      <a href="/blog/">Blog</a>
+      <a class="btn btn-sm" href="/#contact">Hire Me</a>
+    </nav>
+    <button id="menu-toggle" class="menu-toggle" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="nav-links"><span></span><span></span><span></span></button>
+  </div>
+</header>
+
+<main id="top">
+  <section class="page-head">
+    <div class="wrap">
+      <nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a><span aria-hidden="true">/</span><a href="/blog/">Blog</a><span aria-hidden="true">/</span><span aria-current="page">RAG vs fine-tuning: which to choose</span></nav>
+      <p class="eyebrow">Guide</p>
+      <h1>RAG vs fine-tuning: which to choose</h1>
+      <p class="lead">Choose RAG when the model lacks knowledge, particularly knowledge that changes, needs citing or varies by user. Choose fine-tuning when the model has what it needs but performs a repeated task in the wrong way, such as the wrong format, labels or style. Many teams should try RAG or better prompts first, and the two can be combined.</p>
+    </div>
+  </section>
+  <section class="article">
+    <div class="wrap prose">
+<h2>The question to ask first</h2>
+<p>RAG and fine-tuning are often presented as rivals, yet they change different things. RAG alters the input: for each question, the system finds relevant text and adds it to the prompt. Fine-tuning alters the model: it continues training from an existing model using your examples, so that its weights shift towards the behaviour those examples show.</p>
+<p>So the useful first question is not which technique is better. It is what kind of failure you are looking at. Collect some poor outputs and sort them into two groups:</p>
+<ul>
+<li><strong>A knowledge failure.</strong> The answer is wrong or vague because the model never saw the facts. It cannot state your returns policy, or it describes last year's pricing rules.</li>
+<li><strong>A behaviour failure.</strong> The facts were available, but the output is in the wrong shape. It uses the wrong labels, ignores your house style or handles a repeated judgement inconsistently.</li>
+</ul>
+<p>A simple test separates the two. Paste the relevant facts directly into the prompt by hand and run the request again. If the answer becomes good, the model needed knowledge, and retrieval could supply it automatically. If the answer is still poor with all the facts in front of the model, retrieval alone will not fix it, and you should look at the prompt, the examples or the model itself.</p>
+
+<h2>How the two compare</h2>
+<div class="table-wrap"><table>
+<thead><tr><th>Question</th><th>RAG</th><th>Fine-tuning</th></tr></thead>
+<tbody>
+<tr><td>What changes</td><td>The context sent with each request</td><td>The model's weights</td></tr>
+<tr><td>Main strength</td><td>Supplying specific, current information</td><td>Teaching a consistent pattern of behaviour</td></tr>
+<tr><td>Updating knowledge</td><td>Update the index</td><td>Prepare new examples and train again</td></tr>
+<tr><td>Citing sources</td><td>Natural, since passages are known</td><td>Not reliable, since training does not preserve a link to a source</td></tr>
+<tr><td>Per-user access control</td><td>Can be enforced at retrieval time</td><td>Not suitable, since anything learned is available to every user of that model</td></tr>
+<tr><td>Main work</td><td>Parsing, chunking, search and an index to maintain</td><td>A labelled dataset, training runs and model versions</td></tr>
+<tr><td>Typical failure</td><td>The right passage is not retrieved</td><td>The model learns the wrong pattern or overfits</td></tr>
+</tbody>
+</table></div>
+<p>Provider support and pricing for fine-tuning vary by model and change over time, so check them for the specific model you plan to use. Some hosted models do not offer it at all, which can settle the question on its own.</p>
+
+<h2>When RAG is the better choice</h2>
+<p>RAG suits problems in which the answer lives in content you hold. Look for these signs:</p>
+<ul>
+<li><strong>The information changes.</strong> Policies, documentation and product details are revised, and an index can reflect an edit without any training.</li>
+<li><strong>People need to verify answers.</strong> Because the system knows which passages it supplied, it can show them alongside the answer.</li>
+<li><strong>The content is large.</strong> Retrieval selects a small relevant portion for each question rather than sending everything.</li>
+<li><strong>Access differs by user.</strong> A filter applied outside the model can restrict what each person's question is able to retrieve.</li>
+<li><strong>Removal matters.</strong> Deleting a document from an index is direct. Removing a fact from a trained model is not.</li>
+</ul>
+<p>The price is a pipeline that has to be built and looked after. Retrieval quality depends on parsing, on <a href="/blog/choosing-chunking-strategies-for-rag/">how documents are chunked</a> and on the search method, and retrieved text is untrusted input that may contain instructions. The guide on <a href="/blog/what-is-rag-and-when-to-use-it/">what RAG is and when to use it</a> covers these parts, as well as the cases where it is the wrong tool.</p>
+
+<h2>When fine-tuning is the better choice</h2>
+<p>Fine-tuning is worth considering when you can describe the desired behaviour mainly through examples, and when instructions have stopped improving it. Reasonable candidates include:</p>
+<ul>
+<li><strong>A narrow, repeated task.</strong> Classification or extraction with stable labels gives the model one pattern to learn. The guide to <a href="/blog/text-classification-llms-vs-traditional-nlp/">text classification with LLMs and traditional NLP</a> compares this with other methods.</li>
+<li><strong>A strict output style.</strong> A format or tone that is hard to specify in words may be easier to show.</li>
+<li><strong>Long prompts carrying many examples.</strong> Moving repeated examples into training may shorten each request. Whether that saves money depends on the rates and traffic involved, so work it out for your case.</li>
+<li><strong>A move to a smaller model.</strong> A tuned smaller model might handle a narrow task acceptably at lower cost or latency, although this has to be demonstrated on your own test set.</li>
+</ul>
+<p>The price is a different kind of maintenance. You need enough good examples, a way to keep test data separate from training data, and a process for repeating the work when requirements change or the base model is retired. Errors in your examples are also learned. Inconsistent labels, in particular, are often a sign that the task definition needs work before any training begins.</p>
+
+<h2>Why fine-tuning is a poor way to add facts</h2>
+<p>It is tempting to think of fine-tuning as a way of teaching a model your documents. In practice, this tends to disappoint for several reasons. Training adjusts the model towards patterns, and it does not store documents for reliable lookup, so the model can blend what it learned into a confident and incorrect answer. A tuned model also cannot tell you where a statement came from. Each change in the facts requires new training, and in the meantime the old facts remain in the weights.</p>
+<p>There is a privacy concern as well. Confidential text in a training set may be reproduced in later output, and every user of that model has potential access to it. If this matters, retrieval with enforced permissions gives you a clearer boundary, though it still needs defences of its own.</p>
+
+<h2>Try the cheaper fixes first</h2>
+<p>Before you commit to either technique, check whether a simpler change would solve the problem:</p>
+<ol>
+<li><strong>Improve the prompt.</strong> Clearer instructions and a few well-chosen examples resolve many behaviour failures.</li>
+<li><strong>Use structured output.</strong> Where a provider or library can enforce a schema, a format problem may need no training at all.</li>
+<li><strong>Add static context.</strong> If the knowledge is small and stable, including it in the prompt avoids a retrieval system. Prompt caching, where available, may reduce the cost of repeating it.</li>
+<li><strong>Use a tool call.</strong> Live values and calculations are usually better fetched from an API or database than retrieved from an index or learned in training.</li>
+<li><strong>Try another model.</strong> Compare a different base model on your test set, because this may be less work than tuning the current one.</li>
+</ol>
+
+<h2>Using both together</h2>
+<p>The two can work together because they address different layers. A support assistant might use retrieval for current policy, plus a tuned model for the structure and tone of its replies. The tuned model supplies the behaviour, while the index supplies the facts.</p>
+<p>If you combine them, keep the training examples realistic. Include retrieved passages in the examples, including some cases in which the passages do not answer the question and the correct output is to say so. Otherwise, the model may never learn to decline, and the training data will not resemble what it sees in production.</p>
+<p>Add the second technique only after the first has reached its limit, because each adds its own source of failure. If you change both at once, you will struggle to work out which one caused a result to move.</p>
+
+<h2>A way to decide on your own data</h2>
+<p>A short experiment gives a better answer than general advice:</p>
+<ol>
+<li><strong>Build a test set.</strong> Gather realistic requests with expected outcomes, and keep them apart from anything used for training.</li>
+<li><strong>Record a baseline.</strong> Run your current prompt and model, and label each failure as knowledge or behaviour.</li>
+<li><strong>Run the paste test.</strong> Supply the correct facts by hand for the knowledge failures, and confirm that the answers improve.</li>
+<li><strong>Change one thing.</strong> Add retrieval or a tuned model, not both, and score it on the same test set.</li>
+<li><strong>Compare the running cost.</strong> Look beyond quality to latency, price and the effort of keeping the system current.</li>
+</ol>
+<p>For retrieval, score retrieval and answers separately, as described in <a href="/blog/how-to-evaluate-a-rag-system/">how to evaluate a RAG system</a>. Where the failures are mostly knowledge failures, the next step is usually to prototype a small pipeline, and the guide to <a href="/blog/build-a-rag-chatbot-in-python/">building a RAG chatbot in Python</a> walks through one.</p>
+<p>If your diagnosis points towards retrieval and you want help planning it, the <a href="/services/rag-development/">RAG development</a> page describes what I can help with.</p>
+      <h2>Frequently asked questions</h2>
+      <h3>Is RAG cheaper than fine-tuning?</h3>
+      <p>It depends on your volume, provider and content. RAG has indexing, search and extra prompt costs on each request, while fine-tuning has dataset and training costs and may change the price per request. Estimate both using current prices.</p>
+      <h3>Can fine-tuning replace RAG?</h3>
+      <p>Generally not when answers depend on specific or changing facts. A tuned model cannot cite a source or reflect an update without further training, and it cannot apply per-user access rules to what it learned.</p>
+      <h3>Can I use RAG and fine-tuning together?</h3>
+      <p>Yes. Retrieval can supply the facts while the tuned model handles format, labels or tone. Make the training examples include retrieved passages so that they resemble real requests, and add one technique at a time.</p>
+      <h3>How do I know which one my problem needs?</h3>
+      <p>Paste the correct facts into the prompt by hand and try again. If the output becomes good, the model needed knowledge, which points to retrieval. If it stays poor, look at the prompt, examples or model.</p>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="foot-cta">
+      <div>
+        <h2>Have an AI or full stack project in mind?</h2>
+        <p>Tell me what you want to build.</p>
+      </div>
+      <div class="foot-cta-btns">
+        <a class="btn" href="/#contact">Start a conversation</a>
+        <a class="btn btn-line" href="mailto:shivanigupta4876@gmail.com">Send an email</a>
+      </div>
+    </div>
+    <div class="foot-grid">
+      <div>
+        <a href="/" aria-label="Shivani, home"><img src="/assets/logo.svg" alt="Shivani" width="144" height="40"></a>
+        <p>AI/ML engineer working across generative AI, LLMs, RAG, agentic AI and NLP, plus full stack development.</p>
+        <span class="avail">Taking new projects</span>
+      </div>
+      <div>
+        <h3>Explore</h3>
+        <ul>
+          <li><a href="/services/">Services</a></li>
+          <li><a href="/#work">Projects</a></li>
+          <li><a href="/#process">Process</a></li>
+          <li><a href="/#faq">FAQ</a></li>
+          <li><a href="/blog/">Blog</a></li>
+          <li><a href="/#contact">Contact</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Services</h3>
+        <ul>
+          <li><a href="/services/generative-ai-llm-development/">Generative AI and LLMs</a></li>
+          <li><a href="/services/rag-development/">RAG development</a></li>
+          <li><a href="/services/multi-agent-systems/">Multi-agent systems</a></li>
+          <li><a href="/services/ai-orchestration-langgraph/">Orchestration with LangGraph</a></li>
+          <li><a href="/services/nlp-development/">NLP development</a></li>
+          <li><a href="/services/full-stack-development/">Full stack development</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Contact</h3>
+        <ul>
+          <li><a href="mailto:shivanigupta4876@gmail.com">shivanigupta4876@gmail.com</a></li>
+          <li><a href="tel:+919720466504">+91 97204 66504</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="foot-bottom">&copy; <span id="year">2026</span> Shivani. All rights reserved.</div>
+  </div>
+</footer>
+<a class="wa-float" href="https://wa.me/919720466504?text=Hi%20Shivani%2C%20I%20saw%20your%20website%20and%20would%20like%20to%20talk%20about%20a%20project." target="_blank" rel="noopener" aria-label="Chat on WhatsApp"><svg viewBox="0 0 24 24" width="28" height="28" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15L2 22l5.1-1.3A10 10 0 1 0 12 2zm0 18.2a8.2 8.2 0 0 1-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1a6.700 6.700 0 0 1-3.300-2.900c-.2-.3 0-.4.1-.6l.4-.4.2-.4v-.5l-.8-1.800c-.2-.5-.4-.4-.6-.4h-.5c-.2 0-.4.1-.6.3-.2.2-.8.8-.8 2s.9 2.300 1 2.500c.1.2 1.700 2.600 4.100 3.600 1.500.7 2.100.7 2.900.6.500-.1 1.500-.6 1.700-1.200.2-.6.2-1.100.1-1.200l-.2-.2z"/></svg></a>
+<script src="/assets/js/site.js" defer></script>
+</body>
+</html>

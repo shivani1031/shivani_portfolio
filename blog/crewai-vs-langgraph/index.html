@@ -1,0 +1,249 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="canonical" href="https://shivanigupta.store/blog/crewai-vs-langgraph/">
+<title>CrewAI vs LangGraph for Multi-Agent Systems | Shivani</title>
+<meta name="description" content="CrewAI organises work around agents, tasks and crews, while LangGraph has you define state and routes in a graph. How to choose for a multi-agent system.">
+<meta name="robots" content="index,follow">
+<meta name="author" content="Shivani">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<link rel="manifest" href="/site.webmanifest">
+<meta name="theme-color" content="#080b0f">
+<meta property="og:type" content="article">
+<meta property="og:title" content="CrewAI vs LangGraph for Multi-Agent Systems | Shivani">
+<meta property="og:description" content="CrewAI organises work around agents, tasks and crews, while LangGraph has you define state and routes in a graph. How to choose for a multi-agent system.">
+<meta property="og:url" content="https://shivanigupta.store/blog/crewai-vs-langgraph/">
+<meta property="og:image" content="https://shivanigupta.store/assets/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"CrewAI vs LangGraph for multi-agent systems","description":"CrewAI organises work around agents, tasks and crews, while LangGraph has you define state and routes in a graph. How to choose for a multi-agent system.","mainEntityOfPage":"https://shivanigupta.store/blog/crewai-vs-langgraph/","datePublished":"2026-11-06","dateModified":"2026-11-06","author":{"@type":"Person","name":"Shivani"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://shivanigupta.store/"},{"@type":"ListItem","position":2,"name":"Blog","item":"https://shivanigupta.store/blog/"},{"@type":"ListItem","position":3,"name":"CrewAI vs LangGraph for multi-agent systems","item":"https://shivanigupta.store/blog/crewai-vs-langgraph/"}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Is CrewAI or LangGraph better for multi-agent systems?","acceptedAnswer":{"@type":"Answer","text":"Neither is better in every case. CrewAI offers a higher-level model of agents, tasks and crews, while LangGraph gives explicit control over state and routing. Build your hardest workflow in both, then compare the results."}},{"@type":"Question","name":"Can CrewAI and LangGraph be used together?","acceptedAnswer":{"@type":"Answer","text":"In principle, yes, since a LangGraph node can run ordinary Python, including a crew. However, this adds two sets of concepts and versions, so have a clear reason before combining them."}},{"@type":"Question","name":"Does LangGraph require LangChain?","acceptedAnswer":{"@type":"Answer","text":"No. LangGraph's documentation says it does not require LangChain, although its examples often use LangChain for model and tool integrations."}},{"@type":"Question","name":"Do I need a framework for multi-agent systems?","acceptedAnswer":{"@type":"Answer","text":"No. Simple coordination can be written in ordinary code, and many problems need only one agent. A framework becomes more useful as branching, recovery and human review become harder to manage by hand."}}]}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&family=Poppins:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+<header class="nav">
+  <div class="wrap nav-in">
+    <a class="logo" href="/" aria-label="Shivani, home"><img src="/assets/logo.svg" alt="Shivani" width="144" height="40"></a>
+    <nav id="nav-links" aria-label="Main">
+      <a href="/#services">Services</a>
+      <a href="/#skills">Skills</a>
+      <a href="/#work">Work</a>
+      <a href="/#process">Process</a>
+      <a href="/#faq">FAQ</a>
+      <a href="/blog/">Blog</a>
+      <a class="btn btn-sm" href="/#contact">Hire Me</a>
+    </nav>
+    <button id="menu-toggle" class="menu-toggle" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="nav-links"><span></span><span></span><span></span></button>
+  </div>
+</header>
+
+<main id="top">
+  <section class="page-head">
+    <div class="wrap">
+      <nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a><span aria-hidden="true">/</span><a href="/blog/">Blog</a><span aria-hidden="true">/</span><span aria-current="page">CrewAI vs LangGraph for multi-agent systems</span></nav>
+      <p class="eyebrow">Guide</p>
+      <h1>CrewAI vs LangGraph for multi-agent systems</h1>
+      <p class="lead">Choose CrewAI when your work maps naturally onto role-based agents completing defined tasks and you want a higher-level starting point. Choose LangGraph when you need explicit control over state, routing, retries and human review. Neither is better in general, so prototype your hardest workflow in both before you commit.</p>
+    </div>
+  </section>
+  <section class="article">
+    <div class="wrap prose">
+<h2>Two different starting points</h2>
+<p>Both projects can coordinate several agents, but they ask you to describe the work in different terms.</p>
+<p><strong>CrewAI</strong> begins with a team. You define agents with a role, a goal and a backstory, then define tasks with a description and an expected output, and group them into a crew. A process setting decides how the tasks run. Its documentation also describes Flows, which add event-driven steps and shared state around that work.</p>
+<p><strong>LangGraph</strong> begins with a program. Its documentation calls it a low-level orchestration framework and runtime for long-running, stateful agents. You define a shared state object, nodes that update it and edges that decide what runs next. An "agent" is whatever you put in a node, and the library has no built-in notion of a team. It also does not require LangChain, although its examples often use it for model and tool integrations.</p>
+<p>The result is that CrewAI gives you more structure to begin with, while LangGraph asks you to specify more and assumes less. Before comparing them, it is worth confirming that you need several agents at all. The guide to <a href="/blog/single-agent-vs-multi-agent-systems/">single agent vs multi-agent systems</a> covers that decision, and one agent with good tools is often enough.</p>
+
+<h2>How they compare</h2>
+<div class="table-wrap"><table>
+<thead><tr><th>Question</th><th>CrewAI</th><th>LangGraph</th></tr></thead>
+<tbody>
+<tr><td>Main concepts</td><td>Agents, tasks, crews, processes and Flows</td><td>State, nodes, edges and checkpointers</td></tr>
+<tr><td>Who decides what runs next</td><td>The process setting, a manager or Flow logic</td><td>Your edges and routing functions</td></tr>
+<tr><td>Coordination</td><td>Sequential or hierarchical processes</td><td>Whatever topology you draw</td></tr>
+<tr><td>State</td><td>Task outputs passed as context, and Flow state</td><td>A defined object that nodes read and update</td></tr>
+<tr><td>Recovery</td><td>Documented persistence and checkpointing features</td><td>Checkpoints saved per thread</td></tr>
+<tr><td>Human review</td><td>Documented options such as a task's human input setting</td><td>Interrupts that pause and later resume a run</td></tr>
+<tr><td>Likely strength</td><td>Quickly expressing role-based work</td><td>Precise control over complex paths</td></tr>
+</tbody>
+</table></div>
+<p>Both projects change quickly, and features listed here may have moved on. Treat the table as a description of each project's general approach as documented at the time of writing, and confirm the details against the version you plan to install. Vendor comparisons and benchmarks deserve caution too, since each is written from one point of view.</p>
+
+<h2>What each looks like in code</h2>
+<p>Consider a simple job in which one agent researches a topic and another writes a summary. Both samples below are illustrative and have not been run against a live model. They show the general shape only, and <code>search_tool</code> and the node functions are placeholders. In CrewAI, it reads like a description of the team:</p>
+<pre><code># Illustrative only. search_tool is a placeholder.
+from crewai import Agent, Crew, Process, Task
+
+researcher = Agent(
+    role="Researcher",
+    goal="Find reliable facts about {topic}",
+    backstory="You check sources before reporting anything.",
+    tools=[search_tool],
+)
+writer = Agent(
+    role="Writer",
+    goal="Summarise research accurately",
+    backstory="You write plainly and never add unsupported claims.",
+)
+
+research = Task(
+    description="Research {topic}.",
+    expected_output="A list of facts with their sources.",
+    agent=researcher,
+)
+summary = Task(
+    description="Write a short summary of the research.",
+    expected_output="Three paragraphs that cite the sources.",
+    agent=writer,
+)
+
+crew = Crew(
+    agents=[researcher, writer],
+    tasks=[research, summary],
+    process=Process.sequential,
+)
+result = crew.kickoff(inputs={"topic": "battery recycling"})</code></pre>
+<p>In LangGraph, the same job is written as a state schema and a graph. This sample is also illustrative, and it adds a check that sends thin research back for another pass, because that kind of branch is where a graph is most useful:</p>
+<pre><code># Illustrative only. The node functions are placeholders.
+from typing import TypedDict
+from langgraph.graph import StateGraph, START, END
+
+class ReportState(TypedDict):
+    topic: str
+    facts: list[str]
+    attempts: int
+    summary: str
+
+def route_after_research(state: ReportState) -&gt; str:
+    if state["facts"] or state["attempts"] &gt;= 2:
+        return "write"
+    return "research"
+
+graph = StateGraph(ReportState)
+graph.add_node("research", research_node)
+graph.add_node("write", write_node)
+
+graph.add_edge(START, "research")
+graph.add_conditional_edges("research", route_after_research)
+graph.add_edge("write", END)
+
+app = graph.compile()</code></pre>
+<p>CrewAI's version is closer to the way a person would brief a team. LangGraph's version is longer, but the retry rule and its limit are visible in code that you can test without calling a model.</p>
+
+<h2>Control flow and predictability</h2>
+<p>This is usually the deciding difference. CrewAI's documentation describes two process implementations. In a sequential process, tasks follow the listed order and each output can provide context for the next. In a hierarchical process, a manager oversees planning and delegation, and you must supply a manager model or a custom manager agent. This is convenient, but in the hierarchical case a model is making coordination decisions, so paths may vary between runs. CrewAI's Flows offer a more deterministic layer, with start, listen and router steps, and a Flow can call a crew as one of its steps.</p>
+<p>In LangGraph, routing is whatever you write. It can be a plain Python condition, or it can be a model's decision, and you can mix the two in one graph. If a compliance rule says that a particular step must always follow another, an explicit edge states this directly. The cost is that you must think through those routes yourself. <a href="/blog/building-an-orchestrator-with-langgraph/">Building an orchestrator with LangGraph</a> shows what this involves.</p>
+
+<h2>State, recovery and human review</h2>
+<p>Long-running workflows need to survive failures and wait for people, so check this area closely.</p>
+<p>LangGraph builds its persistence around checkpoints. A checkpointer saves graph state for a thread, identified by a thread ID, and this supports resumption and human-in-the-loop pauses. An <code>interrupt</code> needs a checkpointer and a thread ID, and on resume the node runs again from its beginning, so side effects before the interrupt should be idempotent. That detail matters in any real design, and is covered further in <a href="/blog/human-in-the-loop-approval-for-ai-agents/">human-in-the-loop approval for AI agents</a>.</p>
+<p>CrewAI documents several related features. These include a <code>@persist</code> decorator for Flow state, a checkpointing feature for resuming crews and flows after a failure, and a task setting that asks a person to review an agent's final answer. Check how far each one meets your needs. For example, confirm what happens to a run that waits for several days, what happens during a deployment, and which storage options suit several servers. A short test will reveal more than the feature list can.</p>
+<p>With either framework, decide separately what the agents should remember across runs. The guide to <a href="/blog/agent-memory-short-term-and-long-term-state/">agent memory</a> explains why run state and long-term memory are different problems.</p>
+
+<h2>Debugging and everyday maintenance</h2>
+<p>The first demonstration of a framework says little about the sixth month of using it. Higher-level abstractions can make it harder to see the exact prompt a model received, so check how easily you can inspect this in each option. Role and backstory text in a crew, along with the framework's own instructions, all become part of what the model reads. In a graph, you write more of the prompt yourself, but you also own more code.</p>
+<p>Also look at how each project handles upgrades, since fast-moving libraries can change their APIs. Pin versions, keep a test suite that does not depend on live model calls, and read release notes before you upgrade.</p>
+
+<h2>When to choose each</h2>
+<h3>CrewAI tends to suit</h3>
+<ul>
+<li>work that divides cleanly into roles and tasks, such as research, drafting and review;</li>
+<li>teams who want a working prototype of a multi-agent process quickly;</li>
+<li>processes where some variation between runs is acceptable, and a person reviews the output.</li>
+</ul>
+<h3>LangGraph tends to suit</h3>
+<ul>
+<li>workflows with branches, loops, retries and strict ordering rules;</li>
+<li>long-running processes that must pause, resume and recover;</li>
+<li>systems where you want routing logic you can read, unit test and audit;</li>
+<li>designs that mix deterministic code with model decisions at specific points.</li>
+</ul>
+<h3>Neither may be needed</h3>
+<p>If your program is a short sequence of steps, or a single agent loop with a few tools, ordinary Python may be enough. A framework adds concepts to learn, versions to track and a layer to debug through. The comparison of <a href="/blog/langchain-vs-langgraph-when-to-use-each/">LangChain vs LangGraph</a> makes the same point for simpler applications.</p>
+
+<h2>How to decide on your own project</h2>
+<p>Feature tables have limits, so a small trial is worth the time:</p>
+<ol>
+<li><strong>Choose your hardest path.</strong> Pick the part of the workflow most likely to cause trouble, such as a failed tool call followed by an approval.</li>
+<li><strong>Build it in both.</strong> Keep the tools and prompts the same, so that you are comparing the frameworks.</li>
+<li><strong>Force failures.</strong> Stop the process mid-run, return bad tool output and make a person reject a step.</li>
+<li><strong>Inspect a failed run.</strong> Can you see which agent did what, and with which input?</li>
+<li><strong>Compare the running cost.</strong> Count model calls and tokens for the same job, as a manager or extra agents can add calls.</li>
+<li><strong>Try a requirement change.</strong> Add a new branch, and see how much code has to move.</li>
+</ol>
+<p>Whichever you choose, keep your tools and business logic in plain functions that know nothing about the framework. Migration then becomes far less painful if your needs change.</p>
+<p>If you are planning a workflow that needs this kind of control, the <a href="/services/ai-orchestration-langgraph/">AI orchestration with LangGraph</a> page describes what I can help with.</p>
+      <h2>Frequently asked questions</h2>
+      <h3>Is CrewAI or LangGraph better for multi-agent systems?</h3>
+      <p>Neither is better in every case. CrewAI offers a higher-level model of agents, tasks and crews, while LangGraph gives explicit control over state and routing. Build your hardest workflow in both, then compare the results.</p>
+      <h3>Can CrewAI and LangGraph be used together?</h3>
+      <p>In principle, yes, since a LangGraph node can run ordinary Python, including a crew. However, this adds two sets of concepts and versions, so have a clear reason before combining them.</p>
+      <h3>Does LangGraph require LangChain?</h3>
+      <p>No. LangGraph's documentation says it does not require LangChain, although its examples often use LangChain for model and tool integrations.</p>
+      <h3>Do I need a framework for multi-agent systems?</h3>
+      <p>No. Simple coordination can be written in ordinary code, and many problems need only one agent. A framework becomes more useful as branching, recovery and human review become harder to manage by hand.</p>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="foot-cta">
+      <div>
+        <h2>Have an AI or full stack project in mind?</h2>
+        <p>Tell me what you want to build.</p>
+      </div>
+      <div class="foot-cta-btns">
+        <a class="btn" href="/#contact">Start a conversation</a>
+        <a class="btn btn-line" href="mailto:shivanigupta4876@gmail.com">Send an email</a>
+      </div>
+    </div>
+    <div class="foot-grid">
+      <div>
+        <a href="/" aria-label="Shivani, home"><img src="/assets/logo.svg" alt="Shivani" width="144" height="40"></a>
+        <p>AI/ML engineer working across generative AI, LLMs, RAG, agentic AI and NLP, plus full stack development.</p>
+        <span class="avail">Taking new projects</span>
+      </div>
+      <div>
+        <h3>Explore</h3>
+        <ul>
+          <li><a href="/services/">Services</a></li>
+          <li><a href="/#work">Projects</a></li>
+          <li><a href="/#process">Process</a></li>
+          <li><a href="/#faq">FAQ</a></li>
+          <li><a href="/blog/">Blog</a></li>
+          <li><a href="/#contact">Contact</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Services</h3>
+        <ul>
+          <li><a href="/services/generative-ai-llm-development/">Generative AI and LLMs</a></li>
+          <li><a href="/services/rag-development/">RAG development</a></li>
+          <li><a href="/services/multi-agent-systems/">Multi-agent systems</a></li>
+          <li><a href="/services/ai-orchestration-langgraph/">Orchestration with LangGraph</a></li>
+          <li><a href="/services/nlp-development/">NLP development</a></li>
+          <li><a href="/services/full-stack-development/">Full stack development</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Contact</h3>
+        <ul>
+          <li><a href="mailto:shivanigupta4876@gmail.com">shivanigupta4876@gmail.com</a></li>
+          <li><a href="tel:+919720466504">+91 97204 66504</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="foot-bottom">&copy; <span id="year">2026</span> Shivani. All rights reserved.</div>
+  </div>
+</footer>
+<a class="wa-float" href="https://wa.me/919720466504?text=Hi%20Shivani%2C%20I%20saw%20your%20website%20and%20would%20like%20to%20talk%20about%20a%20project." target="_blank" rel="noopener" aria-label="Chat on WhatsApp"><svg viewBox="0 0 24 24" width="28" height="28" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15L2 22l5.1-1.3A10 10 0 1 0 12 2zm0 18.2a8.2 8.2 0 0 1-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1a6.700 6.700 0 0 1-3.300-2.900c-.2-.3 0-.4.1-.6l.4-.4.2-.4v-.5l-.8-1.800c-.2-.5-.4-.4-.6-.4h-.5c-.2 0-.4.1-.6.3-.2.2-.8.8-.8 2s.9 2.300 1 2.500c.1.2 1.700 2.600 4.100 3.600 1.500.7 2.100.7 2.900.6.500-.1 1.500-.6 1.700-1.200.2-.6.2-1.100.1-1.200l-.2-.2z"/></svg></a>
+<script src="/assets/js/site.js" defer></script>
+</body>
+</html>

@@ -41,6 +41,11 @@ The site describes the services on offer and publishes general technical guides.
 - [Embeddings and choosing a vector database](/blog/embeddings-and-choosing-a-vector-database/): how embeddings work and the criteria for selecting a model and a vector store, with no product rankings
 - [Text-to-SQL agents: risks and safeguards](/blog/text-to-sql-agents-risks-and-safeguards/): data exposure, wrong answers, database permissions, query validation, resource limits and testing
 - [Controlling LLM cost and latency](/blog/controlling-llm-cost-and-latency/): measurement, context trimming, model routing, caching, output caps, streaming and agent loop limits
+- [RAG vs fine-tuning: which to choose](/blog/rag-vs-fine-tuning/): diagnosing knowledge problems and behaviour problems, comparing the trade-offs and combining the two
+- [Agentic RAG explained: when it beats a plain pipeline](/blog/agentic-rag-explained/): how a model can control retrieval, the common patterns and when a fixed pipeline remains the better choice
+- [Model Context Protocol: what it is and how agents use it](/blog/model-context-protocol-for-ai-agents/): hosts, clients and servers, how agents discover and call tools, transports and the security decisions that remain yours
+- [CrewAI vs LangGraph for multi-agent systems](/blog/crewai-vs-langgraph/): comparing role-based crews with explicit graphs on control, state, recovery and human review, and how to test the choice
+- [How to build a RAG chatbot in Python](/blog/build-a-rag-chatbot-in-python/): a provider-neutral walkthrough of chunking, indexing, retrieval, cited answers, follow-up questions and testing
 
 ## Projects
 

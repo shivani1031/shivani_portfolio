@@ -1,0 +1,209 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="canonical" href="https://shivanigupta.store/blog/agentic-rag-explained/">
+<title>Agentic RAG: What It Is and When to Use It | Shivani</title>
+<meta name="description" content="Agentic RAG lets a model decide when and how to retrieve, then check the results. How it differs from a plain pipeline, when it wins and what it costs.">
+<meta name="robots" content="index,follow">
+<meta name="author" content="Shivani">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<link rel="manifest" href="/site.webmanifest">
+<meta name="theme-color" content="#080b0f">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Agentic RAG: What It Is and When to Use It | Shivani">
+<meta property="og:description" content="Agentic RAG lets a model decide when and how to retrieve, then check the results. How it differs from a plain pipeline, when it wins and what it costs.">
+<meta property="og:url" content="https://shivanigupta.store/blog/agentic-rag-explained/">
+<meta property="og:image" content="https://shivanigupta.store/assets/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Agentic RAG explained: when it beats a plain pipeline","description":"Agentic RAG lets a model decide when and how to retrieve, then check the results. How it differs from a plain pipeline, when it wins and what it costs.","mainEntityOfPage":"https://shivanigupta.store/blog/agentic-rag-explained/","datePublished":"2026-11-06","dateModified":"2026-11-06","author":{"@type":"Person","name":"Shivani"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://shivanigupta.store/"},{"@type":"ListItem","position":2,"name":"Blog","item":"https://shivanigupta.store/blog/"},{"@type":"ListItem","position":3,"name":"Agentic RAG explained: when it beats a plain pipeline","item":"https://shivanigupta.store/blog/agentic-rag-explained/"}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"What is the difference between RAG and agentic RAG?","acceptedAnswer":{"@type":"Answer","text":"Plain RAG follows a fixed path of retrieving and then generating. Agentic RAG lets a model make decisions along the way, such as whether to search, which source to use and whether to search again."}},{"@type":"Question","name":"Is agentic RAG always more accurate?","acceptedAnswer":{"@type":"Answer","text":"No. It can help with multi-step questions, but it adds new failure points and will not cure poor parsing or an inadequate index. Compare it against a fixed pipeline on your own test set."}},{"@type":"Question","name":"Do I need a framework to build agentic RAG?","acceptedAnswer":{"@type":"Answer","text":"No. A simple loop or a single router can be written in ordinary code. A graph library becomes more useful as state, branching, retries and pauses for review become harder to manage by hand."}},{"@type":"Question","name":"How do I stop an agentic RAG system from looping forever?","acceptedAnswer":{"@type":"Answer","text":"Enforce a maximum number of searches or steps in code, rather than asking the model to stop. When the limit is reached, return a clear statement that the system could not find enough information."}}]}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&family=Poppins:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+<header class="nav">
+  <div class="wrap nav-in">
+    <a class="logo" href="/" aria-label="Shivani, home"><img src="/assets/logo.svg" alt="Shivani" width="144" height="40"></a>
+    <nav id="nav-links" aria-label="Main">
+      <a href="/#services">Services</a>
+      <a href="/#skills">Skills</a>
+      <a href="/#work">Work</a>
+      <a href="/#process">Process</a>
+      <a href="/#faq">FAQ</a>
+      <a href="/blog/">Blog</a>
+      <a class="btn btn-sm" href="/#contact">Hire Me</a>
+    </nav>
+    <button id="menu-toggle" class="menu-toggle" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="nav-links"><span></span><span></span><span></span></button>
+  </div>
+</header>
+
+<main id="top">
+  <section class="page-head">
+    <div class="wrap">
+      <nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a><span aria-hidden="true">/</span><a href="/blog/">Blog</a><span aria-hidden="true">/</span><span aria-current="page">Agentic RAG explained: when it beats a plain pipeline</span></nav>
+      <p class="eyebrow">Guide</p>
+      <h1>Agentic RAG explained: when it beats a plain pipeline</h1>
+      <p class="lead">Agentic RAG is retrieval in which a model decides what happens next: whether to search, which source to use, how to rewrite a query and whether the results are good enough. It beats a plain pipeline when questions need several sources or steps. For direct lookups, a fixed pipeline is usually simpler, cheaper and easier to test.</p>
+    </div>
+  </section>
+  <section class="article">
+    <div class="wrap prose">
+<h2>From a fixed pipeline to a decision loop</h2>
+<p>A plain RAG pipeline does the same thing every time. It takes the question, searches an index, builds a prompt and generates an answer. The path is decided in advance by the developer, and it does not change with the question. If you are new to the pattern, start with <a href="/blog/what-is-rag-and-when-to-use-it/">what RAG is and when to use it</a>.</p>
+<p>Agentic RAG hands some of those decisions to a model at run time. The retriever becomes a tool that the model can choose to call, usually within a loop. The model looks at the question, and perhaps at earlier results, then chooses to search, search differently, use another source or answer. LangGraph's documentation has a tutorial along these lines, in which the model either replies directly or calls a retriever tool, and a weak result leads to a rewritten question and another attempt.</p>
+<p>"Agentic RAG" is a descriptive label and not a formal standard, so people use it for systems of differing complexity. A helpful test is to ask who chooses the next step. If your code always follows the same path, it is a pipeline, however many stages it has. If a model's output can change the path, it has an agentic element.</p>
+
+<h2>What the model can decide</h2>
+<p>Agency is a matter of degree, and you can grant it one decision at a time. These are the common ones, roughly from least to most autonomy:</p>
+<ul>
+<li><strong>Whether to retrieve.</strong> A greeting or a question about the conversation itself may need no search.</li>
+<li><strong>Where to retrieve from.</strong> A router sends the question to the product documentation, a contracts index or a database.</li>
+<li><strong>How to query.</strong> The model rewrites a vague question or fills in details from the conversation.</li>
+<li><strong>How to divide the question.</strong> A comparison between two plans may become one search for each.</li>
+<li><strong>Whether the results are sufficient.</strong> The model or a separate grader judges the passages, and the system tries again if they fall short.</li>
+<li><strong>Whether the answer is supported.</strong> A final check compares the draft with its sources before it is returned.</li>
+</ul>
+<p>Research has explored versions of these ideas. The <a href="https://arxiv.org/abs/2401.15884" rel="noopener">Corrective RAG paper</a> uses an evaluator to grade retrieved passages and trigger follow-up actions, and the <a href="https://arxiv.org/abs/2310.11511" rel="noopener">Self-RAG paper</a> trains a model to decide when to retrieve and to critique passages and its own output. Neither one defines agentic RAG, but both show the appeal of treating retrieval as something to assess rather than simply trust.</p>
+
+<h2>What the loop looks like</h2>
+<p>The following sample is illustrative. All the helper functions are placeholders for your own code, and it runs no real model or search. What matters is the shape, especially the limit on attempts and the honest way out when that limit is reached:</p>
+<pre><code># Illustrative only. All helper functions are placeholders.
+MAX_SEARCHES = 3
+
+def answer(question):
+    gathered = []
+    query = question
+
+    for _ in range(MAX_SEARCHES):
+        source = choose_source(query)
+        gathered += search(source, query)
+
+        verdict = assess(question, gathered)
+        if verdict.sufficient:
+            return generate(question, gathered)
+        query = rewrite(question, verdict.missing)
+
+    return "I could not find enough information to answer that."</code></pre>
+<p>This version keeps the loop in ordinary code, with the model filling in specific decisions. Alternatively, you can give the model a search tool and let it issue calls until it replies, which is more flexible but harder to predict. In either version, the limit belongs in your code and not in the prompt. The guide to <a href="/blog/tool-calling-for-ai-agents/">tool calling for AI agents</a> covers tool descriptions, validation and loop limits in more depth.</p>
+
+<h2>When it beats a plain pipeline</h2>
+<p>The extra machinery earns its place when a single search cannot reliably gather what the question needs. Good signs include:</p>
+<ul>
+<li><strong>Multi-part questions.</strong> "How do the refund terms differ between these two plans?" may need separate searches, because a single query can match one plan and miss the other.</li>
+<li><strong>Dependent steps.</strong> When the second search depends on what the first one found, the query cannot be written in advance. An example is finding which team owns a service and then looking up that team's process.</li>
+<li><strong>Several kinds of source.</strong> One question may need a document index, while the next needs a database or a live API. A router, or a set of tools, handles this variety.</li>
+<li><strong>Uneven retrieval.</strong> If failures come largely from poor queries, an assess-and-retry step can recover some of them. Your logs and evaluation should show that this is the cause.</li>
+<li><strong>Tolerance for delay.</strong> Research-style tasks, where a user expects to wait, are a better fit than an instant help widget.</li>
+</ul>
+
+<h2>When a plain pipeline is the better choice</h2>
+<p>Many questions are direct lookups with an answer in one place. For these, an agent adds cost and new ways to fail without improving the result. Stay with a fixed pipeline if:</p>
+<ul>
+<li>most test questions can be answered from a single good search;</li>
+<li>failures come from parsing, chunking or search quality, which a loop will not cure, and may simply repeat;</li>
+<li>you need consistent latency and cost per request;</li>
+<li>you have to explain every step of the process, and a predictable path makes this easier.</li>
+</ul>
+<p>It also helps to separate retrieval problems from control problems. <a href="/blog/hybrid-search-and-reranking-for-rag/">Hybrid search and reranking</a> can fix vocabulary and ranking issues in a fixed pipeline. Query rewriting can be a fixed step too, without any decision loop. Try improvements of this kind first, since they keep the system predictable.</p>
+
+<h2>What agency costs</h2>
+<p>Every decision the model makes is another call and another chance to go wrong. Plan for the following:</p>
+<ul>
+<li><strong>Cost and latency.</strong> Routing, grading and rewriting each add model calls, and the gathered context grows with every search. See <a href="/blog/controlling-llm-cost-and-latency/">controlling LLM cost and latency</a> for ways to limit this.</li>
+<li><strong>Unpredictable paths.</strong> The same question may take different routes on different runs, which makes failures harder to reproduce. Log every decision, query and result for each run.</li>
+<li><strong>Loops that go nowhere.</strong> A model may repeat near-identical searches. Limit the attempts, and consider stopping when a new search returns nothing new.</li>
+<li><strong>Graders that are wrong.</strong> A relevance check can reject good passages or approve bad ones, and it needs testing like any other component.</li>
+<li><strong>A larger attack surface.</strong> Retrieved text can contain instructions, and it now reaches a model that controls further actions. Restrict tools to read-only access where possible, and enforce permissions outside the model. See <a href="/blog/llm-guardrails-and-prompt-injection-defence/">LLM guardrails and prompt injection defence</a>.</li>
+</ul>
+
+<h2>Keeping the agent's permissions small</h2>
+<p>Because agentic retrieval usually needs only reading, it is one of the safer places to give a model some autonomy. Keep it that way. If the same agent can also send messages or change records, a poisoned document becomes much more dangerous, so separate the retrieving agent from anything that acts.</p>
+
+<h2>How to test it</h2>
+<p>Evaluate the system as a set of decisions as well as an end result. Alongside the usual retrieval and answer measures described in <a href="/blog/how-to-evaluate-a-rag-system/">how to evaluate a RAG system</a>, track these for each question:</p>
+<ul>
+<li>whether routing selected a suitable source;</li>
+<li>how many searches and model calls were made, and the total latency and cost;</li>
+<li>how often retries improved the result, and how often they only added cost;</li>
+<li>how often the system correctly declined when no answer was available.</li>
+</ul>
+<p>Most usefully, run your fixed pipeline on the same test set as a baseline. Agentic RAG should be adopted because it answers more of your real questions at an acceptable cost, and this comparison is the way to find out. Include simple questions in the set as well, to check that an agent does not make them slower or worse.</p>
+
+<h2>A sensible way to adopt it</h2>
+<p>Start with a fixed pipeline and a test set, then look at which questions fail and why. If a particular group needs a new capability, add the smallest decision that deals with it. That might be one router, a single retry or a split step for comparison questions. Keep the rest fixed.</p>
+<p>As decisions accumulate, branching and retry logic can become difficult to manage in plain functions. At that point, a graph library can make the state and routes explicit, as shown in <a href="/blog/building-an-orchestrator-with-langgraph/">building an orchestrator with LangGraph</a>. A fully autonomous agent with many tools should be the last step, justified by evidence, and not the starting point.</p>
+<p>If you are weighing up this design for a real system, the <a href="/services/rag-development/">RAG development</a> page describes what I can help with.</p>
+      <h2>Frequently asked questions</h2>
+      <h3>What is the difference between RAG and agentic RAG?</h3>
+      <p>Plain RAG follows a fixed path of retrieving and then generating. Agentic RAG lets a model make decisions along the way, such as whether to search, which source to use and whether to search again.</p>
+      <h3>Is agentic RAG always more accurate?</h3>
+      <p>No. It can help with multi-step questions, but it adds new failure points and will not cure poor parsing or an inadequate index. Compare it against a fixed pipeline on your own test set.</p>
+      <h3>Do I need a framework to build agentic RAG?</h3>
+      <p>No. A simple loop or a single router can be written in ordinary code. A graph library becomes more useful as state, branching, retries and pauses for review become harder to manage by hand.</p>
+      <h3>How do I stop an agentic RAG system from looping forever?</h3>
+      <p>Enforce a maximum number of searches or steps in code, rather than asking the model to stop. When the limit is reached, return a clear statement that the system could not find enough information.</p>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="foot-cta">
+      <div>
+        <h2>Have an AI or full stack project in mind?</h2>
+        <p>Tell me what you want to build.</p>
+      </div>
+      <div class="foot-cta-btns">
+        <a class="btn" href="/#contact">Start a conversation</a>
+        <a class="btn btn-line" href="mailto:shivanigupta4876@gmail.com">Send an email</a>
+      </div>
+    </div>
+    <div class="foot-grid">
+      <div>
+        <a href="/" aria-label="Shivani, home"><img src="/assets/logo.svg" alt="Shivani" width="144" height="40"></a>
+        <p>AI/ML engineer working across generative AI, LLMs, RAG, agentic AI and NLP, plus full stack development.</p>
+        <span class="avail">Taking new projects</span>
+      </div>
+      <div>
+        <h3>Explore</h3>
+        <ul>
+          <li><a href="/services/">Services</a></li>
+          <li><a href="/#work">Projects</a></li>
+          <li><a href="/#process">Process</a></li>
+          <li><a href="/#faq">FAQ</a></li>
+          <li><a href="/blog/">Blog</a></li>
+          <li><a href="/#contact">Contact</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Services</h3>
+        <ul>
+          <li><a href="/services/generative-ai-llm-development/">Generative AI and LLMs</a></li>
+          <li><a href="/services/rag-development/">RAG development</a></li>
+          <li><a href="/services/multi-agent-systems/">Multi-agent systems</a></li>
+          <li><a href="/services/ai-orchestration-langgraph/">Orchestration with LangGraph</a></li>
+          <li><a href="/services/nlp-development/">NLP development</a></li>
+          <li><a href="/services/full-stack-development/">Full stack development</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Contact</h3>
+        <ul>
+          <li><a href="mailto:shivanigupta4876@gmail.com">shivanigupta4876@gmail.com</a></li>
+          <li><a href="tel:+919720466504">+91 97204 66504</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="foot-bottom">&copy; <span id="year">2026</span> Shivani. All rights reserved.</div>
+  </div>
+</footer>
+<a class="wa-float" href="https://wa.me/919720466504?text=Hi%20Shivani%2C%20I%20saw%20your%20website%20and%20would%20like%20to%20talk%20about%20a%20project." target="_blank" rel="noopener" aria-label="Chat on WhatsApp"><svg viewBox="0 0 24 24" width="28" height="28" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15L2 22l5.1-1.3A10 10 0 1 0 12 2zm0 18.2a8.2 8.2 0 0 1-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1a6.700 6.700 0 0 1-3.300-2.900c-.2-.3 0-.4.1-.6l.4-.4.2-.4v-.5l-.8-1.800c-.2-.5-.4-.4-.6-.4h-.5c-.2 0-.4.1-.6.3-.2.2-.8.8-.8 2s.9 2.300 1 2.500c.1.2 1.700 2.600 4.100 3.600 1.500.7 2.100.7 2.900.6.500-.1 1.500-.6 1.700-1.200.2-.6.2-1.100.1-1.200l-.2-.2z"/></svg></a>
+<script src="/assets/js/site.js" defer></script>
+</body>
+</html>
