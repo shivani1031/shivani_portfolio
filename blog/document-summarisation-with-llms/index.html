@@ -1,0 +1,218 @@
+<!doctype html>
+<html lang="en">
+<head>
+<script async src="https://www.googletagmanager.com/gtm.js?id=GTM-THN7RV8R"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+</script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="canonical" href="https://shivanigupta.store/blog/document-summarisation-with-llms/">
+<title>Document Summarisation with LLMs: Main Methods | Shivani</title>
+<meta name="description" content="How to summarise long documents with LLMs: when to send everything, how map-reduce, refine and hierarchical methods compare, and how to check faithfulness.">
+<meta name="robots" content="index,follow">
+<meta name="author" content="Shivani">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<link rel="manifest" href="/site.webmanifest">
+<meta name="theme-color" content="#080b0f">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Document Summarisation with LLMs: Main Methods | Shivani">
+<meta property="og:description" content="How to summarise long documents with LLMs: when to send everything, how map-reduce, refine and hierarchical methods compare, and how to check faithfulness.">
+<meta property="og:url" content="https://shivanigupta.store/blog/document-summarisation-with-llms/">
+<meta property="og:image" content="https://shivanigupta.store/assets/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Document summarisation with LLMs","description":"How to summarise long documents with LLMs: when to send everything, how map-reduce, refine and hierarchical methods compare, and how to check faithfulness.","mainEntityOfPage":"https://shivanigupta.store/blog/document-summarisation-with-llms/","datePublished":"2026-11-06","dateModified":"2026-11-06","author":{"@type":"Person","name":"Shivani"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://shivanigupta.store/"},{"@type":"ListItem","position":2,"name":"Blog","item":"https://shivanigupta.store/blog/"},{"@type":"ListItem","position":3,"name":"Document summarisation with LLMs","item":"https://shivanigupta.store/blog/document-summarisation-with-llms/"}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"What is the difference between map-reduce and refine?","acceptedAnswer":{"@type":"Answer","text":"Map-reduce summarises each chunk independently, then combines those summaries, so the chunks can be processed in parallel. Refine works through chunks in order and updates one running summary, which keeps sequence but must run one step at a time."}},{"@type":"Question","name":"Should I use RAG to summarise a document?","acceptedAnswer":{"@type":"Answer","text":"Usually not for a summary of the whole document, because retrieval returns only the passages closest to a query. RAG can suit a targeted summary on one topic, such as what a contract says about termination."}},{"@type":"Question","name":"How do I stop a summary inventing details?","acceptedAnswer":{"@type":"Answer","text":"You cannot rule it out, but you can reduce and detect it. Instruct the model to use only the source, ask for references to sections, verify names and figures in code and test faithfulness on a sample."}},{"@type":"Question","name":"Is a bigger context window enough for long documents?","acceptedAnswer":{"@type":"Answer","text":"Not always. A document that fits may still exceed what is practical on cost or latency, and details from the middle can be underrepresented. Compare a whole-document summary with a section-based one on your own material."}}]}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&family=Poppins:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+<header class="nav">
+  <div class="wrap nav-in">
+    <a class="logo" href="/" aria-label="Shivani, home"><img src="/assets/logo.svg" alt="Shivani" width="144" height="40"></a>
+    <nav id="nav-links" aria-label="Main">
+      <a href="/#services">Services</a>
+      <a href="/#skills">Skills</a>
+      <a href="/#work">Work</a>
+      <a href="/#process">Process</a>
+      <a href="/#faq">FAQ</a>
+      <a href="/blog/">Blog</a>
+      <a class="btn btn-sm" href="/#contact">Hire Me</a>
+    </nav>
+    <button id="menu-toggle" class="menu-toggle" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="nav-links"><span></span><span></span><span></span></button>
+  </div>
+</header>
+
+<main id="top">
+  <section class="page-head">
+    <div class="wrap">
+      <nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a><span aria-hidden="true">/</span><a href="/blog/">Blog</a><span aria-hidden="true">/</span><span aria-current="page">Document summarisation with LLMs</span></nav>
+      <p class="eyebrow">Guide</p>
+      <h1>Document summarisation with LLMs</h1>
+      <p class="lead">To summarise a long document with an LLM, send the whole text if it fits comfortably in the context window. If it does not, use map-reduce to summarise sections and then combine them, or a refine or hierarchical method where order and structure matter. Then check the result against the source, because a readable summary can still be wrong.</p>
+    </div>
+  </section>
+  <section class="article">
+    <div class="wrap prose">
+<h2>Decide what the summary is for</h2>
+<p>A summary is not one fixed output. An executive wants the decisions and risks in a report, a lawyer may want the obligations in a contract, and a support lead may want recurring complaints in a set of tickets. Each of these keeps different information, so a general "summarise this" instruction leaves the most important choice to the model.</p>
+<p>Before choosing a method, write down the following:</p>
+<ul>
+<li><strong>The reader and their next action.</strong> What should this person be able to decide or do afterwards?</li>
+<li><strong>What must not be lost.</strong> Dates, amounts, named parties, exceptions and caveats are often the first things to disappear.</li>
+<li><strong>The format.</strong> Decide on paragraphs, bullet points or fixed fields, and on a target length.</li>
+<li><strong>The cost of an error.</strong> A rough digest of an internal meeting can tolerate more than a summary of a medical or legal document, where review by a qualified person may be needed.</li>
+</ul>
+<p>These answers often change the design. A request for fixed fields, for instance, may really be an extraction task, covered in the guide to <a href="/blog/named-entity-recognition-and-data-extraction-with-llms/">entity and data extraction with LLMs</a>.</p>
+
+<h2>Extractive and abstractive summaries</h2>
+<p>Traditional NLP distinguishes two broad kinds of summary. An <strong>extractive</strong> summary selects sentences from the source unchanged. An <strong>abstractive</strong> summary writes new sentences, and this is what LLMs generally do. Extractive output cannot misquote the source, although selected sentences may read awkwardly or mislead without their context. Abstractive output reads better but can introduce errors. The two can also be combined, as the extract-first approach below shows.</p>
+
+<h2>Approach 1: send the whole document</h2>
+<p>If the document fits comfortably within the model's context window, this is the simplest choice and a sensible baseline. The model sees all of the text at once, so it can connect a claim in one section with a qualification in another.</p>
+<p>The limits are cost, latency and attention. A larger input costs more, and a document that technically fits may still give uneven coverage. Check whether material from the middle is underrepresented, and do not assume that an advertised context limit is a practical target. Check your provider's current limits rather than relying on figures from an article. Remember also to leave room for the output.</p>
+
+<h2>Approach 2: map-reduce</h2>
+<p>Map-reduce splits the document into chunks, summarises each one separately (map) and then combines those summaries (reduce). Here is the basic shape. This sample is illustrative: <code>call_llm</code> and <code>split_by_section</code> are placeholders for your own functions, and error handling is left out.</p>
+<pre><code>from concurrent.futures import ThreadPoolExecutor
+
+def summarise_section(section):
+    return call_llm(
+        "Summarise this section. Keep names, dates, amounts and "
+        "exceptions. Use only the text provided.\n\n" + section
+    )
+
+def map_reduce_summary(document):
+    sections = split_by_section(document)
+
+    with ThreadPoolExecutor(max_workers=4) as pool:
+        partials = list(pool.map(summarise_section, sections))
+
+    combined = "\n\n".join(partials)
+    return call_llm(
+        "Combine these section summaries into one summary. Remove "
+        "repetition and do not add new facts.\n\n" + combined
+    )</code></pre>
+<ul>
+<li><strong>Strengths:</strong> it handles long documents, runs in parallel and covers each section.</li>
+<li><strong>Weaknesses:</strong> each chunk is processed without knowledge of the others, so a pronoun or a term defined earlier can lose its meaning. The combining step may also discard details.</li>
+<li><strong>Suits:</strong> collections of separate documents, or long texts with independent sections, such as reports and sets of reviews.</li>
+</ul>
+<p>If the combined summaries are themselves too long for one call, group them and repeat the process. Each additional level loses some information, which leads to the hierarchical approach.</p>
+
+<h2>Approach 3: refine</h2>
+<p>Refine processes chunks in order and maintains a running summary. Each call receives the current summary and the next chunk, then returns an updated summary.</p>
+<ul>
+<li><strong>Strengths:</strong> it retains the order of events and carries earlier context forward, which suits narratives, transcripts and arguments that build over time.</li>
+<li><strong>Weaknesses:</strong> it runs one step at a time, so it can be slower. An early error may also persist, and the running summary can give more weight to earlier or later material, depending on how it is updated.</li>
+<li><strong>Suits:</strong> sequential documents where each part depends on what came before.</li>
+</ul>
+
+<h2>Approach 4: hierarchical summaries</h2>
+<p>A hierarchical method follows the document's own structure. Subsections are summarised, then sections, then the entire document. It is similar to multi-level map-reduce, but its boundaries come from the author's organisation and not an arbitrary length, so each step works on a coherent unit.</p>
+<p>A further benefit is that the intermediate summaries are useful in their own right. A reader can start with the overview and drill into a chapter, and each level can link to its source. They can also be indexed for retrieval, which helps with broad questions that a handful of matching chunks would answer poorly. <a href="/blog/what-is-rag-and-when-to-use-it/">What RAG is and when to use it</a> explains this limitation of ordinary retrieval.</p>
+
+<h2>Approach 5: extract first, then write</h2>
+<p>Sometimes it helps to separate finding from writing. In the first pass, the model pulls out specified items, such as decisions, obligations or action points, with a reference to where each was found. In the second, it writes the summary using only those items.</p>
+<p>The intermediate list gives you something to verify, as you can check in code that a quotation or a figure really appears in the source. The drawback is that anything missed by the first pass cannot reach the summary. This approach suits contracts, meeting notes and other material where the reader knows what they are looking for.</p>
+
+<h2>Choosing between the approaches</h2>
+<ul>
+<li>The document fits comfortably: start with the whole document.</li>
+<li>The sections are largely independent, or there are many documents: try map-reduce.</li>
+<li>The order matters and later sections rely on earlier ones: try refine.</li>
+<li>The document is long with clear headings, or readers need to drill down: try hierarchical.</li>
+<li>The reader needs specific items, and accuracy is critical: try extract first.</li>
+<li>The reader cares about only one topic: retrieve the relevant passages and summarise those.</li>
+</ul>
+<p>Chunking affects most of these. Split along headings where possible, keep the section title with each chunk and carry defined terms forward where necessary. Parsing matters too, because a broken table or lost heading will distort what the model reads. See <a href="/blog/choosing-chunking-strategies-for-rag/">choosing chunking strategies</a>; although written for RAG, its discussion of boundaries applies here as well.</p>
+
+<h2>Controlling length and cost</h2>
+<p>Models are not precise about length, so a request for exactly 100 words may produce something close but not exact. Ask for a limit on sentences or bullet points where that suffices, and check it in code if a hard limit matters. Section-based methods also multiply the number of calls, so estimate the total before processing a large collection. A smaller, cheaper model may be adequate for the map step, with a stronger one used to combine the results, but test this rather than assuming it. Store section summaries against a hash of the source text, so that an updated document only needs its changed sections processed again.</p>
+
+<h2>Checking that a summary can be trusted</h2>
+<p>Summaries are hard to assess because a poor one can read perfectly well. Look at several qualities separately:</p>
+<ul>
+<li><strong>Faithfulness.</strong> Is each statement supported by the source? Watch for merged facts, changed numbers and qualifications that have been dropped, because "may" easily becomes "will".</li>
+<li><strong>Coverage.</strong> Are the points this reader needs included? List them for each test document and count how many appear.</li>
+<li><strong>Usefulness.</strong> Can the reader act on it? This is best answered by the reader.</li>
+</ul>
+<p>Some practical controls help. Ask for section or page references next to claims, and show them to readers. Check in code that numbers, dates and names in the summary also appear in the source; this will not catch everything, but it is cheap. An LLM judge can check claims against the source, provided you have compared its verdicts with human judgement. Build a small test set with reference points written by someone who knows the material.</p>
+<p>Long documents can also contain text that tries to steer the model, and a summary may be read as authoritative. Treat the document as untrusted input, particularly if the summary feeds an automated action. The guide on <a href="/blog/llm-guardrails-and-prompt-injection-defence/">guardrails and prompt injection</a> covers this risk.</p>
+
+<h2>Where to start</h2>
+<p>Take a few representative documents and write down what a good summary must contain. Compare a whole-document baseline with one section-based method, measuring faithfulness, coverage, cost and latency. Choose the simplest method that meets your needs. If you are planning a feature of this kind, the <a href="/services/nlp-development/">NLP development</a> page describes what I can help with.</p>
+      <h2>Frequently asked questions</h2>
+      <h3>What is the difference between map-reduce and refine?</h3>
+      <p>Map-reduce summarises each chunk independently, then combines those summaries, so the chunks can be processed in parallel. Refine works through chunks in order and updates one running summary, which keeps sequence but must run one step at a time.</p>
+      <h3>Should I use RAG to summarise a document?</h3>
+      <p>Usually not for a summary of the whole document, because retrieval returns only the passages closest to a query. RAG can suit a targeted summary on one topic, such as what a contract says about termination.</p>
+      <h3>How do I stop a summary inventing details?</h3>
+      <p>You cannot rule it out, but you can reduce and detect it. Instruct the model to use only the source, ask for references to sections, verify names and figures in code and test faithfulness on a sample.</p>
+      <h3>Is a bigger context window enough for long documents?</h3>
+      <p>Not always. A document that fits may still exceed what is practical on cost or latency, and details from the middle can be underrepresented. Compare a whole-document summary with a section-based one on your own material.</p>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="foot-cta">
+      <div>
+        <h2>Have an AI or full stack project in mind?</h2>
+        <p>Tell me what you want to build.</p>
+      </div>
+      <div class="foot-cta-btns">
+        <a class="btn" href="/#contact">Start a conversation</a>
+        <a class="btn btn-line" href="mailto:shivanigupta4876@gmail.com">Send an email</a>
+      </div>
+    </div>
+    <div class="foot-grid">
+      <div>
+        <a href="/" aria-label="Shivani, home"><img src="/assets/logo.svg" alt="Shivani" width="144" height="40"></a>
+        <p>AI/ML engineer working across generative AI, LLMs, RAG, agentic AI and NLP, plus full stack development.</p>
+        <span class="avail">Taking new projects</span>
+      </div>
+      <div>
+        <h3>Explore</h3>
+        <ul>
+          <li><a href="/services/">Services</a></li>
+          <li><a href="/#work">Projects</a></li>
+          <li><a href="/#process">Process</a></li>
+          <li><a href="/#faq">FAQ</a></li>
+          <li><a href="/blog/">Blog</a></li>
+          <li><a href="/#contact">Contact</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Services</h3>
+        <ul>
+          <li><a href="/services/generative-ai-llm-development/">Generative AI and LLMs</a></li>
+          <li><a href="/services/rag-development/">RAG development</a></li>
+          <li><a href="/services/multi-agent-systems/">Multi-agent systems</a></li>
+          <li><a href="/services/ai-orchestration-langgraph/">Orchestration with LangGraph</a></li>
+          <li><a href="/services/nlp-development/">NLP development</a></li>
+          <li><a href="/services/full-stack-development/">Full stack development</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Contact</h3>
+        <ul>
+          <li><a href="mailto:shivanigupta4876@gmail.com">shivanigupta4876@gmail.com</a></li>
+          <li><a href="tel:+919720466504">+91 97204 66504</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="foot-bottom">&copy; <span id="year">2026</span> Shivani. All rights reserved.</div>
+  </div>
+</footer>
+<a class="wa-float" href="https://wa.me/919720466504?text=Hi%20Shivani%2C%20I%20saw%20your%20website%20and%20would%20like%20to%20talk%20about%20a%20project." target="_blank" rel="noopener" aria-label="Chat on WhatsApp"><svg viewBox="0 0 24 24" width="28" height="28" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15L2 22l5.1-1.3A10 10 0 1 0 12 2zm0 18.2a8.2 8.2 0 0 1-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1a6.700 6.700 0 0 1-3.300-2.900c-.2-.3 0-.4.1-.6l.4-.4.2-.4v-.5l-.8-1.800c-.2-.5-.4-.4-.6-.4h-.5c-.2 0-.4.1-.6.3-.2.2-.8.8-.8 2s.9 2.300 1 2.500c.1.2 1.700 2.600 4.100 3.600 1.500.7 2.100.7 2.900.6.500-.1 1.500-.6 1.700-1.200.2-.6.2-1.100.1-1.200l-.2-.2z"/></svg></a>
+<script src="/assets/js/site.js" defer></script>
+</body>
+</html>

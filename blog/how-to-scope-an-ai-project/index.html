@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="en">
+<head>
+<script async src="https://www.googletagmanager.com/gtm.js?id=GTM-THN7RV8R"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+</script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="canonical" href="https://shivanigupta.store/blog/how-to-scope-an-ai-project/">
+<title>How to Scope an AI Project Before You Build | Shivani</title>
+<meta name="description" content="What to decide before commissioning AI work: the problem, baseline, data access, acceptable errors, human review, evaluation, integration and ownership.">
+<meta name="robots" content="index,follow">
+<meta name="author" content="Shivani">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<link rel="manifest" href="/site.webmanifest">
+<meta name="theme-color" content="#080b0f">
+<meta property="og:type" content="article">
+<meta property="og:title" content="How to Scope an AI Project Before You Build | Shivani">
+<meta property="og:description" content="What to decide before commissioning AI work: the problem, baseline, data access, acceptable errors, human review, evaluation, integration and ownership.">
+<meta property="og:url" content="https://shivanigupta.store/blog/how-to-scope-an-ai-project/">
+<meta property="og:image" content="https://shivanigupta.store/assets/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"How to scope an AI project before you build","description":"What to decide before commissioning AI work: the problem, baseline, data access, acceptable errors, human review, evaluation, integration and ownership.","mainEntityOfPage":"https://shivanigupta.store/blog/how-to-scope-an-ai-project/","datePublished":"2026-11-06","dateModified":"2026-11-06","author":{"@type":"Person","name":"Shivani"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://shivanigupta.store/"},{"@type":"ListItem","position":2,"name":"Blog","item":"https://shivanigupta.store/blog/"},{"@type":"ListItem","position":3,"name":"How to scope an AI project before you build","item":"https://shivanigupta.store/blog/how-to-scope-an-ai-project/"}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Do I need a technical specification before talking to an AI engineer?","acceptedAnswer":{"@type":"Answer","text":"No. A clear description of the problem, the current process, the available data and what a good result looks like is more useful at first. The technical design can be worked out from those answers."}},{"@type":"Question","name":"What is the difference between a proof of concept and a production system?","acceptedAnswer":{"@type":"Answer","text":"A proof of concept tests whether an approach can work, often on limited data. A production system must also handle permissions, failures, monitoring, unusual inputs and ongoing maintenance, which are often substantial additional work."}},{"@type":"Question","name":"Can a supplier guarantee a level of AI accuracy?","acceptedAnswer":{"@type":"Answer","text":"Be cautious of an accuracy promise that is not tied to a defined test. Performance depends on the data, the task and how it is measured. A more useful commitment is an agreed evaluation method and reported results."}},{"@type":"Question","name":"What if our data is not ready?","acceptedAnswer":{"@type":"Answer","text":"Treat it as a finding and not a failure. You might narrow the first version to a cleaner source, or plan a data preparation phase. Testing a representative sample early shows what needs to be done."}}]}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&family=Poppins:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+<header class="nav">
+  <div class="wrap nav-in">
+    <a class="logo" href="/" aria-label="Shivani, home"><img src="/assets/logo.svg" alt="Shivani" width="144" height="40"></a>
+    <nav id="nav-links" aria-label="Main">
+      <a href="/#services">Services</a>
+      <a href="/#skills">Skills</a>
+      <a href="/#work">Work</a>
+      <a href="/#process">Process</a>
+      <a href="/#faq">FAQ</a>
+      <a href="/blog/">Blog</a>
+      <a class="btn btn-sm" href="/#contact">Hire Me</a>
+    </nav>
+    <button id="menu-toggle" class="menu-toggle" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="nav-links"><span></span><span></span><span></span></button>
+  </div>
+</header>
+
+<main id="top">
+  <section class="page-head">
+    <div class="wrap">
+      <nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a><span aria-hidden="true">/</span><a href="/blog/">Blog</a><span aria-hidden="true">/</span><span aria-current="page">How to scope an AI project before you build</span></nav>
+      <p class="eyebrow">Guide</p>
+      <h1>How to scope an AI project before you build</h1>
+      <p class="lead">To scope an AI project, define the business problem and how it is handled today, confirm that the necessary data is accessible, and agree what errors are acceptable and who reviews them. Then set a test for success and decide what the first version excludes. These decisions show whether AI is needed and what to ask for.</p>
+    </div>
+  </section>
+  <section class="article">
+    <div class="wrap prose">
+<h2>Why scoping matters more with AI</h2>
+<p>Ordinary software is often specified by what it should do: when a user clicks this, save that. AI features are harder to pin down, as their output varies and will sometimes be wrong. You cannot fully specify the behaviour in advance, so you need to agree how good is good enough, how that will be measured and what happens when the system fails.</p>
+<p>A demonstration can also make a task look finished long before it is. A model that answers ten hand-picked questions well says little about how it will handle unusual requests, messy documents or users who should not see certain data. Good scoping brings those questions forward, when changing direction is still easy. You do not need to know how the technology works to answer most of them, because they concern your business.</p>
+
+<h2>Decision 1: what is the problem, in business terms?</h2>
+<p>Begin with the problem and not the technology. "We want a chatbot" describes a possible solution. "Our support team spends much of its time finding answers scattered across policy documents" describes a problem and leaves the solution open.</p>
+<p>Try to complete this sentence: <em>[This group of people] currently [does this], which causes [this problem], and we would know it had improved if [this changed].</em> If people in your organisation complete it differently, resolve that first, as no supplier can settle it on your behalf.</p>
+
+<h2>Decision 2: how is it handled today?</h2>
+<p>Record the current process before proposing a new one. Who does the work, what do they consult, what does a good result look like and where does it go wrong? Then take some measurements of your own, even rough ones, such as how often the task occurs and how long it takes.</p>
+<p>This baseline does two jobs. It gives you something real to compare against later, and it often reveals useful details, such as an expert's unwritten rule or a step that exists only because of an old system. Without a baseline, it is difficult to show that a new system has improved anything.</p>
+
+<h2>Decision 3: does this need AI at all?</h2>
+<p>It is worth asking this honestly, and a good engineer should be willing to raise it. Fixed rules, a better search box, a form or a report may solve the problem more cheaply and predictably. AI tends to fit where the input is unstructured, the variety defeats fixed rules and some errors can be tolerated or caught.</p>
+<p>Even then, the AI part is often small. A workflow may use a model to classify a message and ordinary code for everything else. Similarly, you may not need several cooperating agents; <a href="/blog/single-agent-vs-multi-agent-systems/">single agent vs multi-agent systems</a> sets out when added complexity is justified. Choosing the least complicated design that works is a sign of good judgement, not a lack of ambition.</p>
+
+<h2>Decision 4: what data can the system use?</h2>
+<p>Data problems are a common cause of trouble, and they are easier to find before work starts. Establish the following:</p>
+<ul>
+<li><strong>Where it lives.</strong> List the sources and who controls each one.</li>
+<li><strong>Whether it can be accessed.</strong> Is there an export or an API? Does someone need to approve access?</li>
+<li><strong>Its condition.</strong> Is it current, consistent and complete? Are there scanned files or conflicting versions? Look at a real sample rather than a description.</li>
+<li><strong>Whether you may use it.</strong> Check contracts, personal data rules, sector rules and whether the data may be sent to an external model provider. Involve your legal or compliance contact where necessary.</li>
+<li><strong>Who may see what.</strong> If existing documents have access restrictions, the AI system must respect them.</li>
+</ul>
+<p>Share a representative sample early, including the awkward cases. A supplier given only the tidiest documents will form an unrealistic view of the work. If your content includes difficult files, <a href="/blog/rag-for-pdfs-and-tables/">RAG for PDFs and tables</a> shows why this can be a substantial piece of work in its own right.</p>
+
+<h2>Decision 5: what errors can you accept?</h2>
+<p>Every AI system makes mistakes, so the useful question is which mistakes matter and how much. Not all errors are equal. A poor draft that an employee corrects is a minor cost. A wrong statement sent straight to a customer about a refund is another matter. Work through these questions:</p>
+<ul>
+<li>What is the worst realistic outcome of a wrong answer?</li>
+<li>Is it worse to give a wrong answer or to give no answer?</li>
+<li>Can someone tell that an output is wrong? How easily?</li>
+<li>Can the action be undone?</li>
+</ul>
+<p>Your answers largely determine how much autonomy is reasonable. They may also rule out some ideas altogether, and it is better to discover this now.</p>
+
+<h2>Decision 6: where do people stay involved?</h2>
+<p>Decide the level of autonomy as a deliberate choice. The system could suggest while a person decides, act with approval, act and be spot-checked, or act alone on low-risk tasks. Starting with more oversight and relaxing it as evidence builds is often a sensible path.</p>
+<p>Be specific about the practicalities. Who reviews the output, what do they need to see to judge it and what happens when they are unavailable? A review step that nobody has time for offers little real protection. <a href="/blog/human-in-the-loop-approval-for-ai-agents/">Human-in-the-loop approval for AI agents</a> looks at the design of this step, including approval fatigue.</p>
+
+<h2>Decision 7: how will you judge success?</h2>
+<p>Agree a test before the build begins. Ask your domain experts to collect realistic examples with good answers, including hard cases and some that the system should decline. This set becomes the shared definition of "working", and it is much harder to argue with than an impressive demonstration.</p>
+<p>Use two levels of measure. Quality measures ask whether the outputs are correct, supported and in the right format. Business measures ask whether the process really improved, for instance through less handling time or fewer escalations. Set your targets using your baseline and the cost of errors, rather than borrowing a figure from elsewhere. For a document assistant, <a href="/blog/how-to-evaluate-a-rag-system/">how to evaluate a RAG system</a> shows what this looks like in practice.</p>
+
+<h2>Decision 8: how does it fit into daily work?</h2>
+<p>A capable system that sits outside people's working tools may go unused. Decide where it will appear, such as an existing application, a helpdesk or a new interface. Then list what it must connect to, how users will sign in, what must be logged and how much delay users will accept. Include IT and security contacts early, since their requirements can shape the design. The guide to <a href="/blog/adding-an-llm-feature-to-a-full-stack-app/">adding an LLM feature to a full stack app</a> shows the sort of concerns involved.</p>
+
+<h2>Decision 9: what is left out, and who owns it afterwards?</h2>
+<p>Write down what the first version will not do. Choose one user group, one or two content sources and one task, then record the other good ideas for later. A narrow release gives you real evidence, while a broad one can spread attention thinly.</p>
+<p>Also plan for life after launch, because an AI system needs ongoing care. Documents change, model versions are retired and new questions arise. Decide who updates the content, who reviews failures, who pays and monitors usage costs, and who may approve changes. Ask for the code, prompts, test sets and configuration to be handed over in a form your team can use.</p>
+<p>Cost and duration should come out of this work and not precede it. A credible estimate depends on answers to the questions above, so be wary of a firm figure given before anyone has looked at your data.</p>
+
+<h2>Questions to ask a supplier</h2>
+<ul>
+<li>Might a simpler, non-AI approach work here?</li>
+<li>What would you want to test first, and what result would make you recommend stopping?</li>
+<li>How will quality be measured, and will we see the failures as well as the successes?</li>
+<li>Where will our data go, and what is stored?</li>
+<li>What are the ongoing running costs driven by, and how can we control them?</li>
+<li>What will we own and be able to maintain when the work ends?</li>
+</ul>
+<p>Answers that acknowledge uncertainty and propose a way to reduce it are generally more reassuring than confident promises.</p>
+
+<h2>Turning this into a brief</h2>
+<p>A useful brief can be short. Cover the problem, current process, users, data sources and sample, unacceptable errors, level of oversight, success test, first-version boundaries and owner. Gaps are fine as long as they are marked as open questions. If you are preparing to commission this kind of work, the <a href="/services/generative-ai-llm-development/">generative AI and LLM development</a> page describes what I can help with.</p>
+      <h2>Frequently asked questions</h2>
+      <h3>Do I need a technical specification before talking to an AI engineer?</h3>
+      <p>No. A clear description of the problem, the current process, the available data and what a good result looks like is more useful at first. The technical design can be worked out from those answers.</p>
+      <h3>What is the difference between a proof of concept and a production system?</h3>
+      <p>A proof of concept tests whether an approach can work, often on limited data. A production system must also handle permissions, failures, monitoring, unusual inputs and ongoing maintenance, which are often substantial additional work.</p>
+      <h3>Can a supplier guarantee a level of AI accuracy?</h3>
+      <p>Be cautious of an accuracy promise that is not tied to a defined test. Performance depends on the data, the task and how it is measured. A more useful commitment is an agreed evaluation method and reported results.</p>
+      <h3>What if our data is not ready?</h3>
+      <p>Treat it as a finding and not a failure. You might narrow the first version to a cleaner source, or plan a data preparation phase. Testing a representative sample early shows what needs to be done.</p>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="foot-cta">
+      <div>
+        <h2>Have an AI or full stack project in mind?</h2>
+        <p>Tell me what you want to build.</p>
+      </div>
+      <div class="foot-cta-btns">
+        <a class="btn" href="/#contact">Start a conversation</a>
+        <a class="btn btn-line" href="mailto:shivanigupta4876@gmail.com">Send an email</a>
+      </div>
+    </div>
+    <div class="foot-grid">
+      <div>
+        <a href="/" aria-label="Shivani, home"><img src="/assets/logo.svg" alt="Shivani" width="144" height="40"></a>
+        <p>AI/ML engineer working across generative AI, LLMs, RAG, agentic AI and NLP, plus full stack development.</p>
+        <span class="avail">Taking new projects</span>
+      </div>
+      <div>
+        <h3>Explore</h3>
+        <ul>
+          <li><a href="/services/">Services</a></li>
+          <li><a href="/#work">Projects</a></li>
+          <li><a href="/#process">Process</a></li>
+          <li><a href="/#faq">FAQ</a></li>
+          <li><a href="/blog/">Blog</a></li>
+          <li><a href="/#contact">Contact</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Services</h3>
+        <ul>
+          <li><a href="/services/generative-ai-llm-development/">Generative AI and LLMs</a></li>
+          <li><a href="/services/rag-development/">RAG development</a></li>
+          <li><a href="/services/multi-agent-systems/">Multi-agent systems</a></li>
+          <li><a href="/services/ai-orchestration-langgraph/">Orchestration with LangGraph</a></li>
+          <li><a href="/services/nlp-development/">NLP development</a></li>
+          <li><a href="/services/full-stack-development/">Full stack development</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Contact</h3>
+        <ul>
+          <li><a href="mailto:shivanigupta4876@gmail.com">shivanigupta4876@gmail.com</a></li>
+          <li><a href="tel:+919720466504">+91 97204 66504</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="foot-bottom">&copy; <span id="year">2026</span> Shivani. All rights reserved.</div>
+  </div>
+</footer>
+<a class="wa-float" href="https://wa.me/919720466504?text=Hi%20Shivani%2C%20I%20saw%20your%20website%20and%20would%20like%20to%20talk%20about%20a%20project." target="_blank" rel="noopener" aria-label="Chat on WhatsApp"><svg viewBox="0 0 24 24" width="28" height="28" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15L2 22l5.1-1.3A10 10 0 1 0 12 2zm0 18.2a8.2 8.2 0 0 1-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1a6.700 6.700 0 0 1-3.300-2.900c-.2-.3 0-.4.1-.6l.4-.4.2-.4v-.5l-.8-1.800c-.2-.5-.4-.4-.6-.4h-.5c-.2 0-.4.1-.6.3-.2.2-.8.8-.8 2s.9 2.300 1 2.500c.1.2 1.700 2.600 4.100 3.600 1.500.7 2.100.7 2.900.6.500-.1 1.500-.6 1.700-1.200.2-.6.2-1.100.1-1.200l-.2-.2z"/></svg></a>
+<script src="/assets/js/site.js" defer></script>
+</body>
+</html>

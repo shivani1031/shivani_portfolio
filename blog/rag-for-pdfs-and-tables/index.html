@@ -1,0 +1,211 @@
+<!doctype html>
+<html lang="en">
+<head>
+<script async src="https://www.googletagmanager.com/gtm.js?id=GTM-THN7RV8R"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+</script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="canonical" href="https://shivanigupta.store/blog/rag-for-pdfs-and-tables/">
+<title>RAG for PDFs and Tables: Parsing Awkward Documents | Shivani</title>
+<meta name="description" content="How to parse PDFs, scanned pages and tables for RAG: detecting document types, preserving structure, representing tables and checking extraction quality.">
+<meta name="robots" content="index,follow">
+<meta name="author" content="Shivani">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<link rel="manifest" href="/site.webmanifest">
+<meta name="theme-color" content="#080b0f">
+<meta property="og:type" content="article">
+<meta property="og:title" content="RAG for PDFs and Tables: Parsing Awkward Documents | Shivani">
+<meta property="og:description" content="How to parse PDFs, scanned pages and tables for RAG: detecting document types, preserving structure, representing tables and checking extraction quality.">
+<meta property="og:url" content="https://shivanigupta.store/blog/rag-for-pdfs-and-tables/">
+<meta property="og:image" content="https://shivanigupta.store/assets/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"RAG for PDFs and tables: parsing awkward documents","description":"How to parse PDFs, scanned pages and tables for RAG: detecting document types, preserving structure, representing tables and checking extraction quality.","mainEntityOfPage":"https://shivanigupta.store/blog/rag-for-pdfs-and-tables/","datePublished":"2026-11-06","dateModified":"2026-11-06","author":{"@type":"Person","name":"Shivani"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://shivanigupta.store/"},{"@type":"ListItem","position":2,"name":"Blog","item":"https://shivanigupta.store/blog/"},{"@type":"ListItem","position":3,"name":"RAG for PDFs and tables: parsing awkward documents","item":"https://shivanigupta.store/blog/rag-for-pdfs-and-tables/"}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"What is the best PDF parser for RAG?","acceptedAnswer":{"@type":"Answer","text":"No single parser suits every collection. Compare a few on a sample of your hardest pages, including columns, tables and scans, and judge the output by whether a person could still understand it and answer questions from it."}},{"@type":"Question","name":"Should tables be split across chunks?","acceptedAnswer":{"@type":"Answer","text":"Avoid splitting them in a way that loses headers. Small tables can stay whole. A large table can be divided by row or group, provided each piece repeats the table title and relevant column headers."}},{"@type":"Question","name":"Do scanned PDFs work with RAG?","acceptedAnswer":{"@type":"Answer","text":"Yes, once their text has been recovered through optical character recognition or a vision model. Recognition errors can harm retrieval and answers, so check quality on a sample and keep a link to the original page."}},{"@type":"Question","name":"Can RAG add up the values in a table?","acceptedAnswer":{"@type":"Answer","text":"Not reliably on its own. Retrieval may miss relevant rows, and a language model can make arithmetic errors. For totals and comparisons, extract the table into a structured store and calculate the result with a query."}}]}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&family=Poppins:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+<header class="nav">
+  <div class="wrap nav-in">
+    <a class="logo" href="/" aria-label="Shivani, home"><img src="/assets/logo.svg" alt="Shivani" width="144" height="40"></a>
+    <nav id="nav-links" aria-label="Main">
+      <a href="/#services">Services</a>
+      <a href="/#skills">Skills</a>
+      <a href="/#work">Work</a>
+      <a href="/#process">Process</a>
+      <a href="/#faq">FAQ</a>
+      <a href="/blog/">Blog</a>
+      <a class="btn btn-sm" href="/#contact">Hire Me</a>
+    </nav>
+    <button id="menu-toggle" class="menu-toggle" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="nav-links"><span></span><span></span><span></span></button>
+  </div>
+</header>
+
+<main id="top">
+  <section class="page-head">
+    <div class="wrap">
+      <nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a><span aria-hidden="true">/</span><a href="/blog/">Blog</a><span aria-hidden="true">/</span><span aria-current="page">RAG for PDFs and tables: parsing awkward documents</span></nav>
+      <p class="eyebrow">Guide</p>
+      <h1>RAG for PDFs and tables: parsing awkward documents</h1>
+      <p class="lead">To make RAG work on PDFs and tables, sort documents by type, use a parser suited to each type, and keep structure such as headings, reading order and table headers. Index tables in a form that retains the link between each value and its row and column, then check the extracted text before tuning retrieval.</p>
+    </div>
+  </section>
+  <section class="article">
+    <div class="wrap prose">
+<h2>Why PDFs cause so much trouble</h2>
+<p>A PDF is designed to display a page, not to describe its logical content. Internally, a page is largely a set of drawing instructions that put text at particular positions. Headings, paragraphs and tables are often things a reader infers from the layout, and the file may not record them explicitly. A parser has to reconstruct that structure, and it can go wrong without raising an error.</p>
+<p>The usual symptoms show up in retrieval later on. Two columns are merged line by line into nonsense. A page footer appears in the middle of a sentence. A table becomes a stream of numbers with no headers. Each failure produces text that embeds poorly and misleads the model, which may still sound confident. This is why the step deserves attention before you adjust the <a href="/blog/choosing-chunking-strategies-for-rag/">chunking strategy</a> or the prompt.</p>
+
+<h2>Step 1: sort your documents by type</h2>
+<p>Running one parser over everything is the commonest shortcut, and a collection is rarely uniform. Take a sample and look at what you really have:</p>
+<ul>
+<li><strong>Digital PDFs with a text layer.</strong> These were exported from software, and text can be extracted directly. Simple layouts may need little more.</li>
+<li><strong>Scanned PDFs.</strong> These are images of pages, so they need optical character recognition (OCR) or a vision model.</li>
+<li><strong>Layout-heavy documents.</strong> Reports, brochures and academic papers can have columns, sidebars and captions that need layout analysis.</li>
+<li><strong>Table-heavy documents.</strong> Financial statements, specifications and price lists need specific table handling.</li>
+<li><strong>Mixed documents.</strong> One file may contain all of the above, so it is worth routing at page level where the volume justifies it.</li>
+</ul>
+<p>A cheap check can do part of this routing. If a page yields almost no characters from its text layer but contains a large image, it is probably scanned. Be careful, though: some files carry a poor hidden text layer from an earlier OCR run, so the presence of text does not prove that it is good.</p>
+
+<h2>Step 2: choose parsers by the failure you need to avoid</h2>
+<p>Parsing tools broadly fall into a few categories, and many pipelines combine more than one:</p>
+<ul>
+<li><strong>Text-layer extractors</strong> are fast and inexpensive. They can return words and positions but may offer limited insight into structure.</li>
+<li><strong>Layout-aware parsers</strong> try to detect headings, columns, lists and tables, often with machine learning models. They usually cost more compute.</li>
+<li><strong>OCR engines</strong> recover text from images. Accuracy depends on scan quality, language and layout.</li>
+<li><strong>Vision-capable LLMs</strong> can transcribe a page image into Markdown and may cope with complicated layouts. They add cost and latency, and they can produce plausible text that is not on the page, so they call for verification.</li>
+</ul>
+<p>Compare candidates on your own hardest pages. Pick perhaps a few dozen that represent the difficult cases, run each parser and read the output beside the original. Tools change quickly, so a test on your documents will tell you more than a general ranking.</p>
+
+<h2>Step 3: keep the structure that retrieval needs</h2>
+<p>Aim to output clean, structured text, such as Markdown, together with metadata. Several details matter:</p>
+<ul>
+<li><strong>Reading order.</strong> Columns, sidebars and footnotes should not be interleaved with the main text.</li>
+<li><strong>Heading paths.</strong> Store the path to each section, such as "Section 4 &gt; Warranty &gt; Exclusions", and consider adding it to each chunk. A passage then keeps its context once it is separated from the page.</li>
+<li><strong>Repeated furniture.</strong> Remove running headers, footers and page numbers. Text that recurs at the same position on many pages is a useful clue, but make sure that you do not remove a legal notice someone may need.</li>
+<li><strong>Broken words and lines.</strong> Rejoin words hyphenated at line ends and lines wrapped within a paragraph.</li>
+<li><strong>Page references.</strong> Keep the source file and page number on each chunk, so that answers can cite a location a reader can check.</li>
+</ul>
+
+<h2>Step 4: decide how to represent tables</h2>
+<p>A table's meaning lies in relationships. "42" means nothing until you know its row and its column. A good representation preserves that link. There are several common options, each with its own trade-offs:</p>
+<ul>
+<li><strong>A whole table as Markdown or HTML.</strong> This is simple and suits small tables. HTML can represent merged cells, whereas Markdown cannot do so directly. Large tables can exceed a sensible chunk size.</li>
+<li><strong>Row-level text.</strong> Each row becomes a self-contained statement that repeats its headers. This is useful for precise lookups, though it can inflate the index.</li>
+<li><strong>A summary pointing to the full table.</strong> You embed a short description of what the table contains, then send the full table to the model when it is retrieved. This helps with long tables, but the summary must mention what users will search for.</li>
+<li><strong>A structured store.</strong> You load the values into a database and query them. This is the right direction for totals, filters and comparisons.</li>
+</ul>
+<p>Here is the row-level approach. This sample is illustrative: it assumes the headers and rows have already been extracted correctly, which is often the hard part.</p>
+<pre><code>def table_to_chunks(title, headers, rows, source, page):
+    chunks = []
+    for row in rows:
+        pairs = [f"{h}: {v}" for h, v in zip(headers, row)]
+        chunks.append({
+            "text": f"{title}. " + "; ".join(pairs),
+            "metadata": {"source": source, "page": page, "type": "table_row"},
+        })
+    return chunks</code></pre>
+<p>A row such as "Basic, 5 users, 10 GB" then becomes text that names its plan, users and storage explicitly, so it still makes sense when retrieved alone.</p>
+
+<h3>Table problems to look for</h3>
+<ul>
+<li><strong>Tables that continue across pages.</strong> Detect when a table carries on, merge the parts and avoid treating the repeated header as data.</li>
+<li><strong>Merged and nested headers.</strong> Flatten them so that each value receives its full label, such as "2024 Revenue" and not simply "Revenue".</li>
+<li><strong>Empty cells.</strong> A blank may mean zero, unknown or "same as above". Do not guess silently; where a merged cell clearly applies downwards, fill it in deliberately.</li>
+<li><strong>Units and footnotes.</strong> "Figures in thousands" may appear only in a caption. Carry this information with the table, or answers may be wrong by a large factor.</li>
+<li><strong>Wrongly aligned columns.</strong> Borderless tables can shift values into the next column. This is especially harmful because the text still looks reasonable.</li>
+</ul>
+
+<h2>Step 5: handle scans, images and charts</h2>
+<p>For scanned pages, image quality has a large effect. Correcting rotation and skew can help before OCR. Keep any confidence scores your OCR tool provides, and send low-confidence pages for review or mark them, particularly where digits matter, because a misread number looks as valid as a correct one.</p>
+<p>Charts and diagrams are a separate question. Decide whether their contents are likely to be asked about. If they are, a vision model can produce a text description for indexing, but treat values read from a chart as approximate. Link back to the original figure, so a reader can confirm the result. Text inside documents can also carry instructions intended for the model, so parsed content should remain untrusted input, however it was extracted.</p>
+
+<h2>Step 6: check extraction before you tune retrieval</h2>
+<p>Add quality checks to the ingestion pipeline, so that problems surface before a user finds them:</p>
+<ul>
+<li>Flag pages with unusually little text, a high share of odd characters or very short lines.</li>
+<li>Compare the number of tables you detected with a sample count by hand, to estimate what is being missed.</li>
+<li>Spot-check numbers from extracted tables against their source pages.</li>
+<li>Record which parser and version processed each document, so that affected files can be reprocessed later.</li>
+</ul>
+<p>Next, separate parsing failures from retrieval failures in your testing. Include questions whose answers sit in tables, footnotes and scanned pages, then trace each miss back. Was the answer present in the extracted text? Was it in a chunk? Was that chunk retrieved? <a href="/blog/how-to-evaluate-a-rag-system/">How to evaluate a RAG system</a> covers how to build this test set, and <a href="/blog/hybrid-search-and-reranking-for-rag/">hybrid search and reranking</a> helps when users search for exact codes and figures found in tables.</p>
+
+<h2>When retrieval is the wrong answer for tables</h2>
+<p>A question such as "What was the total across all regions?" needs every relevant row and a correct calculation. Retrieving a few chunks and asking a model to add them up is fragile. Extract such tables into a database and answer through a query instead, using the precautions set out in <a href="/blog/text-to-sql-agents-risks-and-safeguards/">text-to-SQL agents: risks and safeguards</a>. A system can route lookups to the document index and calculations to the database.</p>
+<p>If your documents are proving difficult to work with, the <a href="/services/rag-development/">RAG development</a> page describes what I can help with.</p>
+      <h2>Frequently asked questions</h2>
+      <h3>What is the best PDF parser for RAG?</h3>
+      <p>No single parser suits every collection. Compare a few on a sample of your hardest pages, including columns, tables and scans, and judge the output by whether a person could still understand it and answer questions from it.</p>
+      <h3>Should tables be split across chunks?</h3>
+      <p>Avoid splitting them in a way that loses headers. Small tables can stay whole. A large table can be divided by row or group, provided each piece repeats the table title and relevant column headers.</p>
+      <h3>Do scanned PDFs work with RAG?</h3>
+      <p>Yes, once their text has been recovered through optical character recognition or a vision model. Recognition errors can harm retrieval and answers, so check quality on a sample and keep a link to the original page.</p>
+      <h3>Can RAG add up the values in a table?</h3>
+      <p>Not reliably on its own. Retrieval may miss relevant rows, and a language model can make arithmetic errors. For totals and comparisons, extract the table into a structured store and calculate the result with a query.</p>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="foot-cta">
+      <div>
+        <h2>Have an AI or full stack project in mind?</h2>
+        <p>Tell me what you want to build.</p>
+      </div>
+      <div class="foot-cta-btns">
+        <a class="btn" href="/#contact">Start a conversation</a>
+        <a class="btn btn-line" href="mailto:shivanigupta4876@gmail.com">Send an email</a>
+      </div>
+    </div>
+    <div class="foot-grid">
+      <div>
+        <a href="/" aria-label="Shivani, home"><img src="/assets/logo.svg" alt="Shivani" width="144" height="40"></a>
+        <p>AI/ML engineer working across generative AI, LLMs, RAG, agentic AI and NLP, plus full stack development.</p>
+        <span class="avail">Taking new projects</span>
+      </div>
+      <div>
+        <h3>Explore</h3>
+        <ul>
+          <li><a href="/services/">Services</a></li>
+          <li><a href="/#work">Projects</a></li>
+          <li><a href="/#process">Process</a></li>
+          <li><a href="/#faq">FAQ</a></li>
+          <li><a href="/blog/">Blog</a></li>
+          <li><a href="/#contact">Contact</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Services</h3>
+        <ul>
+          <li><a href="/services/generative-ai-llm-development/">Generative AI and LLMs</a></li>
+          <li><a href="/services/rag-development/">RAG development</a></li>
+          <li><a href="/services/multi-agent-systems/">Multi-agent systems</a></li>
+          <li><a href="/services/ai-orchestration-langgraph/">Orchestration with LangGraph</a></li>
+          <li><a href="/services/nlp-development/">NLP development</a></li>
+          <li><a href="/services/full-stack-development/">Full stack development</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Contact</h3>
+        <ul>
+          <li><a href="mailto:shivanigupta4876@gmail.com">shivanigupta4876@gmail.com</a></li>
+          <li><a href="tel:+919720466504">+91 97204 66504</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="foot-bottom">&copy; <span id="year">2026</span> Shivani. All rights reserved.</div>
+  </div>
+</footer>
+<a class="wa-float" href="https://wa.me/919720466504?text=Hi%20Shivani%2C%20I%20saw%20your%20website%20and%20would%20like%20to%20talk%20about%20a%20project." target="_blank" rel="noopener" aria-label="Chat on WhatsApp"><svg viewBox="0 0 24 24" width="28" height="28" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15L2 22l5.1-1.3A10 10 0 1 0 12 2zm0 18.2a8.2 8.2 0 0 1-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1a6.700 6.700 0 0 1-3.300-2.900c-.2-.3 0-.4.1-.6l.4-.4.2-.4v-.5l-.8-1.800c-.2-.5-.4-.4-.6-.4h-.5c-.2 0-.4.1-.6.3-.2.2-.8.8-.8 2s.9 2.300 1 2.500c.1.2 1.700 2.600 4.100 3.600 1.500.7 2.100.7 2.900.6.500-.1 1.500-.6 1.700-1.200.2-.6.2-1.100.1-1.200l-.2-.2z"/></svg></a>
+<script src="/assets/js/site.js" defer></script>
+</body>
+</html>

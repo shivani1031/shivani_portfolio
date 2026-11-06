@@ -39,3 +39,8 @@
 /blog/structured-output-from-llms/
 /blog/llm-observability-and-tracing/
 /blog/pgvector-vs-dedicated-vector-databases/
+/blog/prompt-engineering-for-production-llm-apps/
+/blog/rag-for-pdfs-and-tables/
+/blog/langgraph-tutorial-for-beginners/
+/blog/document-summarisation-with-llms/
+/blog/how-to-scope-an-ai-project/
