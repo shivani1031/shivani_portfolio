@@ -1,0 +1,217 @@
+<!doctype html>
+<html lang="en">
+<head>
+<script async src="https://www.googletagmanager.com/gtm.js?id=GTM-THN7RV8R"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+</script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="canonical" href="https://shivanigupta.store/blog/rag-chatbot-vs-custom-gpt/">
+<title>RAG Chatbot vs Custom GPT: Which Do You Need? | Shivani</title>
+<meta name="description" content="An off-the-shelf assistant suits small, low-risk content for a few people. Build a RAG chatbot when you need access control, testing or your own interface.">
+<meta name="robots" content="index,follow">
+<meta name="author" content="Shivani">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<link rel="manifest" href="/site.webmanifest">
+<meta name="theme-color" content="#080b0f">
+<meta property="og:type" content="article">
+<meta property="og:title" content="RAG Chatbot vs Custom GPT: Which Do You Need? | Shivani">
+<meta property="og:description" content="An off-the-shelf assistant suits small, low-risk content for a few people. Build a RAG chatbot when you need access control, testing or your own interface.">
+<meta property="og:url" content="https://shivanigupta.store/blog/rag-chatbot-vs-custom-gpt/">
+<meta property="og:image" content="https://shivanigupta.store/assets/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"RAG chatbot vs custom GPT: when to build","description":"An off-the-shelf assistant suits small, low-risk content for a few people. Build a RAG chatbot when you need access control, testing or your own interface.","mainEntityOfPage":"https://shivanigupta.store/blog/rag-chatbot-vs-custom-gpt/","datePublished":"2026-11-06","dateModified":"2026-11-06","author":{"@type":"Person","name":"Shivani"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://shivanigupta.store/"},{"@type":"ListItem","position":2,"name":"Blog","item":"https://shivanigupta.store/blog/"},{"@type":"ListItem","position":3,"name":"RAG chatbot vs custom GPT: when to build","item":"https://shivanigupta.store/blog/rag-chatbot-vs-custom-gpt/"}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Is a custom GPT a RAG system?","acceptedAnswer":{"@type":"Answer","text":"In a loose sense, when it answers from uploaded knowledge files, because it retrieves content and passes it to a model. The difference is that the vendor controls how documents are parsed, searched and ranked, so you cannot inspect or tune these steps as you could in your own pipeline."}},{"@type":"Question","name":"Are custom GPTs still available?","acceptedAnswer":{"@type":"Answer","text":"At the time of writing, OpenAI's help centre says they are scheduled to retire on 11 December 2026, with a later date for some enterprise workspaces, and points creators towards plugins. Check OpenAI's current documentation, because these details may change."}},{"@type":"Question","name":"Is building a RAG chatbot always more accurate?","acceptedAnswer":{"@type":"Answer","text":"No. A custom build gives you the means to improve accuracy, but a poorly built pipeline can do worse than a hosted product. The only reliable comparison is to run both on the same realistic questions and score the results."}},{"@type":"Question","name":"Can I start with an off-the-shelf assistant and build later?","acceptedAnswer":{"@type":"Answer","text":"Yes, and this is often sensible. The real questions you collect, the documents you clean and the instructions you refine all carry over. Keep your own copies of them outside the tool so that moving remains simple."}}]}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&family=Poppins:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+<header class="nav">
+  <div class="wrap nav-in">
+    <a class="logo" href="/" aria-label="Shivani, home"><img src="/assets/logo.svg" alt="Shivani" width="144" height="40"></a>
+    <nav id="nav-links" aria-label="Main">
+      <a href="/#services">Services</a>
+      <a href="/#skills">Skills</a>
+      <a href="/#work">Work</a>
+      <a href="/#process">Process</a>
+      <a href="/#faq">FAQ</a>
+      <a href="/blog/">Blog</a>
+      <a class="btn btn-sm" href="/#contact">Hire Me</a>
+    </nav>
+    <button id="menu-toggle" class="menu-toggle" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="nav-links"><span></span><span></span><span></span></button>
+  </div>
+</header>
+
+<main id="top">
+  <section class="page-head">
+    <div class="wrap">
+      <nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a><span aria-hidden="true">/</span><a href="/blog/">Blog</a><span aria-hidden="true">/</span><span aria-current="page">RAG chatbot vs custom GPT: when to build</span></nav>
+      <p class="eyebrow">Guide</p>
+      <h1>RAG chatbot vs custom GPT: when to build</h1>
+      <p class="lead">An off-the-shelf assistant such as a custom GPT is usually enough when a small group needs help with a modest, low-risk set of documents. Build your own RAG chatbot when you need per-user permissions, control over retrieval, measurable quality, or the assistant embedded in your own product. Whichever you choose, try the cheap option on real questions first.</p>
+    </div>
+  </section>
+  <section class="article">
+    <div class="wrap prose">
+<h2>What is being compared</h2>
+<p>A custom GPT is a configured version of ChatGPT: you give it instructions and files, optionally connect it to outside services, and people use it inside ChatGPT. Similar configured assistants exist in other products, including Claude Projects, Gemini Gems and Microsoft Copilot Studio. They differ in detail, but they share one trait: the vendor owns the retrieval, the interface and most of the behaviour.</p>
+<p>A custom RAG chatbot is software you own. You decide how documents are parsed and split, how search works, which model answers, what the interface looks like and what gets logged. If the pattern itself is unfamiliar, start with <a href="/blog/what-is-rag-and-when-to-use-it/">what RAG is and when to use it</a>.</p>
+<p>So the real choice is not about which technology is smarter. Both may rest on similar models and on similar retrieval ideas. It is a choice about who controls each layer, and how much that control is worth to you.</p>
+
+<h2>Custom GPTs specifically are being retired</h2>
+<p>If you are considering a custom GPT by name, check its status first. At the time of writing, in November 2026, OpenAI's help centre says custom GPTs are scheduled to retire on 11 December 2026, with a later date for some enterprise workspaces. It also points creators towards plugins as the migration path. Custom actions do not carry over through the migration, so those connections must be recreated.</p>
+<p>Details of this kind change, so read <a href="https://help.openai.com/en/articles/20001519-custom-gpt-retirement-and-migration-faq" rel="noopener">OpenAI's retirement FAQ</a> before you commit. The episode also makes a wider point that belongs in your decision: when a vendor owns the product, the vendor sets its lifespan. That is not a reason to avoid hosted assistants, but it is a reason to keep your source documents and instructions somewhere you control, so that moving is an inconvenience rather than a rebuild. For the rest of this guide, "off-the-shelf assistant" means any product in this category.</p>
+
+<h2>When an off-the-shelf assistant is enough</h2>
+<p>A hosted assistant is often the right answer, and building should not be the default. It tends to be enough when most of these are true:</p>
+<ul>
+<li><strong>The audience is small and already has accounts.</strong> A team that already pays for the product can use the assistant without any new deployment.</li>
+<li><strong>The content is modest and fairly stable.</strong> A handbook, a style guide or a set of process documents fits well. Products have limits on files and sizes, so check them against your content.</li>
+<li><strong>Everyone may see everything.</strong> If all users are allowed to read all the documents, you do not need retrieval that varies by person.</li>
+<li><strong>A wrong answer is cheap.</strong> If people use the output as a starting point and check it themselves, occasional errors are tolerable.</li>
+<li><strong>You are still testing the idea.</strong> A configured assistant can show within days whether people want this at all, before anyone writes code.</li>
+</ul>
+<p>That last point is the most undervalued. An internal trial reveals which questions people really ask, and that list is valuable however you proceed, because it becomes the first draft of your test set.</p>
+
+<h2>When building your own is justified</h2>
+<p>Each of the following is a concrete requirement that hosted assistants may handle poorly or not at all. Check the current product before assuming either way, as enterprise tiers and connectors do cover some of this ground.</p>
+<h3>Permissions differ by user</h3>
+<p>If a sales representative must not see HR documents, or one customer must never see another's data, the restriction has to be enforced during retrieval, outside the model. A prompt asking the model to keep a secret is not access control. In your own system, each search carries the user's identity and filters results before the model sees them. The guide on <a href="/blog/llm-guardrails-and-prompt-injection-defence/">LLM guardrails and prompt injection defence</a> explains why this boundary matters.</p>
+<h3>Retrieval quality decides the outcome</h3>
+<p>Hosted products generally hide their parsing, chunking and ranking. That is fine until an answer is wrong and you cannot tell why. Dense tables, part numbers, legal clauses and near-duplicate document versions are common sources of trouble. With your own pipeline you can inspect what was retrieved and change it, for example by adding <a href="/blog/hybrid-search-and-reranking-for-rag/">hybrid search and reranking</a>.</p>
+<h3>You need to measure quality</h3>
+<p>If someone will ask "how accurate is it, and did last week's change make it worse?", you need a repeatable test run and access to each step. That is straightforward with your own code, as described in <a href="/blog/how-to-evaluate-a-rag-system/">how to evaluate a RAG system</a>, and often awkward from outside a hosted product.</p>
+<h3>The assistant lives in your product</h3>
+<p>Customers on your website should not need an account with an AI vendor. Your own branding, login, conversation history and handover to a human agent all point towards building, or at least towards a vendor API rather than a consumer assistant.</p>
+<h3>Answers must trigger actions under your rules</h3>
+<p>Looking up an order or raising a ticket involves your systems, your audit requirements and possibly an approval step. Hosted connectors can do some of this, but complex rules are easier to enforce in code you control.</p>
+<h3>Data handling rules are strict</h3>
+<p>Data residency, retention periods, contractual terms and the option of a self-hosted model can rule products in or out. These differ by plan and change over time, so read the vendor's current terms and involve whoever is responsible for compliance. Do not rely on a general impression, or on a blog post, including this one.</p>
+
+<h2>Side-by-side comparison</h2>
+<p>These are general tendencies rather than product specifications.</p>
+<div class="table-wrap"><table>
+<thead><tr><th>Concern</th><th>Off-the-shelf assistant</th><th>Custom RAG chatbot</th></tr></thead>
+<tbody>
+<tr><td>Time to first version</td><td>Hours to days</td><td>Longer, depending on scope</td></tr>
+<tr><td>Upfront engineering</td><td>Little or none</td><td>Significant</td></tr>
+<tr><td>Ongoing work</td><td>Mostly updating content</td><td>Running a service, plus updating content</td></tr>
+<tr><td>Cost pattern</td><td>Usually per seat</td><td>Build cost, hosting and usage</td></tr>
+<tr><td>Retrieval control</td><td>Limited and often opaque</td><td>Complete</td></tr>
+<tr><td>Per-user permissions</td><td>Depends on product and plan</td><td>Designed to your rules</td></tr>
+<tr><td>Testing and tracing</td><td>Limited visibility</td><td>Full access to each step</td></tr>
+<tr><td>Interface</td><td>The vendor's</td><td>Yours</td></tr>
+<tr><td>Model choice</td><td>Usually limited to the vendor's</td><td>Yours, including self-hosted</td></tr>
+<tr><td>Main dependency risk</td><td>Product changes or retirement</td><td>Your own maintenance capacity</td></tr>
+</tbody>
+</table></div>
+<p>The cost row deserves care. Seat pricing is easy to predict but scales with people, while usage pricing scales with questions and with how much context you send. Neither is automatically cheaper, so estimate both from your own expected usage and the vendors' current price lists. The guide on <a href="/blog/controlling-llm-cost-and-latency/">controlling LLM cost and latency</a> covers the usage side.</p>
+
+<h2>A test that settles most cases</h2>
+<p>You can often make this decision with evidence and very little spending. Keep the trial short and write down the outcome.</p>
+<ol>
+<li><strong>Collect real questions.</strong> Gather a few dozen from support tickets, chat logs or colleagues, including several that your documents cannot answer.</li>
+<li><strong>Load a representative sample of documents</strong> into a hosted assistant, including your awkward ones: tables, old versions and long PDFs.</li>
+<li><strong>Record each result.</strong> Was the answer correct? Did it cite the right source? Did it decline when it should have?</li>
+<li><strong>Sort the failures by cause.</strong> Missing content needs better documents, and no amount of engineering will fix that. Failures in parsing or search suggest that a custom pipeline might help.</li>
+<li><strong>Check the hard requirements.</strong> Separately from quality, list the needs in this guide that apply to you and confirm whether the product meets each one.</li>
+</ol>
+<p>A simple script is enough to score the same questions against any candidate, so that the comparison stays fair if you later build:</p>
+<pre><code># Illustrative only. ask_candidate is your own wrapper around each option,
+# and a person fills in the "correct" column afterwards.
+import csv
+
+def run_trial(questions, ask_candidate, path):
+    with open(path, "w", newline="", encoding="utf-8") as handle:
+        writer = csv.writer(handle)
+        writer.writerow(["question", "answer", "correct"])
+        for question in questions:
+            writer.writerow([question, ask_candidate(question), ""])</code></pre>
+<p>If the assistant answers your questions acceptably and meets your hard requirements, stop there. You have saved a build. If it fails, you now hold a list of specific reasons and a test set, which makes for a far better starting point than a general feeling that you need something custom.</p>
+
+<h2>Mistakes to avoid on either path</h2>
+<ul>
+<li><strong>Building because it feels more serious.</strong> A custom system nobody maintains will degrade. Someone has to own the index, the evaluations and the model upgrades.</li>
+<li><strong>Treating uploaded instructions as secret.</strong> Assume that a determined user can extract instructions and knowledge files from an assistant, so do not place anything confidential in one that is widely shared.</li>
+<li><strong>Letting the only copy live in the tool.</strong> Keep documents and prompts under your own version control or storage, whichever route you pick.</li>
+<li><strong>Skipping the unanswerable questions.</strong> An assistant that invents answers is often worse than one that says it does not know, and only testing will show which you have.</li>
+</ul>
+
+<h2>Moving from one to the other</h2>
+<p>Starting with an assistant does not trap you. Your questions, your cleaned documents and your instructions all transfer to a custom build, so the trial is rarely wasted. The first version of a custom system can also be small; <a href="/blog/build-a-rag-chatbot-in-python/">building a RAG chatbot in Python</a> shows the basic shape. The two routes can coexist, too, with a hosted assistant for internal convenience and a custom chatbot for customers.</p>
+<p>If your requirements point towards building, the <a href="/services/rag-development/">RAG development</a> page describes what I can help with.</p>
+      <h2>Frequently asked questions</h2>
+      <h3>Is a custom GPT a RAG system?</h3>
+      <p>In a loose sense, when it answers from uploaded knowledge files, because it retrieves content and passes it to a model. The difference is that the vendor controls how documents are parsed, searched and ranked, so you cannot inspect or tune these steps as you could in your own pipeline.</p>
+      <h3>Are custom GPTs still available?</h3>
+      <p>At the time of writing, OpenAI's help centre says they are scheduled to retire on 11 December 2026, with a later date for some enterprise workspaces, and points creators towards plugins. Check OpenAI's current documentation, because these details may change.</p>
+      <h3>Is building a RAG chatbot always more accurate?</h3>
+      <p>No. A custom build gives you the means to improve accuracy, but a poorly built pipeline can do worse than a hosted product. The only reliable comparison is to run both on the same realistic questions and score the results.</p>
+      <h3>Can I start with an off-the-shelf assistant and build later?</h3>
+      <p>Yes, and this is often sensible. The real questions you collect, the documents you clean and the instructions you refine all carry over. Keep your own copies of them outside the tool so that moving remains simple.</p>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="foot-cta">
+      <div>
+        <h2>Have an AI or full stack project in mind?</h2>
+        <p>Tell me what you want to build.</p>
+      </div>
+      <div class="foot-cta-btns">
+        <a class="btn" href="/#contact">Start a conversation</a>
+        <a class="btn btn-line" href="mailto:shivanigupta4876@gmail.com">Send an email</a>
+      </div>
+    </div>
+    <div class="foot-grid">
+      <div>
+        <a href="/" aria-label="Shivani, home"><img src="/assets/logo.svg" alt="Shivani" width="144" height="40"></a>
+        <p>AI/ML engineer working across generative AI, LLMs, RAG, agentic AI and NLP, plus full stack development.</p>
+        <span class="avail">Taking new projects</span>
+      </div>
+      <div>
+        <h3>Explore</h3>
+        <ul>
+          <li><a href="/services/">Services</a></li>
+          <li><a href="/#work">Projects</a></li>
+          <li><a href="/#process">Process</a></li>
+          <li><a href="/#faq">FAQ</a></li>
+          <li><a href="/blog/">Blog</a></li>
+          <li><a href="/#contact">Contact</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Services</h3>
+        <ul>
+          <li><a href="/services/generative-ai-llm-development/">Generative AI and LLMs</a></li>
+          <li><a href="/services/rag-development/">RAG development</a></li>
+          <li><a href="/services/multi-agent-systems/">Multi-agent systems</a></li>
+          <li><a href="/services/ai-orchestration-langgraph/">Orchestration with LangGraph</a></li>
+          <li><a href="/services/nlp-development/">NLP development</a></li>
+          <li><a href="/services/full-stack-development/">Full stack development</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Contact</h3>
+        <ul>
+          <li><a href="mailto:shivanigupta4876@gmail.com">shivanigupta4876@gmail.com</a></li>
+          <li><a href="tel:+919720466504">+91 97204 66504</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="foot-bottom">&copy; <span id="year">2026</span> Shivani. All rights reserved.</div>
+  </div>
+</footer>
+<a class="wa-float" href="https://wa.me/919720466504?text=Hi%20Shivani%2C%20I%20saw%20your%20website%20and%20would%20like%20to%20talk%20about%20a%20project." target="_blank" rel="noopener" aria-label="Chat on WhatsApp"><svg viewBox="0 0 24 24" width="28" height="28" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15L2 22l5.1-1.3A10 10 0 1 0 12 2zm0 18.2a8.2 8.2 0 0 1-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1a6.700 6.700 0 0 1-3.300-2.900c-.2-.3 0-.4.1-.6l.4-.4.2-.4v-.5l-.8-1.800c-.2-.5-.4-.4-.6-.4h-.5c-.2 0-.4.1-.6.3-.2.2-.8.8-.8 2s.9 2.300 1 2.500c.1.2 1.700 2.600 4.100 3.600 1.500.7 2.100.7 2.900.6.500-.1 1.500-.6 1.700-1.200.2-.6.2-1.100.1-1.200l-.2-.2z"/></svg></a>
+<script src="/assets/js/site.js" defer></script>
+</body>
+</html>

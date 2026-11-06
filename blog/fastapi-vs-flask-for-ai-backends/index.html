@@ -1,0 +1,235 @@
+<!doctype html>
+<html lang="en">
+<head>
+<script async src="https://www.googletagmanager.com/gtm.js?id=GTM-THN7RV8R"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+</script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="canonical" href="https://shivanigupta.store/blog/fastapi-vs-flask-for-ai-backends/">
+<title>FastAPI vs Flask for AI Backends | Shivani</title>
+<meta name="description" content="FastAPI suits most new LLM backends because of native async and streaming, while Flask remains sensible for existing apps and simpler synchronous workloads.">
+<meta name="robots" content="index,follow">
+<meta name="author" content="Shivani">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<link rel="manifest" href="/site.webmanifest">
+<meta name="theme-color" content="#080b0f">
+<meta property="og:type" content="article">
+<meta property="og:title" content="FastAPI vs Flask for AI Backends | Shivani">
+<meta property="og:description" content="FastAPI suits most new LLM backends because of native async and streaming, while Flask remains sensible for existing apps and simpler synchronous workloads.">
+<meta property="og:url" content="https://shivanigupta.store/blog/fastapi-vs-flask-for-ai-backends/">
+<meta property="og:image" content="https://shivanigupta.store/assets/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"FastAPI vs Flask for AI backends","description":"FastAPI suits most new LLM backends because of native async and streaming, while Flask remains sensible for existing apps and simpler synchronous workloads.","mainEntityOfPage":"https://shivanigupta.store/blog/fastapi-vs-flask-for-ai-backends/","datePublished":"2026-11-06","dateModified":"2026-11-06","author":{"@type":"Person","name":"Shivani"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://shivanigupta.store/"},{"@type":"ListItem","position":2,"name":"Blog","item":"https://shivanigupta.store/blog/"},{"@type":"ListItem","position":3,"name":"FastAPI vs Flask for AI backends","item":"https://shivanigupta.store/blog/fastapi-vs-flask-for-ai-backends/"}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Is FastAPI faster than Flask for LLM apps?","acceptedAnswer":{"@type":"Answer","text":"Framework overhead is rarely what you feel, because the model call takes far longer. The practical advantage is concurrency: an async FastAPI worker can hold many waiting requests, whereas a Flask worker handles one at a time. Measure with your own workload."}},{"@type":"Question","name":"Does async def make Flask work like FastAPI?","acceptedAnswer":{"@type":"Answer","text":"No. Flask's documentation says each request still ties up one worker, even with async views. Async lets one view perform several operations concurrently, but it does not raise the number of requests the application can handle at one time."}},{"@type":"Question","name":"Can Flask stream LLM responses?","acceptedAnswer":{"@type":"Answer","text":"Yes. A view can return a generator and each yielded piece is sent to the client. Use stream_with_context if the generator needs the request, and remember that under a sync worker each open stream occupies that worker until it ends."}},{"@type":"Question","name":"Should I migrate my Flask app to FastAPI to add AI features?","acceptedAnswer":{"@type":"Answer","text":"Usually not at first. Add the feature to the existing app, or run it as a small separate service, and migrate only if you measure a concurrency problem. A rewrite adds risk without helping the AI feature itself."}}]}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&family=Poppins:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+<header class="nav">
+  <div class="wrap nav-in">
+    <a class="logo" href="/" aria-label="Shivani, home"><img src="/assets/logo.svg" alt="Shivani" width="144" height="40"></a>
+    <nav id="nav-links" aria-label="Main">
+      <a href="/#services">Services</a>
+      <a href="/#skills">Skills</a>
+      <a href="/#work">Work</a>
+      <a href="/#process">Process</a>
+      <a href="/#faq">FAQ</a>
+      <a href="/blog/">Blog</a>
+      <a class="btn btn-sm" href="/#contact">Hire Me</a>
+    </nav>
+    <button id="menu-toggle" class="menu-toggle" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="nav-links"><span></span><span></span><span></span></button>
+  </div>
+</header>
+
+<main id="top">
+  <section class="page-head">
+    <div class="wrap">
+      <nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a><span aria-hidden="true">/</span><a href="/blog/">Blog</a><span aria-hidden="true">/</span><span aria-current="page">FastAPI vs Flask for AI backends</span></nav>
+      <p class="eyebrow">Guide</p>
+      <h1>FastAPI vs Flask for AI backends</h1>
+      <p class="lead">For a new LLM backend, FastAPI is usually the better default, because model calls are long network waits and it is built on ASGI for handling many of them concurrently. Flask remains a sound choice when you already have a Flask application, your team knows it well, or concurrency is modest and long-running work happens in a task queue.</p>
+    </div>
+  </section>
+  <section class="article">
+    <div class="wrap prose">
+<h2>Why LLM apps change the comparison</h2>
+<p>Most framework comparisons focus on routing, templates and benchmarks of small requests. LLM backends have a different profile. A single request may spend many seconds waiting on a model provider, while your own Python code does very little. Responses are often streamed. The framework's raw speed barely matters, because the model call dwarfs it. What matters is how many slow requests can be in progress at once, and what each of them occupies while it waits.</p>
+<p>That makes the deployment model the central difference. Flask is a WSGI framework. FastAPI is built on Starlette and runs on ASGI. The rest of this guide follows from there. The inside of a FastAPI service is covered separately in <a href="/blog/serving-an-llm-app-with-fastapi/">serving an LLM app with FastAPI</a>, so this guide stays on the decision.</p>
+<p>The samples below are illustrative. Both frameworks change, so confirm details against their current documentation. Facts here were checked against the FastAPI docs and the Flask 3.1 docs at the time of writing.</p>
+
+<h2>The concurrency difference</h2>
+<p>Under WSGI, a worker handles one request at a time. To serve more requests at once, you add threads or processes. Writing <code>async def</code> in Flask does not change this. The <a href="https://flask.palletsprojects.com/en/stable/async-await/" rel="noopener">Flask documentation</a> states that each request still ties up one worker, even for async views, so the number of requests handled at one time stays the same. Async in Flask is useful for concurrency within a request, such as calling two services at once, and that is its purpose.</p>
+<p>Under ASGI, a single worker runs an event loop that can hold many waiting requests. While one waits for a model, the loop serves others. FastAPI's <a href="https://fastapi.tiangolo.com/async/" rel="noopener">documentation</a> describes the two route types: <code>async def</code> routes run directly on the loop, while plain <code>def</code> routes run in an external thread pool. So FastAPI can absorb blocking code too, provided it is in a <code>def</code> route.</p>
+<p>This does not mean that Flask cannot serve an LLM app. Threads spend most of a network wait idle, so a threaded WSGI server can handle a reasonable amount of concurrent waiting, and Gevent is another documented route. The question is whether you want to size a pool of threads for your slowest requests, or to use a model designed for waiting. As concurrency and response times grow, the event loop tends to become the simpler answer.</p>
+<p>Neither protects you from your own limits. Provider rate limits, budgets and memory still apply, and a framework that accepts many requests can simply overload the provider faster. Limit concurrent model calls explicitly in either case.</p>
+
+<h2>The same endpoint in both</h2>
+<p>A non-streaming endpoint shows the difference in style. Both samples assume a <code>generate_reply</code> function of your own, in async and sync forms respectively.</p>
+<pre><code># Illustrative only. FastAPI: validation comes from the type annotations.
+from fastapi import FastAPI
+from pydantic import BaseModel, Field
+
+app = FastAPI()
+
+class ChatRequest(BaseModel):
+    message: str = Field(min_length=1, max_length=8000)
+
+class ChatResponse(BaseModel):
+    reply: str
+
+@app.post("/chat")
+async def chat(body: ChatRequest) -&gt; ChatResponse:
+    reply = await generate_reply(body.message)
+    return ChatResponse(reply=reply)</code></pre>
+<pre><code># Illustrative only. Flask: validation is added explicitly, here with Pydantic.
+from flask import Flask, jsonify, request
+from pydantic import BaseModel, Field, ValidationError
+
+app = Flask(__name__)
+
+class ChatRequest(BaseModel):
+    message: str = Field(min_length=1, max_length=8000)
+
+@app.post("/chat")
+def chat():
+    try:
+        body = ChatRequest.model_validate(request.get_json(silent=True) or {})
+    except ValidationError as error:
+        return jsonify(errors=error.errors(include_context=False)), 422
+
+    return jsonify(reply=generate_reply_sync(body.message))</code></pre>
+<p>The Flask version is not difficult, and it uses Pydantic too. But with FastAPI, validation, error responses and OpenAPI documentation all come from the same declarations. In an LLM backend, where a schema sits on nearly every boundary, that saving recurs on each route. Flask can achieve similar results through extensions, at the cost of choosing and maintaining them.</p>
+
+<h2>Streaming responses</h2>
+<p>Users expect to see text as it is generated, so this is often the deciding feature. Both frameworks can stream, and the difference is in the surrounding details.</p>
+<p>Flask streams by returning a generator, as its <a href="https://flask.palletsprojects.com/en/stable/patterns/streaming/" rel="noopener">streaming documentation</a> shows. Two details are worth knowing. The request context is gone while the generator runs unless you wrap it in <code>stream_with_context</code>, and all headers must be set before streaming begins. Under a sync worker, each open stream also occupies a thread or process for its whole duration, and so long streams feed directly into your capacity planning.</p>
+<p>FastAPI offers <code>StreamingResponse</code>, and recent versions have added first-class server-sent events through <code>fastapi.sse</code>. The <a href="https://fastapi.tiangolo.com/tutorial/server-sent-events/" rel="noopener">tutorial</a> lists this as added in version 0.135.0, so check your installed version.</p>
+<pre><code># Illustrative only. Requires a FastAPI version with fastapi.sse.
+from collections.abc import AsyncIterable
+from fastapi import FastAPI
+from fastapi.sse import EventSourceResponse
+from pydantic import BaseModel
+
+app = FastAPI()
+
+class Token(BaseModel):
+    text: str
+
+@app.get("/chat/stream", response_class=EventSourceResponse)
+async def stream_chat(message: str) -&gt; AsyncIterable[Token]:
+    async for text in stream_model(message):
+        yield Token(text=text)</code></pre>
+<p>Proxies, reconnection and front-end handling matter just as much as the framework here, and they are covered in <a href="/blog/streaming-llm-responses-to-a-web-ui/">streaming LLM responses to a web UI</a>.</p>
+
+<h2>Background work</h2>
+<p>Neither framework should be doing long agent runs inside a web request. A run that takes minutes, involves retries or must survive a restart belongs in a worker, with the API only starting it and reporting progress. The guide on <a href="/blog/building-a-backend-api-for-an-ai-agent-in-python/">building a backend API for an AI agent</a> covers this design, and it largely applies whichever framework you pick.</p>
+<p>Once that split exists, the framework choice matters less, because the web tier only does short requests. Flask's documentation adds a specific warning here: tasks spawned in an async view are cancelled when the view finishes, so <code>asyncio.create_task</code> is not a way to run background work under ordinary WSGI deployment. FastAPI has a <code>BackgroundTasks</code> helper for small jobs after a response, but it runs within the web process, so it does not give you durability.</p>
+
+<h2>Where Flask still wins</h2>
+<ul>
+<li><strong>You already have a Flask application.</strong> Adding one LLM endpoint to working code with its authentication, database setup and tests is rarely a good reason to rewrite. See <a href="/blog/adding-an-llm-feature-to-a-full-stack-app/">adding an LLM feature to a full stack app</a>.</li>
+<li><strong>The workload is short or queued.</strong> If model calls run in background workers, or a small internal tool sees light traffic, Flask's concurrency model may never become a constraint.</li>
+<li><strong>Your code is mainly synchronous.</strong> Flask's simple model is hard to misuse, while an <code>async def</code> route containing a blocking call can stall a whole FastAPI worker.</li>
+<li><strong>Server-rendered pages matter.</strong> Flask has long been used with Jinja templates and its extension ecosystem, and your team's familiarity with it counts for something real.</li>
+</ul>
+<p>If you like Flask's style but have a mainly async codebase, the Flask documentation itself suggests considering Quart, a reimplementation of Flask based on ASGI. Check that any extensions you rely on are supported before moving.</p>
+
+<h2>A side-by-side summary</h2>
+<div class="table-wrap"><table>
+<thead><tr><th>Concern</th><th>FastAPI</th><th>Flask</th></tr></thead>
+<tbody>
+<tr><td>Server interface</td><td>ASGI</td><td>WSGI</td></tr>
+<tr><td>Many slow, concurrent model calls</td><td>Suited, with async clients</td><td>Needs enough threads, processes or Gevent</td></tr>
+<tr><td>Request validation</td><td>Built in with Pydantic</td><td>Added by you or an extension</td></tr>
+<tr><td>API documentation</td><td>Generated automatically</td><td>Added through an extension</td></tr>
+<tr><td>Streaming</td><td>Streaming responses and SSE support</td><td>Generators, with each stream holding a worker</td></tr>
+<tr><td>Main trap</td><td>Blocking calls in <code>async def</code> routes</td><td>Worker exhaustion from long requests</td></tr>
+<tr><td>Best starting point</td><td>New API-first LLM services</td><td>Existing Flask apps, sync or queued work</td></tr>
+</tbody>
+</table></div>
+
+<h2>How to decide</h2>
+<ol>
+<li><strong>Do you have an existing Python web app?</strong> If so, extend it unless you have measured a real limit. If the LLM part later outgrows it, split that out as a separate service.</li>
+<li><strong>Will web workers hold model calls open?</strong> If so, particularly with streaming, lean towards FastAPI.</li>
+<li><strong>Are your libraries async-capable?</strong> Check your model SDK and database driver. Async benefits depend on them, and mixing in blocking calls is the most common source of trouble.</li>
+<li><strong>What does your team know?</strong> A team that has never used async can pick it up, but should plan time to learn about blocking the event loop and to test under concurrent load.</li>
+<li><strong>Test your own workload.</strong> Published benchmarks rarely resemble long streaming calls. Replace the model with a stub that waits realistically, then load-test each candidate deployment.</li>
+</ol>
+<p>Whichever you choose, keep model logic in its own layer, away from the route handlers. It makes testing simple, and it also means that the framework decision is not permanent. If you are planning a backend of this kind, the <a href="/services/full-stack-development/">full stack development</a> page describes what I can help with.</p>
+      <h2>Frequently asked questions</h2>
+      <h3>Is FastAPI faster than Flask for LLM apps?</h3>
+      <p>Framework overhead is rarely what you feel, because the model call takes far longer. The practical advantage is concurrency: an async FastAPI worker can hold many waiting requests, whereas a Flask worker handles one at a time. Measure with your own workload.</p>
+      <h3>Does async def make Flask work like FastAPI?</h3>
+      <p>No. Flask's documentation says each request still ties up one worker, even with async views. Async lets one view perform several operations concurrently, but it does not raise the number of requests the application can handle at one time.</p>
+      <h3>Can Flask stream LLM responses?</h3>
+      <p>Yes. A view can return a generator and each yielded piece is sent to the client. Use stream_with_context if the generator needs the request, and remember that under a sync worker each open stream occupies that worker until it ends.</p>
+      <h3>Should I migrate my Flask app to FastAPI to add AI features?</h3>
+      <p>Usually not at first. Add the feature to the existing app, or run it as a small separate service, and migrate only if you measure a concurrency problem. A rewrite adds risk without helping the AI feature itself.</p>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="foot-cta">
+      <div>
+        <h2>Have an AI or full stack project in mind?</h2>
+        <p>Tell me what you want to build.</p>
+      </div>
+      <div class="foot-cta-btns">
+        <a class="btn" href="/#contact">Start a conversation</a>
+        <a class="btn btn-line" href="mailto:shivanigupta4876@gmail.com">Send an email</a>
+      </div>
+    </div>
+    <div class="foot-grid">
+      <div>
+        <a href="/" aria-label="Shivani, home"><img src="/assets/logo.svg" alt="Shivani" width="144" height="40"></a>
+        <p>AI/ML engineer working across generative AI, LLMs, RAG, agentic AI and NLP, plus full stack development.</p>
+        <span class="avail">Taking new projects</span>
+      </div>
+      <div>
+        <h3>Explore</h3>
+        <ul>
+          <li><a href="/services/">Services</a></li>
+          <li><a href="/#work">Projects</a></li>
+          <li><a href="/#process">Process</a></li>
+          <li><a href="/#faq">FAQ</a></li>
+          <li><a href="/blog/">Blog</a></li>
+          <li><a href="/#contact">Contact</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Services</h3>
+        <ul>
+          <li><a href="/services/generative-ai-llm-development/">Generative AI and LLMs</a></li>
+          <li><a href="/services/rag-development/">RAG development</a></li>
+          <li><a href="/services/multi-agent-systems/">Multi-agent systems</a></li>
+          <li><a href="/services/ai-orchestration-langgraph/">Orchestration with LangGraph</a></li>
+          <li><a href="/services/nlp-development/">NLP development</a></li>
+          <li><a href="/services/full-stack-development/">Full stack development</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Contact</h3>
+        <ul>
+          <li><a href="mailto:shivanigupta4876@gmail.com">shivanigupta4876@gmail.com</a></li>
+          <li><a href="tel:+919720466504">+91 97204 66504</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="foot-bottom">&copy; <span id="year">2026</span> Shivani. All rights reserved.</div>
+  </div>
+</footer>
+<a class="wa-float" href="https://wa.me/919720466504?text=Hi%20Shivani%2C%20I%20saw%20your%20website%20and%20would%20like%20to%20talk%20about%20a%20project." target="_blank" rel="noopener" aria-label="Chat on WhatsApp"><svg viewBox="0 0 24 24" width="28" height="28" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15L2 22l5.1-1.3A10 10 0 1 0 12 2zm0 18.2a8.2 8.2 0 0 1-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1a6.700 6.700 0 0 1-3.300-2.900c-.2-.3 0-.4.1-.6l.4-.4.2-.4v-.5l-.8-1.800c-.2-.5-.4-.4-.6-.4h-.5c-.2 0-.4.1-.6.3-.2.2-.8.8-.8 2s.9 2.300 1 2.500c.1.2 1.700 2.600 4.100 3.600 1.500.7 2.100.7 2.900.6.500-.1 1.500-.6 1.700-1.200.2-.6.2-1.100.1-1.200l-.2-.2z"/></svg></a>
+<script src="/assets/js/site.js" defer></script>
+</body>
+</html>

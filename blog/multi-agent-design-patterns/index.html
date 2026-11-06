@@ -1,0 +1,245 @@
+<!doctype html>
+<html lang="en">
+<head>
+<script async src="https://www.googletagmanager.com/gtm.js?id=GTM-THN7RV8R"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+</script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="canonical" href="https://shivanigupta.store/blog/multi-agent-design-patterns/">
+<title>Multi-Agent Design Patterns Explained | Shivani</title>
+<meta name="description" content="How the supervisor, pipeline and handoff multi-agent patterns work, what each costs you, how to pick one, and how to combine them without losing control.">
+<meta name="robots" content="index,follow">
+<meta name="author" content="Shivani">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<link rel="manifest" href="/site.webmanifest">
+<meta name="theme-color" content="#080b0f">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Multi-Agent Design Patterns Explained | Shivani">
+<meta property="og:description" content="How the supervisor, pipeline and handoff multi-agent patterns work, what each costs you, how to pick one, and how to combine them without losing control.">
+<meta property="og:url" content="https://shivanigupta.store/blog/multi-agent-design-patterns/">
+<meta property="og:image" content="https://shivanigupta.store/assets/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Multi-agent design patterns: supervisor, pipeline and handoff","description":"How the supervisor, pipeline and handoff multi-agent patterns work, what each costs you, how to pick one, and how to combine them without losing control.","mainEntityOfPage":"https://shivanigupta.store/blog/multi-agent-design-patterns/","datePublished":"2026-11-06","dateModified":"2026-11-06","author":{"@type":"Person","name":"Shivani"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://shivanigupta.store/"},{"@type":"ListItem","position":2,"name":"Blog","item":"https://shivanigupta.store/blog/"},{"@type":"ListItem","position":3,"name":"Multi-agent design patterns: supervisor, pipeline and handoff","item":"https://shivanigupta.store/blog/multi-agent-design-patterns/"}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Which multi-agent pattern should I start with?","acceptedAnswer":{"@type":"Answer","text":"Start with the simplest one that fits. If the steps are known in advance, use a pipeline. Move to a supervisor or to handoffs only when the route truly depends on the request, because both are harder to test and to predict."}},{"@type":"Question","name":"What is the difference between a supervisor and a handoff?","acceptedAnswer":{"@type":"Answer","text":"With a supervisor, control returns to the coordinating agent after each specialist finishes, and it decides the next step. With a handoff, control transfers to the new agent, which continues the work and usually talks to the user directly."}},{"@type":"Question","name":"Is a pipeline of agents really multi-agent?","acceptedAnswer":{"@type":"Answer","text":"It depends on your definition. The order is fixed by code, so it is partly a workflow, but each stage can still be an agent that chooses its own tool calls. The label matters less than whether the design suits the task."}},{"@type":"Question","name":"How do I stop agents looping forever?","acceptedAnswer":{"@type":"Answer","text":"Set hard limits in code on rounds, handoffs, tool calls and spending, and define what happens when a limit is reached, such as returning a partial result or escalating to a person. Do not rely on instructions in a prompt to prevent loops."}}]}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&family=Poppins:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+<header class="nav">
+  <div class="wrap nav-in">
+    <a class="logo" href="/" aria-label="Shivani, home"><img src="/assets/logo.svg" alt="Shivani" width="144" height="40"></a>
+    <nav id="nav-links" aria-label="Main">
+      <a href="/#services">Services</a>
+      <a href="/#skills">Skills</a>
+      <a href="/#work">Work</a>
+      <a href="/#process">Process</a>
+      <a href="/#faq">FAQ</a>
+      <a href="/blog/">Blog</a>
+      <a class="btn btn-sm" href="/#contact">Hire Me</a>
+    </nav>
+    <button id="menu-toggle" class="menu-toggle" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="nav-links"><span></span><span></span><span></span></button>
+  </div>
+</header>
+
+<main id="top">
+  <section class="page-head">
+    <div class="wrap">
+      <nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a><span aria-hidden="true">/</span><a href="/blog/">Blog</a><span aria-hidden="true">/</span><span aria-current="page">Multi-agent design patterns: supervisor, pipeline and handoff</span></nav>
+      <p class="eyebrow">Guide</p>
+      <h1>Multi-agent design patterns: supervisor, pipeline and handoff</h1>
+      <p class="lead">Use a pipeline when the steps are known and fixed, a supervisor when the steps depend on the task and someone must combine the results, and a handoff when a conversation should move to a specialist who then talks to the user directly. The main question is who decides what happens next: your code, a coordinating agent or the agent currently working.</p>
+    </div>
+  </section>
+  <section class="article">
+    <div class="wrap prose">
+<h2>Before choosing a pattern</h2>
+<p>This guide assumes that you have already decided to use more than one agent. If you have not, read <a href="/blog/single-agent-vs-multi-agent-systems/">single agent vs multi-agent systems</a> first, because one well-designed agent is often the better answer. Here the focus is on how the three most common arrangements behave once you have split the work: where control sits, what information moves and how each one fails.</p>
+<p>The samples are illustrative and framework-neutral. <code>call_agent</code> stands in for one agent's complete loop of model and <a href="/blog/tool-calling-for-ai-agents/">tool calls</a>. Frameworks offer their own names and helpers for these ideas, so the terms may differ from one set of documentation to another.</p>
+
+<h2>Three questions that separate the patterns</h2>
+<p>Patterns are easier to compare through the decisions they make for you:</p>
+<ul>
+<li><strong>Who picks the next step?</strong> Your code, a coordinating agent or the current specialist.</li>
+<li><strong>Who talks to the user?</strong> One consistent voice, or whichever agent currently holds the conversation.</li>
+<li><strong>What does each agent see?</strong> The whole history, a summary or only a specific brief.</li>
+</ul>
+<p>Most design trouble comes from answering the third question carelessly, so it gets a section of its own below.</p>
+
+<h2>The pipeline pattern</h2>
+<p>In a pipeline, agents run in a fixed order and each one receives the output of the step before it. An extractor pulls facts from a document, a drafter writes a report from them and a reviewer checks the draft against the source. No model decides the route, because your code already has.</p>
+<pre><code># Illustrative only. Validate each stage before passing its output on.
+def run_pipeline(document):
+    facts = call_agent("extractor", document)
+    check_facts(facts)
+
+    draft = call_agent("drafter", facts)
+    review = call_agent("reviewer", {"draft": draft, "source": document})
+
+    if not review["approved"]:
+        return {"status": "needs_human", "draft": draft, "notes": review["notes"]}
+    return {"status": "done", "draft": draft}</code></pre>
+<p>Note that the reviewer receives the original document as well as the draft. Had it seen only the draft, it could check style but not accuracy.</p>
+<p><strong>Where it fits.</strong> Pipelines suit repeatable work with a known sequence, such as document processing or content production. Strictly speaking, this is often a workflow containing agents, and that is a strength: it is the easiest pattern to test, trace and cost, since each stage has a defined input and output.</p>
+<p><strong>How it fails.</strong> The characteristic failure is the silent carry-forward. An early mistake becomes the "truth" for all later stages, which then build on it with confidence. The defence is a validation gate between stages, using a schema where possible, as described in <a href="/blog/structured-output-from-llms/">structured output from LLMs</a>. Pipelines also handle exceptions badly: if a task needs a stage skipped or repeated, you end up adding branches until it has stopped being a simple pipeline.</p>
+
+<h2>The supervisor pattern</h2>
+<p>A supervisor is a coordinating agent that reads the task, delegates pieces to specialists, reviews what returns and decides what to do next. Specialists report only to the supervisor and do not talk to one another, or usually to the user. The supervisor typically treats each specialist as if it were a tool.</p>
+<pre><code># Illustrative only. The supervisor returns either a delegation or a final answer.
+def run_supervisor(task, specialists, max_rounds=6):
+    notes = []
+
+    for _ in range(max_rounds):
+        decision = plan_next_step(task, notes, list(specialists))
+
+        if decision["type"] == "finish":
+            return decision["answer"]
+        if decision["agent"] not in specialists:
+            notes.append({"error": "Unknown agent: " + decision["agent"]})
+            continue
+
+        result = call_agent(decision["agent"], decision["brief"])
+        notes.append({"agent": decision["agent"], "result": result})
+
+    return "Stopped: round limit reached."</code></pre>
+<p><strong>Where it fits.</strong> A supervisor works well when the necessary steps depend on the request, such as a research question that may or may not need the database, the document store and the web. It keeps a single point of control and one consistent voice, and specialists can be given narrow permissions.</p>
+<p><strong>How it fails.</strong> Every result passes through the supervisor, so model calls and context accumulate there, and it can become slow and expensive. Its instructions also tend to grow as specialists are added. A supervisor may delegate in circles, or may lose detail when it paraphrases a specialist's result. Set a round limit, keep specialist results short and structured, and consider letting a specialist's output go straight into the final answer where no rewriting is needed. A deterministic supervisor is also a legitimate option: if plain code can route the work, you avoid a model call on each decision. The guide on <a href="/blog/building-an-orchestrator-with-langgraph/">building an orchestrator with LangGraph</a> shows one way to model this kind of control flow.</p>
+
+<h2>The handoff pattern</h2>
+<p>In a handoff, control itself moves. The active agent decides that another is better placed and transfers the conversation, and the new agent carries on from there, often talking directly to the user. Nothing has to report back to a central coordinator. A general support agent passing a customer to a billing specialist is the classic example.</p>
+<pre><code># Illustrative only. A handoff changes which agent handles the next turn.
+ALLOWED = {
+    "triage": {"billing", "technical"},
+    "billing": {"triage"},
+    "technical": {"triage"},
+}
+
+def run_turn(state, user_message, max_handoffs=3):
+    state["messages"].append({"role": "user", "content": user_message})
+
+    for _ in range(max_handoffs + 1):
+        result = call_agent(state["active_agent"], state["messages"])
+
+        if result["type"] != "handoff":
+            state["messages"].append({"role": "assistant", "content": result["text"]})
+            return result["text"]
+
+        if result["target"] not in ALLOWED[state["active_agent"]]:
+            return escalate_to_human(state)
+        state["active_agent"] = result["target"]
+
+    return escalate_to_human(state)</code></pre>
+<p>The active agent is saved in the state, so the next user message goes to the billing specialist without passing through triage again. The explicit table of allowed routes means that the model proposes a handoff but your code decides whether it is valid.</p>
+<p><strong>Where it fits.</strong> Handoffs suit conversations that move through distinct areas, particularly where each area has different tools or permissions. They can also reduce latency, because there is no coordinator to consult at each turn.</p>
+<p><strong>How it fails.</strong> The obvious failure is agents passing a user back and forth, which the handoff limit above contains. Less obvious is the lack of an overview: with no central agent, no one is responsible for the whole request. If a user asks about a refund and a login problem in one message, the first specialist may deal with its part and forget the rest. Users can also find changes of tone jarring, and a specialist that receives too little context may ask them to repeat themselves.</p>
+
+<h2>Comparing the three</h2>
+<div class="table-wrap"><table>
+<thead><tr><th>Concern</th><th>Pipeline</th><th>Supervisor</th><th>Handoff</th></tr></thead>
+<tbody>
+<tr><td>Who picks the next step</td><td>Your code</td><td>Coordinating agent</td><td>Current agent, within your rules</td></tr>
+<tr><td>Flexibility</td><td>Low</td><td>High</td><td>Medium to high</td></tr>
+<tr><td>Who talks to the user</td><td>Usually the final stage</td><td>The supervisor</td><td>The active specialist</td></tr>
+<tr><td>Extra model calls</td><td>Predictable</td><td>Highest, as a rule</td><td>Moderate</td></tr>
+<tr><td>Ease of testing</td><td>Easiest</td><td>Harder, as routes vary</td><td>Harder, as conversations vary</td></tr>
+<tr><td>Typical failure</td><td>Early error carried forward</td><td>Bottleneck, circular delegation</td><td>Bouncing, lost overview</td></tr>
+</tbody>
+</table></div>
+<p>A quick way to choose: if you can draw the steps before seeing the input, begin with a pipeline. If a single conversation should move between specialists, use handoffs. If a task must be broken up and the pieces reassembled, use a supervisor.</p>
+
+<h2>What each agent should see</h2>
+<p>Context passing causes more trouble than the choice of pattern. Three common options have different costs:</p>
+<ul>
+<li><strong>The full history.</strong> Nothing is lost, but context grows quickly, cost rises and irrelevant detail can distract the specialist. It also exposes everything to every agent, which may breach your permission boundaries.</li>
+<li><strong>A generated summary.</strong> This is compact, but it can quietly drop the one detail that mattered, and no one will notice.</li>
+<li><strong>A structured brief.</strong> Defined fields, such as the goal, known facts, constraints and identifiers, make omissions visible and can be validated. This takes more design but is often the most dependable choice.</li>
+</ul>
+<p>Keep IDs and exact figures as data outside the model's prose wherever you can, so that they are never paraphrased. The guide on <a href="/blog/agent-memory-short-term-and-long-term-state/">agent memory and state</a> covers what to keep and where.</p>
+
+<h2>Combining patterns</h2>
+<p>Real systems often nest these. A handoff might route a customer to a claims specialist, which internally runs a fixed pipeline. A supervisor might delegate one branch to a pipeline while running two specialists in parallel. This is reasonable when each level has a clear boundary, but every layer adds another place for failures to hide, so add one only to answer a specific problem.</p>
+
+<h2>Controls every pattern needs</h2>
+<ul>
+<li><strong>Hard limits.</strong> Cap rounds, handoffs, tool calls and spending per run, and define what the system does on reaching a limit.</li>
+<li><strong>Permissions outside the model.</strong> Enforce what each agent may do in the tool layer, not through instructions.</li>
+<li><strong>Tracing across agents.</strong> Link every step to one run ID, as explained in <a href="/blog/llm-observability-and-tracing/">LLM observability and tracing</a>.</li>
+<li><strong>Approval for risky actions.</strong> Pause before anything that is hard to undo, using <a href="/blog/human-in-the-loop-approval-for-ai-agents/">human-in-the-loop approval</a>.</li>
+<li><strong>Tests at two levels.</strong> Test each agent on its own, then test the routing and the complete run.</li>
+</ul>
+<p>If you are weighing up these designs for a real system, the <a href="/services/multi-agent-systems/">multi-agent systems</a> page describes what I can help with.</p>
+      <h2>Frequently asked questions</h2>
+      <h3>Which multi-agent pattern should I start with?</h3>
+      <p>Start with the simplest one that fits. If the steps are known in advance, use a pipeline. Move to a supervisor or to handoffs only when the route truly depends on the request, because both are harder to test and to predict.</p>
+      <h3>What is the difference between a supervisor and a handoff?</h3>
+      <p>With a supervisor, control returns to the coordinating agent after each specialist finishes, and it decides the next step. With a handoff, control transfers to the new agent, which continues the work and usually talks to the user directly.</p>
+      <h3>Is a pipeline of agents really multi-agent?</h3>
+      <p>It depends on your definition. The order is fixed by code, so it is partly a workflow, but each stage can still be an agent that chooses its own tool calls. The label matters less than whether the design suits the task.</p>
+      <h3>How do I stop agents looping forever?</h3>
+      <p>Set hard limits in code on rounds, handoffs, tool calls and spending, and define what happens when a limit is reached, such as returning a partial result or escalating to a person. Do not rely on instructions in a prompt to prevent loops.</p>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="foot-cta">
+      <div>
+        <h2>Have an AI or full stack project in mind?</h2>
+        <p>Tell me what you want to build.</p>
+      </div>
+      <div class="foot-cta-btns">
+        <a class="btn" href="/#contact">Start a conversation</a>
+        <a class="btn btn-line" href="mailto:shivanigupta4876@gmail.com">Send an email</a>
+      </div>
+    </div>
+    <div class="foot-grid">
+      <div>
+        <a href="/" aria-label="Shivani, home"><img src="/assets/logo.svg" alt="Shivani" width="144" height="40"></a>
+        <p>AI/ML engineer working across generative AI, LLMs, RAG, agentic AI and NLP, plus full stack development.</p>
+        <span class="avail">Taking new projects</span>
+      </div>
+      <div>
+        <h3>Explore</h3>
+        <ul>
+          <li><a href="/services/">Services</a></li>
+          <li><a href="/#work">Projects</a></li>
+          <li><a href="/#process">Process</a></li>
+          <li><a href="/#faq">FAQ</a></li>
+          <li><a href="/blog/">Blog</a></li>
+          <li><a href="/#contact">Contact</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Services</h3>
+        <ul>
+          <li><a href="/services/generative-ai-llm-development/">Generative AI and LLMs</a></li>
+          <li><a href="/services/rag-development/">RAG development</a></li>
+          <li><a href="/services/multi-agent-systems/">Multi-agent systems</a></li>
+          <li><a href="/services/ai-orchestration-langgraph/">Orchestration with LangGraph</a></li>
+          <li><a href="/services/nlp-development/">NLP development</a></li>
+          <li><a href="/services/full-stack-development/">Full stack development</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Contact</h3>
+        <ul>
+          <li><a href="mailto:shivanigupta4876@gmail.com">shivanigupta4876@gmail.com</a></li>
+          <li><a href="tel:+919720466504">+91 97204 66504</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="foot-bottom">&copy; <span id="year">2026</span> Shivani. All rights reserved.</div>
+  </div>
+</footer>
+<a class="wa-float" href="https://wa.me/919720466504?text=Hi%20Shivani%2C%20I%20saw%20your%20website%20and%20would%20like%20to%20talk%20about%20a%20project." target="_blank" rel="noopener" aria-label="Chat on WhatsApp"><svg viewBox="0 0 24 24" width="28" height="28" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15L2 22l5.1-1.3A10 10 0 1 0 12 2zm0 18.2a8.2 8.2 0 0 1-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1a6.700 6.700 0 0 1-3.300-2.900c-.2-.3 0-.4.1-.6l.4-.4.2-.4v-.5l-.8-1.800c-.2-.5-.4-.4-.6-.4h-.5c-.2 0-.4.1-.6.3-.2.2-.8.8-.8 2s.9 2.300 1 2.500c.1.2 1.700 2.600 4.100 3.600 1.500.7 2.100.7 2.900.6.500-.1 1.500-.6 1.700-1.200.2-.6.2-1.100.1-1.200l-.2-.2z"/></svg></a>
+<script src="/assets/js/site.js" defer></script>
+</body>
+</html>

@@ -44,3 +44,8 @@
 /blog/langgraph-tutorial-for-beginners/
 /blog/document-summarisation-with-llms/
 /blog/how-to-scope-an-ai-project/
+/blog/rag-chatbot-vs-custom-gpt/
+/blog/multi-agent-design-patterns/
+/blog/fastapi-vs-flask-for-ai-backends/
+/blog/sentiment-analysis-with-python/
+/blog/testing-ai-agents/

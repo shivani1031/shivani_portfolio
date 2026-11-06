@@ -56,6 +56,11 @@ The site describes the services on offer and publishes general technical guides.
 - [LangGraph tutorial for beginners: your first graph](/blog/langgraph-tutorial-for-beginners/): A step-by-step first graph that needs no API key: state, nodes, edges, conditional routing, a bounded loop and a checkpointer.
 - [Document summarisation with LLMs](/blog/document-summarisation-with-llms/): Approaches for summarising long documents: whole-document prompts, map-reduce, refine, hierarchical and extract-first methods, plus how to check faithfulness.
 - [How to scope an AI project before you build](/blog/how-to-scope-an-ai-project/): A buyer's guide to the decisions that come before an AI build: the problem, baseline, data, acceptable errors, human review, evaluation and ownership.
+- [RAG chatbot vs custom GPT: when to build](/blog/rag-chatbot-vs-custom-gpt/): When a hosted assistant is enough, when building is justified, and a low-cost trial that settles the choice.
+- [Multi-agent design patterns: supervisor, pipeline and handoff](/blog/multi-agent-design-patterns/): How each pattern works and fails, based on who picks the next step, plus how to pass context between agents.
+- [FastAPI vs Flask for AI backends](/blog/fastapi-vs-flask-for-ai-backends/): Why FastAPI is the usual default for new LLM backends, and when Flask is still the right choice.
+- [Sentiment analysis with Python: approaches and trade-offs](/blog/sentiment-analysis-with-python/): VADER, TF-IDF classifiers, pretrained transformers and LLMs compared, with a fair way to test them on your own data.
+- [Testing AI agents: how to handle non-deterministic behaviour](/blog/testing-ai-agents/): Four test layers, from a scripted fake model to repeated scenarios judged by pass rate, with assertions on behaviour rather than wording.
 
 ## Projects
 
