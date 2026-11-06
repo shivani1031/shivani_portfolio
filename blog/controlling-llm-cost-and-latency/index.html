@@ -3,6 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="canonical" href="https://shivanigupta.store/blog/controlling-llm-cost-and-latency/">
 <title>Controlling LLM Cost and Latency | Shivani</title>
 <meta name="description" content="Techniques to reduce LLM cost and latency: measure each step, trim context, route by task, cache safely, cap output, stream and limit agent loops.">
 <meta name="robots" content="index,follow">
@@ -14,13 +15,14 @@
 <meta property="og:type" content="article">
 <meta property="og:title" content="Controlling LLM Cost and Latency | Shivani">
 <meta property="og:description" content="Techniques to reduce LLM cost and latency: measure each step, trim context, route by task, cache safely, cap output, stream and limit agent loops.">
-<meta property="og:image" content="/assets/og-image.png">
+<meta property="og:url" content="https://shivanigupta.store/blog/controlling-llm-cost-and-latency/">
+<meta property="og:image" content="https://shivanigupta.store/assets/og-image.png">
 <meta name="twitter:card" content="summary_large_image">
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Controlling LLM cost and latency","description":"Techniques to reduce LLM cost and latency: measure each step, trim context, route by task, cache safely, cap output, stream and limit agent loops.","mainEntityOfPage":"/blog/controlling-llm-cost-and-latency/","author":{"@type":"Person","name":"Shivani"}}</script>
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"/"},{"@type":"ListItem","position":2,"name":"Blog","item":"/blog/"},{"@type":"ListItem","position":3,"name":"Controlling LLM cost and latency","item":"/blog/controlling-llm-cost-and-latency/"}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Controlling LLM cost and latency","description":"Techniques to reduce LLM cost and latency: measure each step, trim context, route by task, cache safely, cap output, stream and limit agent loops.","mainEntityOfPage":"https://shivanigupta.store/blog/controlling-llm-cost-and-latency/","datePublished":"2026-11-06","dateModified":"2026-11-06","author":{"@type":"Person","name":"Shivani"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://shivanigupta.store/"},{"@type":"ListItem","position":2,"name":"Blog","item":"https://shivanigupta.store/blog/"},{"@type":"ListItem","position":3,"name":"Controlling LLM cost and latency","item":"https://shivanigupta.store/blog/controlling-llm-cost-and-latency/"}]}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"What is the first step in reducing LLM cost?","acceptedAnswer":{"@type":"Answer","text":"Measure tokens, model and cost by feature and by step, so you can see where the spending goes. Trimming unnecessary context and history is then often a good early change, tested against your evaluation set."}},{"@type":"Question","name":"Does streaming reduce LLM latency?","acceptedAnswer":{"@type":"Answer","text":"It reduces the time before people see something, not the total generation time, and it does not reduce tokens. For long answers, it makes waiting feel much better."}},{"@type":"Question","name":"Is semantic caching safe?","acceptedAnswer":{"@type":"Answer","text":"It can be, with care. Similar questions can need different answers, so test thresholds on realistic data, scope entries by user and permissions, and avoid it where a wrong reused answer would be costly."}},{"@type":"Question","name":"How do I stop an agent from running up costs?","acceptedAnswer":{"@type":"Answer","text":"Enforce limits on steps, tool calls, tokens and time per run in code, detect repeated calls and add per-user quotas and budget alerts. Prompt instructions alone are not a reliable limit."}}]}</script>
-<!-- TODO once the domain is known: canonical, absolute og:url and og:image, absolute URLs in JSON-LD -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&family=Poppins:wght@400;500;600&display=swap">
 <link rel="stylesheet" href="/styles.css">
 </head>

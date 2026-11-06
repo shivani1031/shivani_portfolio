@@ -3,6 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="canonical" href="https://shivanigupta.store/blog/text-to-sql-agents-risks-and-safeguards/">
 <title>Text-to-SQL Agents: Risks and Safeguards | Shivani</title>
 <meta name="description" content="The main risks of text-to-SQL agents, from wrong answers to data leaks, and the safeguards to use: read-only roles, query validation, limits and testing.">
 <meta name="robots" content="index,follow">
@@ -14,13 +15,14 @@
 <meta property="og:type" content="article">
 <meta property="og:title" content="Text-to-SQL Agents: Risks and Safeguards | Shivani">
 <meta property="og:description" content="The main risks of text-to-SQL agents, from wrong answers to data leaks, and the safeguards to use: read-only roles, query validation, limits and testing.">
-<meta property="og:image" content="/assets/og-image.png">
+<meta property="og:url" content="https://shivanigupta.store/blog/text-to-sql-agents-risks-and-safeguards/">
+<meta property="og:image" content="https://shivanigupta.store/assets/og-image.png">
 <meta name="twitter:card" content="summary_large_image">
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Text-to-SQL agents: risks and safeguards","description":"The main risks of text-to-SQL agents, from wrong answers to data leaks, and the safeguards to use: read-only roles, query validation, limits and testing.","mainEntityOfPage":"/blog/text-to-sql-agents-risks-and-safeguards/","author":{"@type":"Person","name":"Shivani"}}</script>
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"/"},{"@type":"ListItem","position":2,"name":"Blog","item":"/blog/"},{"@type":"ListItem","position":3,"name":"Text-to-SQL agents: risks and safeguards","item":"/blog/text-to-sql-agents-risks-and-safeguards/"}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Text-to-SQL agents: risks and safeguards","description":"The main risks of text-to-SQL agents, from wrong answers to data leaks, and the safeguards to use: read-only roles, query validation, limits and testing.","mainEntityOfPage":"https://shivanigupta.store/blog/text-to-sql-agents-risks-and-safeguards/","datePublished":"2026-11-06","dateModified":"2026-11-06","author":{"@type":"Person","name":"Shivani"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://shivanigupta.store/"},{"@type":"ListItem","position":2,"name":"Blog","item":"https://shivanigupta.store/blog/"},{"@type":"ListItem","position":3,"name":"Text-to-SQL agents: risks and safeguards","item":"https://shivanigupta.store/blog/text-to-sql-agents-risks-and-safeguards/"}]}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Is text-to-SQL safe to use on a production database?","acceptedAnswer":{"@type":"Answer","text":"Direct access to the primary database is hard to justify. A read-only, narrowly scoped role on a replica or analytics copy, with validation and limits, reduces the risk considerably, although it does not remove it."}},{"@type":"Question","name":"Is a read-only role enough on its own?","acceptedAnswer":{"@type":"Answer","text":"No. It prevents writes but not reading too much, slow queries or wrong answers. Combine it with restricted views, row-level rules, query validation, timeouts and testing."}},{"@type":"Question","name":"Can the system prompt stop harmful queries?","acceptedAnswer":{"@type":"Answer","text":"Not reliably. Instructions can be ignored or overridden, so treat them as helpful guidance only. Controls that must hold belong in database permissions and application code."}},{"@type":"Question","name":"How do I test text-to-SQL accuracy?","acceptedAnswer":{"@type":"Answer","text":"Build questions with known answers on a stable test dataset and compare query results, not SQL text. Include ambiguous questions and review failures to find missing definitions or context."}}]}</script>
-<!-- TODO once the domain is known: canonical, absolute og:url and og:image, absolute URLs in JSON-LD -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&family=Poppins:wght@400;500;600&display=swap">
 <link rel="stylesheet" href="/styles.css">
 </head>

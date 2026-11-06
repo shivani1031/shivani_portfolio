@@ -3,6 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="canonical" href="https://shivanigupta.store/blog/serving-an-llm-app-with-fastapi/">
 <title>Serving an LLM App with FastAPI: Async Design | Shivani</title>
 <meta name="description" content="Structure a FastAPI LLM service: separate routes from model code, share clients via lifespan, avoid blocking the event loop and limit concurrent calls.">
 <meta name="robots" content="index,follow">
@@ -14,13 +15,14 @@
 <meta property="og:type" content="article">
 <meta property="og:title" content="Serving an LLM App with FastAPI: Async Design | Shivani">
 <meta property="og:description" content="Structure a FastAPI LLM service: separate routes from model code, share clients via lifespan, avoid blocking the event loop and limit concurrent calls.">
-<meta property="og:image" content="/assets/og-image.png">
+<meta property="og:url" content="https://shivanigupta.store/blog/serving-an-llm-app-with-fastapi/">
+<meta property="og:image" content="https://shivanigupta.store/assets/og-image.png">
 <meta name="twitter:card" content="summary_large_image">
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Serving an LLM app with FastAPI: structure and async","description":"Structure a FastAPI LLM service: separate routes from model code, share clients via lifespan, avoid blocking the event loop and limit concurrent calls.","mainEntityOfPage":"/blog/serving-an-llm-app-with-fastapi/","author":{"@type":"Person","name":"Shivani"}}</script>
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"/"},{"@type":"ListItem","position":2,"name":"Blog","item":"/blog/"},{"@type":"ListItem","position":3,"name":"Serving an LLM app with FastAPI: structure and async","item":"/blog/serving-an-llm-app-with-fastapi/"}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Serving an LLM app with FastAPI: structure and async","description":"Structure a FastAPI LLM service: separate routes from model code, share clients via lifespan, avoid blocking the event loop and limit concurrent calls.","mainEntityOfPage":"https://shivanigupta.store/blog/serving-an-llm-app-with-fastapi/","datePublished":"2026-11-06","dateModified":"2026-11-06","author":{"@type":"Person","name":"Shivani"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://shivanigupta.store/"},{"@type":"ListItem","position":2,"name":"Blog","item":"https://shivanigupta.store/blog/"},{"@type":"ListItem","position":3,"name":"Serving an LLM app with FastAPI: structure and async","item":"https://shivanigupta.store/blog/serving-an-llm-app-with-fastapi/"}]}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Should FastAPI routes for LLM calls be async?","acceptedAnswer":{"@type":"Answer","text":"If you have an async client, yes, since most of the time is spent waiting on the network. If everything the route calls is synchronous, use a plain def route, which FastAPI runs in a thread pool, instead of blocking the event loop."}},{"@type":"Question","name":"Where should the model client be created in FastAPI?","acceptedAnswer":{"@type":"Answer","text":"Create long-lived clients once at startup using the lifespan feature, close them at shutdown and provide them to routes through dependencies. This reuses connections and lets tests substitute a fake."}},{"@type":"Question","name":"Can FastAPI BackgroundTasks run long agent jobs?","acceptedAnswer":{"@type":"Answer","text":"It is a poor fit. Background tasks run in the same process, so a restart can lose them and there is no built-in retry. Use a durable queue with separate workers for long or important runs."}},{"@type":"Question","name":"How do I limit concurrent LLM requests in FastAPI?","acceptedAnswer":{"@type":"Answer","text":"An asyncio semaphore works within one process. Across several workers or instances, each one has its own count, so use a shared rate limiter if you need a global limit."}}]}</script>
-<!-- TODO once the domain is known: canonical, absolute og:url and og:image, absolute URLs in JSON-LD -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&family=Poppins:wght@400;500;600&display=swap">
 <link rel="stylesheet" href="/styles.css">
 </head>

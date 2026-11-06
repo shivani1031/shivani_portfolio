@@ -3,6 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="canonical" href="https://shivanigupta.store/blog/tool-calling-for-ai-agents/">
 <title>Tool Calling for AI Agents: Reliable Tools | Shivani</title>
 <meta name="description" content="Design reliable tools for AI agents: clear schemas and descriptions, argument validation, useful errors, idempotent side effects, limits and testing.">
 <meta name="robots" content="index,follow">
@@ -14,13 +15,14 @@
 <meta property="og:type" content="article">
 <meta property="og:title" content="Tool Calling for AI Agents: Reliable Tools | Shivani">
 <meta property="og:description" content="Design reliable tools for AI agents: clear schemas and descriptions, argument validation, useful errors, idempotent side effects, limits and testing.">
-<meta property="og:image" content="/assets/og-image.png">
+<meta property="og:url" content="https://shivanigupta.store/blog/tool-calling-for-ai-agents/">
+<meta property="og:image" content="https://shivanigupta.store/assets/og-image.png">
 <meta name="twitter:card" content="summary_large_image">
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Tool calling for AI agents: designing reliable tools","description":"Design reliable tools for AI agents: clear schemas and descriptions, argument validation, useful errors, idempotent side effects, limits and testing.","mainEntityOfPage":"/blog/tool-calling-for-ai-agents/","author":{"@type":"Person","name":"Shivani"}}</script>
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"/"},{"@type":"ListItem","position":2,"name":"Blog","item":"/blog/"},{"@type":"ListItem","position":3,"name":"Tool calling for AI agents: designing reliable tools","item":"/blog/tool-calling-for-ai-agents/"}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Tool calling for AI agents: designing reliable tools","description":"Design reliable tools for AI agents: clear schemas and descriptions, argument validation, useful errors, idempotent side effects, limits and testing.","mainEntityOfPage":"https://shivanigupta.store/blog/tool-calling-for-ai-agents/","datePublished":"2026-11-06","dateModified":"2026-11-06","author":{"@type":"Person","name":"Shivani"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://shivanigupta.store/"},{"@type":"ListItem","position":2,"name":"Blog","item":"https://shivanigupta.store/blog/"},{"@type":"ListItem","position":3,"name":"Tool calling for AI agents: designing reliable tools","item":"https://shivanigupta.store/blog/tool-calling-for-ai-agents/"}]}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Does the model run the tool itself?","acceptedAnswer":{"@type":"Answer","text":"No. In standard tool calling the model returns a structured request, and your application decides whether to run it. That is why validation, permissions and approval checks belong in your code."}},{"@type":"Question","name":"How many tools should an agent have?","acceptedAnswer":{"@type":"Answer","text":"There is no fixed number. Keep the list as short as the job allows, since each tool uses context and adds another way to choose wrongly. If selection suffers, merge tools, load them by step or review the descriptions."}},{"@type":"Question","name":"What should a tool return when it fails?","acceptedAnswer":{"@type":"Answer","text":"Return a structured result saying what went wrong and whether retrying could help, along with a suggested next step where there is one. Handle temporary faults in code where possible, and keep stack traces out of the model's context."}},{"@type":"Question","name":"How do I stop an agent repeating an action?","acceptedAnswer":{"@type":"Answer","text":"Make state-changing tools idempotent, typically with a key per intended action, so that a repeat returns the first result. Add step limits and loop detection around the agent as well."}}]}</script>
-<!-- TODO once the domain is known: canonical, absolute og:url and og:image, absolute URLs in JSON-LD -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&family=Poppins:wght@400;500;600&display=swap">
 <link rel="stylesheet" href="/styles.css">
 </head>

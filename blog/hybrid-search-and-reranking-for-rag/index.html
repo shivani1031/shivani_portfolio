@@ -3,6 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="canonical" href="https://shivanigupta.store/blog/hybrid-search-and-reranking-for-rag/">
 <title>Hybrid Search and Reranking for RAG | Shivani</title>
 <meta name="description" content="How hybrid search and reranking improve RAG retrieval: combining keyword and vector results, reciprocal rank fusion, reranker trade-offs and tuning.">
 <meta name="robots" content="index,follow">
@@ -14,13 +15,14 @@
 <meta property="og:type" content="article">
 <meta property="og:title" content="Hybrid Search and Reranking for RAG | Shivani">
 <meta property="og:description" content="How hybrid search and reranking improve RAG retrieval: combining keyword and vector results, reciprocal rank fusion, reranker trade-offs and tuning.">
-<meta property="og:image" content="/assets/og-image.png">
+<meta property="og:url" content="https://shivanigupta.store/blog/hybrid-search-and-reranking-for-rag/">
+<meta property="og:image" content="https://shivanigupta.store/assets/og-image.png">
 <meta name="twitter:card" content="summary_large_image">
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Hybrid search and reranking for RAG","description":"How hybrid search and reranking improve RAG retrieval: combining keyword and vector results, reciprocal rank fusion, reranker trade-offs and tuning.","mainEntityOfPage":"/blog/hybrid-search-and-reranking-for-rag/","author":{"@type":"Person","name":"Shivani"}}</script>
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"/"},{"@type":"ListItem","position":2,"name":"Blog","item":"/blog/"},{"@type":"ListItem","position":3,"name":"Hybrid search and reranking for RAG","item":"/blog/hybrid-search-and-reranking-for-rag/"}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Hybrid search and reranking for RAG","description":"How hybrid search and reranking improve RAG retrieval: combining keyword and vector results, reciprocal rank fusion, reranker trade-offs and tuning.","mainEntityOfPage":"https://shivanigupta.store/blog/hybrid-search-and-reranking-for-rag/","datePublished":"2026-11-06","dateModified":"2026-11-06","author":{"@type":"Person","name":"Shivani"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://shivanigupta.store/"},{"@type":"ListItem","position":2,"name":"Blog","item":"https://shivanigupta.store/blog/"},{"@type":"ListItem","position":3,"name":"Hybrid search and reranking for RAG","item":"https://shivanigupta.store/blog/hybrid-search-and-reranking-for-rag/"}]}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"What is hybrid search in RAG?","acceptedAnswer":{"@type":"Answer","text":"Hybrid search runs both keyword search and vector search for a query, then merges the results into one ranked list. It aims to catch exact terms that embeddings can miss as well as related meanings that keywords can miss."}},{"@type":"Question","name":"What does a reranker do?","acceptedAnswer":{"@type":"Answer","text":"A reranker takes a query and a list of candidate passages, then scores each pair directly. The list is reordered by these scores. It is applied to a limited candidate set because it is generally too slow to run across a whole index."}},{"@type":"Question","name":"Is hybrid search always better than vector search?","acceptedAnswer":{"@type":"Answer","text":"Not always. It often helps when queries contain codes, names or specialist terms, but the benefit depends on your content and questions. Compare both approaches on the same test set before accepting the added complexity."}},{"@type":"Question","name":"Can reranking fix poor retrieval?","acceptedAnswer":{"@type":"Answer","text":"Only partly. A reranker can only reorder what it receives, so a passage missed by the earlier search stays missed. If the right passage is often absent from the candidates, work on first-stage retrieval, parsing or chunking first."}}]}</script>
-<!-- TODO once the domain is known: canonical, absolute og:url and og:image, absolute URLs in JSON-LD -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&family=Poppins:wght@400;500;600&display=swap">
 <link rel="stylesheet" href="/styles.css">
 </head>

@@ -3,6 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="canonical" href="https://shivanigupta.store/blog/text-classification-llms-vs-traditional-nlp/">
 <title>Text Classification: LLMs vs Traditional NLP | Shivani</title>
 <meta name="description" content="Compare LLMs with rules, linear models, embeddings and fine-tuned transformers for text classification, and learn how to test and combine them.">
 <meta name="robots" content="index,follow">
@@ -14,13 +15,14 @@
 <meta property="og:type" content="article">
 <meta property="og:title" content="Text Classification: LLMs vs Traditional NLP | Shivani">
 <meta property="og:description" content="Compare LLMs with rules, linear models, embeddings and fine-tuned transformers for text classification, and learn how to test and combine them.">
-<meta property="og:image" content="/assets/og-image.png">
+<meta property="og:url" content="https://shivanigupta.store/blog/text-classification-llms-vs-traditional-nlp/">
+<meta property="og:image" content="https://shivanigupta.store/assets/og-image.png">
 <meta name="twitter:card" content="summary_large_image">
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Text classification with LLMs vs traditional NLP","description":"Compare LLMs with rules, linear models, embeddings and fine-tuned transformers for text classification, and learn how to test and combine them.","mainEntityOfPage":"/blog/text-classification-llms-vs-traditional-nlp/","author":{"@type":"Person","name":"Shivani"}}</script>
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"/"},{"@type":"ListItem","position":2,"name":"Blog","item":"/blog/"},{"@type":"ListItem","position":3,"name":"Text classification with LLMs vs traditional NLP","item":"/blog/text-classification-llms-vs-traditional-nlp/"}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Text classification with LLMs vs traditional NLP","description":"Compare LLMs with rules, linear models, embeddings and fine-tuned transformers for text classification, and learn how to test and combine them.","mainEntityOfPage":"https://shivanigupta.store/blog/text-classification-llms-vs-traditional-nlp/","datePublished":"2026-11-06","dateModified":"2026-11-06","author":{"@type":"Person","name":"Shivani"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://shivanigupta.store/"},{"@type":"ListItem","position":2,"name":"Blog","item":"https://shivanigupta.store/blog/"},{"@type":"ListItem","position":3,"name":"Text classification with LLMs vs traditional NLP","item":"https://shivanigupta.store/blog/text-classification-llms-vs-traditional-nlp/"}]}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Is an LLM better than a traditional classifier?","acceptedAnswer":{"@type":"Answer","text":"Not automatically. An LLM is quick to try and often copes well with varied language, while a traditional model can be cheaper, faster and more predictable on a stable task with labelled data. Testing both on the same held-out data gives a practical answer."}},{"@type":"Question","name":"Do I need labelled data if I use an LLM?","acceptedAnswer":{"@type":"Answer","text":"You may not need any for training, but you still need a labelled test set. Without one, you have no objective way to know how well the prompt works or whether a later change made it worse."}},{"@type":"Question","name":"Can I trust the confidence score an LLM gives?","acceptedAnswer":{"@type":"Answer","text":"Not as a probability. Self-reported confidence is not necessarily calibrated, so test it against labelled data before using it as a threshold. A trained model's probabilities may need calibrating as well."}},{"@type":"Question","name":"What metrics should I use for text classification?","acceptedAnswer":{"@type":"Answer","text":"Use precision and recall per class, macro-averaged F1 and a confusion matrix. Overall accuracy can look strong on imbalanced data even when rare but important classes are handled badly."}}]}</script>
-<!-- TODO once the domain is known: canonical, absolute og:url and og:image, absolute URLs in JSON-LD -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&family=Poppins:wght@400;500;600&display=swap">
 <link rel="stylesheet" href="/styles.css">
 </head>

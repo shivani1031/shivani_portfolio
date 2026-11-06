@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url><loc>https://shivanigupta.store/</loc><lastmod>2026-11-06</lastmod></url>
+  <url><loc>https://shivanigupta.store/services/</loc><lastmod>2026-11-06</lastmod></url>
+  <url><loc>https://shivanigupta.store/services/generative-ai-llm-development/</loc><lastmod>2026-11-06</lastmod></url>
+  <url><loc>https://shivanigupta.store/services/rag-development/</loc><lastmod>2026-11-06</lastmod></url>
+  <url><loc>https://shivanigupta.store/services/multi-agent-systems/</loc><lastmod>2026-11-06</lastmod></url>
+  <url><loc>https://shivanigupta.store/services/ai-orchestration-langgraph/</loc><lastmod>2026-11-06</lastmod></url>
+  <url><loc>https://shivanigupta.store/services/nlp-development/</loc><lastmod>2026-11-06</lastmod></url>
+  <url><loc>https://shivanigupta.store/services/full-stack-development/</loc><lastmod>2026-11-06</lastmod></url>
+  <url><loc>https://shivanigupta.store/blog/</loc><lastmod>2026-11-06</lastmod></url>
+  <url><loc>https://shivanigupta.store/blog/what-is-rag-and-when-to-use-it/</loc><lastmod>2026-11-06</lastmod></url>
+  <url><loc>https://shivanigupta.store/blog/single-agent-vs-multi-agent-systems/</loc><lastmod>2026-11-06</lastmod></url>
+  <url><loc>https://shivanigupta.store/blog/building-an-orchestrator-with-langgraph/</loc><lastmod>2026-11-06</lastmod></url>
+  <url><loc>https://shivanigupta.store/blog/choosing-chunking-strategies-for-rag/</loc><lastmod>2026-11-06</lastmod></url>
+  <url><loc>https://shivanigupta.store/blog/adding-an-llm-feature-to-a-full-stack-app/</loc><lastmod>2026-11-06</lastmod></url>
+  <url><loc>https://shivanigupta.store/projects/wayfarer/</loc><lastmod>2026-11-06</lastmod></url>
+  <url><loc>https://shivanigupta.store/blog/how-to-evaluate-a-rag-system/</loc><lastmod>2026-11-06</lastmod></url>
+  <url><loc>https://shivanigupta.store/blog/human-in-the-loop-approval-for-ai-agents/</loc><lastmod>2026-11-06</lastmod></url>
+  <url><loc>https://shivanigupta.store/blog/hybrid-search-and-reranking-for-rag/</loc><lastmod>2026-11-06</lastmod></url>
+  <url><loc>https://shivanigupta.store/blog/streaming-llm-responses-to-a-web-ui/</loc><lastmod>2026-11-06</lastmod></url>
+  <url><loc>https://shivanigupta.store/blog/llm-guardrails-and-prompt-injection-defence/</loc><lastmod>2026-11-06</lastmod></url>
+  <url><loc>https://shivanigupta.store/blog/text-classification-llms-vs-traditional-nlp/</loc><lastmod>2026-11-06</lastmod></url>
+  <url><loc>https://shivanigupta.store/blog/named-entity-recognition-and-data-extraction-with-llms/</loc><lastmod>2026-11-06</lastmod></url>
+  <url><loc>https://shivanigupta.store/blog/agent-memory-short-term-and-long-term-state/</loc><lastmod>2026-11-06</lastmod></url>
+  <url><loc>https://shivanigupta.store/blog/tool-calling-for-ai-agents/</loc><lastmod>2026-11-06</lastmod></url>
+  <url><loc>https://shivanigupta.store/blog/building-a-backend-api-for-an-ai-agent-in-python/</loc><lastmod>2026-11-06</lastmod></url>
+  <url><loc>https://shivanigupta.store/blog/langchain-vs-langgraph-when-to-use-each/</loc><lastmod>2026-11-06</lastmod></url>
+  <url><loc>https://shivanigupta.store/blog/serving-an-llm-app-with-fastapi/</loc><lastmod>2026-11-06</lastmod></url>
+  <url><loc>https://shivanigupta.store/blog/embeddings-and-choosing-a-vector-database/</loc><lastmod>2026-11-06</lastmod></url>
+  <url><loc>https://shivanigupta.store/blog/text-to-sql-agents-risks-and-safeguards/</loc><lastmod>2026-11-06</lastmod></url>
+  <url><loc>https://shivanigupta.store/blog/controlling-llm-cost-and-latency/</loc><lastmod>2026-11-06</lastmod></url>
+</urlset>

@@ -3,6 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="canonical" href="https://shivanigupta.store/projects/wayfarer/">
 <title>Wayfarer: AI Travel Planning Agent | Shivani</title>
 <meta name="description" content="Wayfarer is an AI-powered travel planning agent that turns preferences and destination ideas into personalised plans, covering flights, stays and itineraries.">
 <meta name="robots" content="index,follow">
@@ -14,11 +15,11 @@
 <meta property="og:type" content="website">
 <meta property="og:title" content="Wayfarer: AI Travel Planning Agent | Shivani">
 <meta property="og:description" content="Wayfarer is an AI-powered travel planning agent that turns preferences and destination ideas into personalised plans, covering flights, stays and itineraries.">
-<meta property="og:image" content="/assets/og-image.png">
+<meta property="og:url" content="https://shivanigupta.store/projects/wayfarer/">
+<meta property="og:image" content="https://shivanigupta.store/assets/og-image.png">
 <meta name="twitter:card" content="summary_large_image">
-<script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Home", "item": "/"}, {"@type": "ListItem", "position": 2, "name": "Projects", "item": "/#work"}, {"@type": "ListItem", "position": 3, "name": "Wayfarer"}]}</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Home", "item": "https://shivanigupta.store/"}, {"@type": "ListItem", "position": 2, "name": "Projects", "item": "https://shivanigupta.store/#work"}, {"@type": "ListItem", "position": 3, "name": "Wayfarer"}]}</script>
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "WebApplication", "name": "Wayfarer", "url": "https://traveller-agent.onrender.com/", "applicationCategory": "TravelApplication", "operatingSystem": "Web", "softwareRequirements": "Python, FastAPI, LangGraph, LangChain, SQL", "description": "Wayfarer is an AI-powered travel planning agent that turns preferences and destination ideas into personalised plans, covering flights, stays and itineraries.", "author": {"@type": "Person", "name": "Shivani"}}</script>
-<!-- TODO once the domain is known: canonical, absolute og:url and og:image, absolute URLs in JSON-LD -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&family=Poppins:wght@400;500;600&display=swap">
@@ -74,23 +75,6 @@
 <h2>How a travel agent like this works</h2>
 <p>This is the general pattern behind AI travel agents, rather than a line-by-line description of Wayfarer. A request arrives at an API, and an agent works out what the traveller wants. It then decides which tools to call, such as a flight search or a hotel search. The results go back to the language model, which turns them into a plan the traveller can read. A graph-based workflow keeps these steps in order and lets the agent ask a follow-up question when details such as dates are missing.</p>
 <p>Because the options come from live travel data and the wording comes from a model, travellers should verify details before booking. Wayfarer's interface says the same.</p>
-<!-- DRAFT DETAILS: made-up placeholders. Replace with real details or delete this block before launch. -->
-<div class="draft-box">
-<p class="tag">Draft: details to confirm</p>
-<h2>Agent design</h2>
-<ul>
-<li><strong>[Confirm]</strong> A planner agent reads the request and collects missing details such as dates and budget.</li>
-<li><strong>[Confirm]</strong> A flight agent and a hotel agent each call their travel API.</li>
-<li><strong>[Confirm]</strong> An itinerary agent combines the results into a day-by-day plan.</li>
-<li><strong>[Confirm]</strong> SQL stores conversations and saved trips.</li>
-</ul>
-<h2>Challenges</h2>
-<ul>
-<li><strong>[Confirm]</strong> Keeping flight and hotel results in a consistent format for the model.</li>
-<li><strong>[Confirm]</strong> Handling vague requests by asking a follow-up question instead of guessing.</li>
-</ul>
-</div>
-<!-- END DRAFT DETAILS -->
 <h2>Deployment</h2>
 <p>The application runs on Render. You can <a href="https://traveller-agent.onrender.com/" target="_blank" rel="noopener">try the live app</a>.</p>
 <h2>Related services</h2>

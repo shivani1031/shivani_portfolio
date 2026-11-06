@@ -3,6 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="canonical" href="https://shivanigupta.store/blog/named-entity-recognition-and-data-extraction-with-llms/">
 <title>NER and Data Extraction with LLMs | Shivani</title>
 <meta name="description" content="How to extract entities and structured data with LLMs: design the schema, validate output, guard against invented values and measure field-level quality.">
 <meta name="robots" content="index,follow">
@@ -14,13 +15,14 @@
 <meta property="og:type" content="article">
 <meta property="og:title" content="NER and Data Extraction with LLMs | Shivani">
 <meta property="og:description" content="How to extract entities and structured data with LLMs: design the schema, validate output, guard against invented values and measure field-level quality.">
-<meta property="og:image" content="/assets/og-image.png">
+<meta property="og:url" content="https://shivanigupta.store/blog/named-entity-recognition-and-data-extraction-with-llms/">
+<meta property="og:image" content="https://shivanigupta.store/assets/og-image.png">
 <meta name="twitter:card" content="summary_large_image">
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Named entity recognition and data extraction with LLMs","description":"How to extract entities and structured data with LLMs: design the schema, validate output, guard against invented values and measure field-level quality.","mainEntityOfPage":"/blog/named-entity-recognition-and-data-extraction-with-llms/","author":{"@type":"Person","name":"Shivani"}}</script>
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"/"},{"@type":"ListItem","position":2,"name":"Blog","item":"/blog/"},{"@type":"ListItem","position":3,"name":"Named entity recognition and data extraction with LLMs","item":"/blog/named-entity-recognition-and-data-extraction-with-llms/"}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Named entity recognition and data extraction with LLMs","description":"How to extract entities and structured data with LLMs: design the schema, validate output, guard against invented values and measure field-level quality.","mainEntityOfPage":"https://shivanigupta.store/blog/named-entity-recognition-and-data-extraction-with-llms/","datePublished":"2026-11-06","dateModified":"2026-11-06","author":{"@type":"Person","name":"Shivani"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://shivanigupta.store/"},{"@type":"ListItem","position":2,"name":"Blog","item":"https://shivanigupta.store/blog/"},{"@type":"ListItem","position":3,"name":"Named entity recognition and data extraction with LLMs","item":"https://shivanigupta.store/blog/named-entity-recognition-and-data-extraction-with-llms/"}]}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"What is the difference between NER and data extraction?","acceptedAnswer":{"@type":"Answer","text":"Named entity recognition finds and labels mentions in text, such as people or dates. Structured data extraction fills a defined record, which can involve normalising values, using context and working out relationships between them."}},{"@type":"Question","name":"Does structured output guarantee correct data?","acceptedAnswer":{"@type":"Answer","text":"No. Schema-constrained output can reduce formatting errors, but a well-formed response can still hold a wrong value. You still need business rule checks, grounding checks and evaluation against labelled documents."}},{"@type":"Question","name":"How do I stop an LLM inventing values?","acceptedAnswer":{"@type":"Answer","text":"You cannot rule it out, but you can reduce and catch it. Allow nulls, tell the model to use only the document, include examples where null is correct, ask for a supporting quote and verify that the quote exists in the source."}},{"@type":"Question","name":"Should I still use a traditional NER library?","acceptedAnswer":{"@type":"Answer","text":"Often, yes. Pretrained models and patterns can be cheap, fast and able to run locally, which suits common entity types and fixed formats. An LLM is more attractive when layouts vary or a value depends on context."}}]}</script>
-<!-- TODO once the domain is known: canonical, absolute og:url and og:image, absolute URLs in JSON-LD -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&family=Poppins:wght@400;500;600&display=swap">
 <link rel="stylesheet" href="/styles.css">
 </head>

@@ -3,6 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="canonical" href="https://shivanigupta.store/blog/choosing-chunking-strategies-for-rag/">
 <title>Choosing Chunking Strategies for RAG | Shivani</title>
 <meta name="description" content="How to choose a RAG chunking strategy: fixed-size, recursive, structure-aware, semantic and parent-child chunking, with trade-offs and how to test them.">
 <meta name="robots" content="index,follow">
@@ -14,13 +15,14 @@
 <meta property="og:type" content="article">
 <meta property="og:title" content="Choosing Chunking Strategies for RAG | Shivani">
 <meta property="og:description" content="How to choose a RAG chunking strategy: fixed-size, recursive, structure-aware, semantic and parent-child chunking, with trade-offs and how to test them.">
-<meta property="og:image" content="/assets/og-image.png">
+<meta property="og:url" content="https://shivanigupta.store/blog/choosing-chunking-strategies-for-rag/">
+<meta property="og:image" content="https://shivanigupta.store/assets/og-image.png">
 <meta name="twitter:card" content="summary_large_image">
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Choosing chunking strategies for RAG","description":"How to choose a RAG chunking strategy: fixed-size, recursive, structure-aware, semantic and parent-child chunking, with trade-offs and how to test them.","mainEntityOfPage":"/blog/choosing-chunking-strategies-for-rag/","author":{"@type":"Person","name":"Shivani"}}</script>
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"/"},{"@type":"ListItem","position":2,"name":"Blog","item":"/blog/"},{"@type":"ListItem","position":3,"name":"Choosing chunking strategies for RAG","item":"/blog/choosing-chunking-strategies-for-rag/"}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Choosing chunking strategies for RAG","description":"How to choose a RAG chunking strategy: fixed-size, recursive, structure-aware, semantic and parent-child chunking, with trade-offs and how to test them.","mainEntityOfPage":"https://shivanigupta.store/blog/choosing-chunking-strategies-for-rag/","datePublished":"2026-11-06","dateModified":"2026-11-06","author":{"@type":"Person","name":"Shivani"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://shivanigupta.store/"},{"@type":"ListItem","position":2,"name":"Blog","item":"https://shivanigupta.store/blog/"},{"@type":"ListItem","position":3,"name":"Choosing chunking strategies for RAG","item":"https://shivanigupta.store/blog/choosing-chunking-strategies-for-rag/"}]}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"What is the best chunk size for RAG?","acceptedAnswer":{"@type":"Answer","text":"No single size is best. It depends on your documents, your questions and your embedding model. Start with a moderate size and test larger and smaller options against a set of real questions."}},{"@type":"Question","name":"How much overlap should chunks have?","acceptedAnswer":{"@type":"Answer","text":"There is no fixed rule. A modest overlap is a common starting point for fixed-size or recursive chunking, while structure-aware chunks may need little or none. Compare results with and without it on your data."}},{"@type":"Question","name":"Is semantic chunking better than recursive chunking?","acceptedAnswer":{"@type":"Answer","text":"Not necessarily. It can help with poorly structured text, but it costs more at ingestion and adds settings to tune. Treat recursive chunking as the baseline and adopt semantic chunking only if your evaluation shows a clear gain."}},{"@type":"Question","name":"Do I need to re-embed documents after changing the chunking?","acceptedAnswer":{"@type":"Answer","text":"Yes. Changing chunk boundaries creates new text, so the affected chunks must be embedded and indexed again. Keep the ingestion pipeline repeatable so that this stays easy."}}]}</script>
-<!-- TODO once the domain is known: canonical, absolute og:url and og:image, absolute URLs in JSON-LD -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&family=Poppins:wght@400;500;600&display=swap">
 <link rel="stylesheet" href="/styles.css">
 </head>
