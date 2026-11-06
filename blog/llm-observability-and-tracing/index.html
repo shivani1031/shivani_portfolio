@@ -1,0 +1,243 @@
+<!doctype html>
+<html lang="en">
+<head>
+<script async src="https://www.googletagmanager.com/gtm.js?id=GTM-THN7RV8R"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+</script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="canonical" href="https://shivanigupta.store/blog/llm-observability-and-tracing/">
+<title>LLM Observability and Tracing in Production | Shivani</title>
+<meta name="description" content="How to monitor LLM apps in production: what to trace, which metrics matter, OpenTelemetry GenAI conventions, handling prompt privacy and scoring live quality.">
+<meta name="robots" content="index,follow">
+<meta name="author" content="Shivani">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<link rel="manifest" href="/site.webmanifest">
+<meta name="theme-color" content="#080b0f">
+<meta property="og:type" content="article">
+<meta property="og:title" content="LLM Observability and Tracing in Production | Shivani">
+<meta property="og:description" content="How to monitor LLM apps in production: what to trace, which metrics matter, OpenTelemetry GenAI conventions, handling prompt privacy and scoring live quality.">
+<meta property="og:url" content="https://shivanigupta.store/blog/llm-observability-and-tracing/">
+<meta property="og:image" content="https://shivanigupta.store/assets/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"LLM observability and tracing: monitoring LLM apps in production","description":"How to monitor LLM apps in production: what to trace, which metrics matter, OpenTelemetry GenAI conventions, handling prompt privacy and scoring live quality.","mainEntityOfPage":"https://shivanigupta.store/blog/llm-observability-and-tracing/","datePublished":"2026-11-06","dateModified":"2026-11-06","author":{"@type":"Person","name":"Shivani"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://shivanigupta.store/"},{"@type":"ListItem","position":2,"name":"Blog","item":"https://shivanigupta.store/blog/"},{"@type":"ListItem","position":3,"name":"LLM observability and tracing","item":"https://shivanigupta.store/blog/llm-observability-and-tracing/"}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"What is the difference between LLM monitoring and observability?","acceptedAnswer":{"@type":"Answer","text":"Monitoring watches known measures, such as error rate and latency, and tells you that something has changed. Observability records enough detail, particularly linked traces, for you to investigate why a specific response went wrong, including problems you did not anticipate."}},{"@type":"Question","name":"Should I log full prompts and responses in production?","acceptedAnswer":{"@type":"Answer","text":"Only as a deliberate decision. They are very useful for debugging but may contain personal or confidential data. Many teams can start with metadata only, then add redaction, sampling, restricted access and short retention for any stored content."}},{"@type":"Question","name":"Do I need a dedicated LLM observability tool?","acceptedAnswer":{"@type":"Answer","text":"Not at the start. Structured logs or an existing OpenTelemetry setup can cover tokens, latency and traces. Dedicated tools become more attractive when you want prompt views and evaluation workflows, so judge them against your actual needs and data rules."}},{"@type":"Question","name":"How is observability different from evaluation?","acceptedAnswer":{"@type":"Answer","text":"Evaluation usually tests a fixed set of examples before release, to compare versions. Observability looks at real traffic after release. They work best together, with production failures feeding the test set and test measures informing what you watch."}}]}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&family=Poppins:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+<header class="nav">
+  <div class="wrap nav-in">
+    <a class="logo" href="/" aria-label="Shivani, home"><img src="/assets/logo.svg" alt="Shivani" width="144" height="40"></a>
+    <nav id="nav-links" aria-label="Main">
+      <a href="/#services">Services</a>
+      <a href="/#skills">Skills</a>
+      <a href="/#work">Work</a>
+      <a href="/#process">Process</a>
+      <a href="/#faq">FAQ</a>
+      <a href="/blog/">Blog</a>
+      <a class="btn btn-sm" href="/#contact">Hire Me</a>
+    </nav>
+    <button id="menu-toggle" class="menu-toggle" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="nav-links"><span></span><span></span><span></span></button>
+  </div>
+</header>
+
+<main id="top">
+  <section class="page-head">
+    <div class="wrap">
+      <nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a><span aria-hidden="true">/</span><a href="/blog/">Blog</a><span aria-hidden="true">/</span><span aria-current="page">LLM observability and tracing</span></nav>
+      <p class="eyebrow">Guide</p>
+      <h1>LLM observability and tracing: monitoring LLM apps in production</h1>
+      <p class="lead">LLM observability means recording each model call, retrieval and tool step as linked traces, with model, tokens, latency, finish reason and prompt version, then adding quality signals on top. It lets you answer why a specific response was bad, which uptime and error dashboards cannot tell you.</p>
+    </div>
+  </section>
+  <section class="article">
+    <div class="wrap prose">
+<h2>Why ordinary monitoring is not enough</h2>
+<p>Standard application monitoring tells you whether a request succeeded and how long it took. An LLM application can return HTTP 200 quickly and still give a wrong answer, invent a policy or call the wrong tool. Several other things make these systems harder to watch:</p>
+<ul>
+<li><strong>Failure is often silent.</strong> Nothing throws an exception when an answer is simply wrong.</li>
+<li><strong>Behaviour is variable.</strong> The same input can produce different outputs, and agents can take a different path on each run.</li>
+<li><strong>Cost varies by request.</strong> One long conversation or looping agent can use far more tokens than a typical request.</li>
+<li><strong>Causes sit upstream.</strong> A poor answer may come from retrieval, a prompt change or a model update, not from the final call.</li>
+<li><strong>Inputs keep shifting.</strong> Users ask things your test set never anticipated.</li>
+</ul>
+
+<h2>The shape of a trace</h2>
+<p>A trace represents one request from start to finish, made up of nested spans, each a timed operation. For a typical assistant with retrieval and tools, it might look like this:</p>
+<pre><code>request: answer_question
+  retrieve_documents
+    embed_query
+    vector_search
+  chat (model call 1)
+  tool: get_order_status
+  chat (model call 2)
+  validate_output</code></pre>
+<p>This outline is an illustrative example rather than a required structure. Its value is that a slow or wrong response can be attributed to a step: you can see that the search returned nothing useful, or that the agent called the same tool three times. Give every step in a request a shared trace ID, and carry a conversation or session ID as well, so that related requests can be viewed together.</p>
+
+<h2>What to record on each step</h2>
+<h3>Model calls</h3>
+<ul>
+<li><strong>Model identity.</strong> Both the model you requested and the one the response reports, since aliases can resolve to a new version.</li>
+<li><strong>Tokens.</strong> Input and output counts, plus cached tokens if your provider reports them.</li>
+<li><strong>Timing.</strong> Total duration and, for streaming, the time to first token, which is often what users notice.</li>
+<li><strong>Finish reason.</strong> A sudden rise in length-limited responses or refusals is an early warning.</li>
+<li><strong>Settings and versions.</strong> Temperature, maximum tokens, and a version identifier for the prompt.</li>
+<li><strong>Errors and retries.</strong> Rate limits and timeouts, including how many attempts were made.</li>
+</ul>
+<h3>Retrieval steps</h3>
+<p>Record the query as sent, including any rewriting, the document and chunk IDs returned, their scores, filters applied and the index version. Without this, a bad answer cannot be traced back to the passages that shaped it. The guide on <a href="/blog/how-to-evaluate-a-rag-system/">how to evaluate a RAG system</a> covers how to measure retrieval once you can see it.</p>
+<h3>Tool calls and agent runs</h3>
+<p>Record the tool name, validated arguments, result status and duration, along with the step count and stop reason for the run. Log approvals and rejections too. This overlaps with the audit trail you need for <a href="/blog/human-in-the-loop-approval-for-ai-agents/">human-in-the-loop approval</a>, though audit records usually need stricter retention and tamper protection than debugging traces do.</p>
+
+<h2>Using OpenTelemetry's GenAI conventions</h2>
+<p>You do not have to invent your own attribute names. OpenTelemetry has semantic conventions for generative AI, which let different tools understand the same telemetry. They are maintained in a dedicated <code>semantic-conventions-genai</code> repository, and at the time of writing the client inference span and its attributes are marked as in development. Names may therefore change, so pin your versions and check the current specification.</p>
+<p>The conventions name the span <code>{gen_ai.operation.name} {gen_ai.request.model}</code> and define attributes that include <code>gen_ai.provider.name</code>, <code>gen_ai.response.model</code>, <code>gen_ai.usage.input_tokens</code>, <code>gen_ai.usage.output_tokens</code> and <code>gen_ai.response.finish_reasons</code>. The illustrative wrapper below records them around a placeholder <code>call_model</code> function, whose reply object is assumed to carry these fields. Auto-instrumentation libraries may do this for you, in which case prefer them to hand-written code.</p>
+<pre><code># Illustrative only. Assumes the OpenTelemetry API and a configured exporter.
+from opentelemetry import trace
+from opentelemetry.trace import Status, StatusCode
+
+tracer = trace.get_tracer("my_llm_app")
+
+
+def traced_chat(provider, model, messages, prompt_version, call_model):
+    with tracer.start_as_current_span(f"chat {model}") as span:
+        span.set_attribute("gen_ai.operation.name", "chat")
+        span.set_attribute("gen_ai.provider.name", provider)
+        span.set_attribute("gen_ai.request.model", model)
+        # An application-specific attribute, not part of the conventions.
+        span.set_attribute("app.prompt_version", prompt_version)
+        try:
+            reply = call_model(model, messages)
+        except Exception as exc:
+            span.record_exception(exc)
+            span.set_status(Status(StatusCode.ERROR))
+            raise
+        span.set_attribute("gen_ai.response.model", reply.model)
+        span.set_attribute("gen_ai.usage.input_tokens", reply.input_tokens)
+        span.set_attribute("gen_ai.usage.output_tokens", reply.output_tokens)
+        span.set_attribute("gen_ai.response.finish_reasons", [reply.finish_reason])
+        return reply</code></pre>
+<p>Note that message content is deliberately left out of this sample, which brings us to the hardest decision.</p>
+
+<h2>Prompts and privacy</h2>
+<p>Full prompts and responses are the most useful debugging data you can have, and often the most sensitive. They can contain personal details, confidential documents or credentials that a user pasted in. The OpenTelemetry conventions reflect this by treating content capture as opt-in: the configuration defaults to <code>NO_CONTENT</code>, with other settings controlled by <code>OTEL_INSTRUMENTATION_GENAI_CAPTURE_CONTENT</code>.</p>
+<p>Make this a deliberate decision, with these options in mind:</p>
+<ul>
+<li><strong>Metadata only by default.</strong> Tokens, timings, IDs and statuses reveal a lot with little exposure.</li>
+<li><strong>Redaction.</strong> Remove known patterns before storage, accepting that automated redaction misses things.</li>
+<li><strong>Sampled or on-demand capture.</strong> Store content for a small share of traffic, or for flagged sessions.</li>
+<li><strong>Separate storage.</strong> Keep content apart from general telemetry, with stricter access and a shorter retention period.</li>
+<li><strong>Third-party review.</strong> A hosted tool receiving prompts is another data processor. Check your agreements and the regulations that apply to you.</li>
+</ul>
+<p>Tell users what you retain, and make sure your deletion process reaches traces as well as your main database.</p>
+
+<h2>Metrics worth putting on a dashboard</h2>
+<p>Group your metrics by what they tell you, and split them by model, prompt version and feature so that a change can be pinned to its cause.</p>
+<div class="table-wrap"><table>
+<thead><tr><th>Area</th><th>Metrics</th><th>What a change may indicate</th></tr></thead>
+<tbody>
+<tr><td>Reliability</td><td>Error and rate-limit counts, retries, timeouts</td><td>Provider problems or quota limits</td></tr>
+<tr><td>Speed</td><td>Latency percentiles, time to first token</td><td>Longer context, slower models or queueing</td></tr>
+<tr><td>Spend</td><td>Tokens per request, per user and per feature</td><td>Prompt growth, loops or misuse</td></tr>
+<tr><td>Output health</td><td>Finish reasons, refusals, validation failures</td><td>Token limits set too low, or a prompt or model change</td></tr>
+<tr><td>Agent behaviour</td><td>Steps per run, tool error rates, step-limit exits</td><td>Confusing tools or looping</td></tr>
+<tr><td>Retrieval</td><td>Empty results, score distributions</td><td>Index problems or new kinds of question</td></tr>
+<tr><td>User signals</td><td>Ratings, regenerations, handovers</td><td>Possible quality problems</td></tr>
+</tbody>
+</table></div>
+<p>Percentiles matter more than averages here, because a few long requests can hide behind a healthy mean. The guide to <a href="/blog/controlling-llm-cost-and-latency/">controlling LLM cost and latency</a> covers what to do once you can see where the time and money go.</p>
+
+<h2>Measuring quality on live traffic</h2>
+<p>Traces show what happened but not whether it was good. Combine several weaker signals, as no single one is dependable:</p>
+<ul>
+<li><strong>Automated checks.</strong> Fast rules such as schema validity, citation presence or banned content can run on all traffic.</li>
+<li><strong>Model-based scoring.</strong> A second model can grade a sample of responses for attributes such as faithfulness to sources. It is imperfect and adds cost, so check its judgements against human labels.</li>
+<li><strong>User feedback.</strong> Valuable but sparse and skewed, since most people never click anything.</li>
+<li><strong>Human review.</strong> Reading a regular sample of real traces finds problems no metric was designed to catch.</li>
+</ul>
+<p>Close the loop by adding interesting production failures, with appropriate consent and redaction, to your offline test set so that each one becomes a regression test.</p>
+
+<h2>Alerts and a debugging routine</h2>
+<p>Alert on things a person can act on: error rates, spend beyond a budget, latency against your target and sudden shifts in finish reasons or validation failures. Quality scores are noisier, so they are better reviewed as trends than used to wake anybody up. Thresholds should come from your own baseline, which you will only have after watching normal traffic for a while.</p>
+<p>When a bad response is reported, a consistent routine helps. Find the trace, check what was retrieved, read the assembled prompt, compare the prompt and model version with the last known good run, then replay the input. Mark deployments on your dashboards too, as "what changed?" is usually the first useful question.</p>
+
+<h2>Choosing tooling</h2>
+<p>There are three broad routes: extend your existing OpenTelemetry-compatible observability stack, adopt an LLM-specific platform such as Langfuse or LangSmith, or begin with structured logs. LLM platforms tend to offer prompt views and evaluation features, while existing stacks keep everything in one place. Check current features yourself, and compare data residency, self-hosting options, sampling control and how easily you can export your data. Using open conventions where possible keeps a later move realistic.</p>
+<p>A sensible first step is modest: add a trace ID, log model calls with tokens, timing and finish reason, and version your prompts. If you are <a href="/blog/serving-an-llm-app-with-fastapi/">serving an LLM app with FastAPI</a>, this can sit in one shared client wrapper.</p>
+<p>If you want this built into an LLM product, the <a href="/services/generative-ai-llm-development/">generative AI and LLM development</a> page describes what I can help with.</p>
+      <h2>Frequently asked questions</h2>
+      <h3>What is the difference between LLM monitoring and observability?</h3>
+      <p>Monitoring watches known measures, such as error rate and latency, and tells you that something has changed. Observability records enough detail, particularly linked traces, for you to investigate why a specific response went wrong, including problems you did not anticipate.</p>
+      <h3>Should I log full prompts and responses in production?</h3>
+      <p>Only as a deliberate decision. They are very useful for debugging but may contain personal or confidential data. Many teams can start with metadata only, then add redaction, sampling, restricted access and short retention for any stored content.</p>
+      <h3>Do I need a dedicated LLM observability tool?</h3>
+      <p>Not at the start. Structured logs or an existing OpenTelemetry setup can cover tokens, latency and traces. Dedicated tools become more attractive when you want prompt views and evaluation workflows, so judge them against your actual needs and data rules.</p>
+      <h3>How is observability different from evaluation?</h3>
+      <p>Evaluation usually tests a fixed set of examples before release, to compare versions. Observability looks at real traffic after release. They work best together, with production failures feeding the test set and test measures informing what you watch.</p>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="foot-cta">
+      <div>
+        <h2>Have an AI or full stack project in mind?</h2>
+        <p>Tell me what you want to build.</p>
+      </div>
+      <div class="foot-cta-btns">
+        <a class="btn" href="/#contact">Start a conversation</a>
+        <a class="btn btn-line" href="mailto:shivanigupta4876@gmail.com">Send an email</a>
+      </div>
+    </div>
+    <div class="foot-grid">
+      <div>
+        <a href="/" aria-label="Shivani, home"><img src="/assets/logo.svg" alt="Shivani" width="144" height="40"></a>
+        <p>AI/ML engineer working across generative AI, LLMs, RAG, agentic AI and NLP, plus full stack development.</p>
+        <span class="avail">Taking new projects</span>
+      </div>
+      <div>
+        <h3>Explore</h3>
+        <ul>
+          <li><a href="/services/">Services</a></li>
+          <li><a href="/#work">Projects</a></li>
+          <li><a href="/#process">Process</a></li>
+          <li><a href="/#faq">FAQ</a></li>
+          <li><a href="/blog/">Blog</a></li>
+          <li><a href="/#contact">Contact</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Services</h3>
+        <ul>
+          <li><a href="/services/generative-ai-llm-development/">Generative AI and LLMs</a></li>
+          <li><a href="/services/rag-development/">RAG development</a></li>
+          <li><a href="/services/multi-agent-systems/">Multi-agent systems</a></li>
+          <li><a href="/services/ai-orchestration-langgraph/">Orchestration with LangGraph</a></li>
+          <li><a href="/services/nlp-development/">NLP development</a></li>
+          <li><a href="/services/full-stack-development/">Full stack development</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Contact</h3>
+        <ul>
+          <li><a href="mailto:shivanigupta4876@gmail.com">shivanigupta4876@gmail.com</a></li>
+          <li><a href="tel:+919720466504">+91 97204 66504</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="foot-bottom">&copy; <span id="year">2026</span> Shivani. All rights reserved.</div>
+  </div>
+</footer>
+<a class="wa-float" href="https://wa.me/919720466504?text=Hi%20Shivani%2C%20I%20saw%20your%20website%20and%20would%20like%20to%20talk%20about%20a%20project." target="_blank" rel="noopener" aria-label="Chat on WhatsApp"><svg viewBox="0 0 24 24" width="28" height="28" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15L2 22l5.1-1.3A10 10 0 1 0 12 2zm0 18.2a8.2 8.2 0 0 1-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1a6.700 6.700 0 0 1-3.300-2.900c-.2-.3 0-.4.1-.6l.4-.4.2-.4v-.5l-.8-1.800c-.2-.5-.4-.4-.6-.4h-.5c-.2 0-.4.1-.6.3-.2.2-.8.8-.8 2s.9 2.300 1 2.500c.1.2 1.700 2.600 4.100 3.600 1.500.7 2.100.7 2.900.6.500-.1 1.500-.6 1.700-1.200.2-.6.2-1.100.1-1.200l-.2-.2z"/></svg></a>
+<script src="/assets/js/site.js" defer></script>
+</body>
+</html>

@@ -10,4 +10,8 @@ document.addEventListener('DOMContentLoaded', function () {
   links.addEventListener('click', function (e) { if (e.target.tagName === 'A') set(false); });
   document.addEventListener('keydown', function (e) { if (e.key === 'Escape') set(false); });
   document.getElementById('year').textContent = new Date().getFullYear();
+  document.addEventListener('click', function (e) {
+    var a = e.target.closest && e.target.closest('a[href*="wa.me"]');
+    if (a && window.gtag) gtag('event', 'whatsapp_click', { page_path: location.pathname });
+  });
 });

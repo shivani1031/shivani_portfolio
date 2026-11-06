@@ -34,3 +34,8 @@
 /blog/model-context-protocol-for-ai-agents/
 /blog/crewai-vs-langgraph/
 /blog/build-a-rag-chatbot-in-python/
+/blog/what-is-agentic-ai/
+/blog/how-to-build-an-ai-agent-in-python/
+/blog/structured-output-from-llms/
+/blog/llm-observability-and-tracing/
+/blog/pgvector-vs-dedicated-vector-databases/

@@ -1,0 +1,247 @@
+<!doctype html>
+<html lang="en">
+<head>
+<script async src="https://www.googletagmanager.com/gtm.js?id=GTM-THN7RV8R"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+</script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="canonical" href="https://shivanigupta.store/blog/structured-output-from-llms/">
+<title>Structured Output from LLMs: Reliable JSON | Shivani</title>
+<meta name="description" content="How to get reliable JSON from an LLM: schema-constrained output, validating with Pydantic, handling refusals and truncation, and checks a schema cannot make.">
+<meta name="robots" content="index,follow">
+<meta name="author" content="Shivani">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<link rel="manifest" href="/site.webmanifest">
+<meta name="theme-color" content="#080b0f">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Structured Output from LLMs: Reliable JSON | Shivani">
+<meta property="og:description" content="How to get reliable JSON from an LLM: schema-constrained output, validating with Pydantic, handling refusals and truncation, and checks a schema cannot make.">
+<meta property="og:url" content="https://shivanigupta.store/blog/structured-output-from-llms/">
+<meta property="og:image" content="https://shivanigupta.store/assets/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Structured output from LLMs: getting reliable JSON","description":"How to get reliable JSON from an LLM: schema-constrained output, validating with Pydantic, handling refusals and truncation, and checks a schema cannot make.","mainEntityOfPage":"https://shivanigupta.store/blog/structured-output-from-llms/","datePublished":"2026-11-06","dateModified":"2026-11-06","author":{"@type":"Person","name":"Shivani"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://shivanigupta.store/"},{"@type":"ListItem","position":2,"name":"Blog","item":"https://shivanigupta.store/blog/"},{"@type":"ListItem","position":3,"name":"Structured output from LLMs","item":"https://shivanigupta.store/blog/structured-output-from-llms/"}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"What is the difference between JSON mode and structured outputs?","acceptedAnswer":{"@type":"Answer","text":"JSON mode aims for syntactically valid JSON without enforcing any particular shape. Structured outputs also constrain the response to a schema you supply. OpenAI's documentation draws this distinction and recommends structured outputs where they are available."}},{"@type":"Question","name":"Do structured outputs guarantee correct data?","acceptedAnswer":{"@type":"Answer","text":"No. They address the shape of the output and not whether the values are true. A model can return a schema-valid date that is wrong, so validate business rules in your code and measure accuracy on labelled examples."}},{"@type":"Question","name":"Should I still validate if the provider enforces my schema?","acceptedAnswer":{"@type":"Answer","text":"Yes. Refusals and truncation can produce output that does not match, some schema constraints may not be enforced, and cross-field rules cannot be expressed. Your own validation also protects you if you change model or provider."}},{"@type":"Question","name":"Should I use a tool call or a response format to get JSON?","acceptedAnswer":{"@type":"Answer","text":"Use a response format when the JSON is the final answer, for example extracted data. Use a tool call when the model is choosing an action your application will carry out. Some requests legitimately combine both."}}]}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&family=Poppins:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+<header class="nav">
+  <div class="wrap nav-in">
+    <a class="logo" href="/" aria-label="Shivani, home"><img src="/assets/logo.svg" alt="Shivani" width="144" height="40"></a>
+    <nav id="nav-links" aria-label="Main">
+      <a href="/#services">Services</a>
+      <a href="/#skills">Skills</a>
+      <a href="/#work">Work</a>
+      <a href="/#process">Process</a>
+      <a href="/#faq">FAQ</a>
+      <a href="/blog/">Blog</a>
+      <a class="btn btn-sm" href="/#contact">Hire Me</a>
+    </nav>
+    <button id="menu-toggle" class="menu-toggle" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="nav-links"><span></span><span></span><span></span></button>
+  </div>
+</header>
+
+<main id="top">
+  <section class="page-head">
+    <div class="wrap">
+      <nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a><span aria-hidden="true">/</span><a href="/blog/">Blog</a><span aria-hidden="true">/</span><span aria-current="page">Structured output from LLMs</span></nav>
+      <p class="eyebrow">Guide</p>
+      <h1>Structured output from LLMs: getting reliable JSON</h1>
+      <p class="lead">For reliable JSON from an LLM, use your provider's schema-constrained output feature where available, check for refusals and truncation before parsing, validate the result in your own code and retry once with the error. Schema enforcement makes the shape dependable; it does not make the values correct.</p>
+    </div>
+  </section>
+  <section class="article">
+    <div class="wrap prose">
+<h2>The four levels of enforcement</h2>
+<p>"JSON mode" and "structured outputs" are often used interchangeably, but the options differ in what they actually guarantee. From weakest to strongest:</p>
+<div class="table-wrap"><table>
+<thead><tr><th>Approach</th><th>What it gives you</th><th>Use it when</th></tr></thead>
+<tbody>
+<tr><td>Prompt instructions alone</td><td>A request. The model may add commentary, code fences or wrong fields.</td><td>Your model offers nothing better, and you have strong validation.</td></tr>
+<tr><td>JSON mode</td><td>Syntactically valid JSON, with no promise about its shape.</td><td>You need older model support or the shape is loose.</td></tr>
+<tr><td>Schema-constrained output</td><td>JSON that follows a schema you supply, within the provider's supported subset.</td><td>This is the default choice for producing data as the response.</td></tr>
+<tr><td>Strict tool or function calls</td><td>Tool arguments that follow the tool's schema.</td><td>The model should choose an action, not simply return data.</td></tr>
+</tbody>
+</table></div>
+<p>Avoid the older workaround of defining a fake tool just to obtain structure if a direct format option exists. Forcing a tool is also not universally supported: Anthropic's documentation, for example, lists models where forced tool choice returns an error and points to strict tools or structured outputs instead.</p>
+
+<h2>How the main providers expose it</h2>
+<p>Parameter names change, so treat the following as a snapshot from each provider's documentation in November 2026, and check the current pages before you build:</p>
+<ul>
+<li><strong>OpenAI.</strong> The Responses API accepts a <code>json_schema</code> format with <code>"strict": true</code> under <code>text.format</code>. Its Python SDK has <code>responses.parse</code>, which takes a Pydantic model as <code>text_format</code> and returns <code>output_parsed</code>.</li>
+<li><strong>Anthropic.</strong> The Messages API takes a schema in <code>output_config.format</code>, and <code>strict: true</code> on a tool enforces its <code>input_schema</code>. The Python SDK offers <code>client.messages.parse()</code> with a Pydantic model. The older <code>output_format</code> parameter is marked as deprecated.</li>
+<li><strong>Google Gemini.</strong> The documentation describes a <code>response_format</code> object with a <code>mime_type</code> of <code>application/json</code> and a <code>schema</code>. In Python you can pass a Pydantic model's <code>model_json_schema()</code>.</li>
+</ul>
+
+<h2>Know what the schema will not enforce</h2>
+<p>Each provider supports only part of JSON Schema, and the unsupported parts behave differently. Anthropic's documentation says that numeric limits such as <code>minimum</code> and string length limits are unsupported and return a 400 error, though its SDK helpers can move some of them into descriptions and validate locally. Gemini's documentation says <code>minLength</code>, <code>maxLength</code> and <code>uniqueItems</code>, among others, are silently stripped. A rule you believed was enforced may therefore not be, which is one reason to validate on your side regardless.</p>
+<p>Very large or deeply nested schemas can also be rejected, and providers publish complexity limits. Schema compilation can add latency on first use as well. Keep schemas small, and split a sprawling one into separate calls if the parts are really separate tasks. Smaller schemas are also easier to review when a field starts misbehaving.</p>
+
+<h2>Three ways valid-looking output still fails</h2>
+<p>Schema enforcement does not cover these situations, so your code must handle each of them.</p>
+<ul>
+<li><strong>Refusals.</strong> The model may decline for safety reasons, and the response may not follow your schema. OpenAI exposes a <code>refusal</code> field or content item, and Anthropic uses a <code>stop_reason</code> of <code>refusal</code>.</li>
+<li><strong>Truncation.</strong> If the output hits the token limit, the JSON can be cut off midway. OpenAI's Responses API marks this with a <code>status</code> of <code>incomplete</code> and a reason of <code>max_output_tokens</code>, while Anthropic returns a <code>stop_reason</code> of <code>max_tokens</code>. Increase the limit or ask for less, since retrying the same request may simply fail the same way.</li>
+<li><strong>Correct shape, wrong content.</strong> A date can be valid and still be the wrong date. Google's documentation makes this point directly: schema-compliant output can still be semantically wrong.</li>
+</ul>
+<p>Check the status before parsing. A parse error on a truncated reply tells you little, while "truncated at the token limit" tells you what to change.</p>
+
+<h2>Design the schema for the model</h2>
+<p>A good schema reduces mistakes before validation ever runs.</p>
+<ul>
+<li><strong>Use enums for closed sets.</strong> Add an <code>other</code> or <code>unknown</code> value, or the model has to force every case into a category that does not fit. Anthropic's documentation warns that enum capitalisation can vary, so normalise before comparing.</li>
+<li><strong>Make absence explicit.</strong> A required but nullable field gives the model a clear way to say "not stated". A model forced to fill in a required string may invent one.</li>
+<li><strong>Describe fields precisely.</strong> Field names and descriptions guide the model. State formats and units, such as an ISO 8601 date or an amount in pence.</li>
+<li><strong>Keep it flat.</strong> Deep nesting adds complexity and more ways to go wrong.</li>
+<li><strong>Put a short justification first, if you want one.</strong> Fields tend to be generated in order, so a brief evidence field placed before a verdict gives the model a chance to ground it. Keep it short, and ask for an explanation or supporting quote. Anthropic warns that asking for step-by-step reasoning in a property can trigger a refusal.</li>
+</ul>
+<p>For extraction work in particular, where the concern is invented values and field-level accuracy, see <a href="/blog/named-entity-recognition-and-data-extraction-with-llms/">named entity recognition and data extraction with LLMs</a>.</p>
+
+<h2>Validate in your own code</h2>
+<p>Provider guarantees cover part of the problem, can vary by model and may change. Your application should have its own definition of valid data. Pydantic suits this in Python, because one model can provide the JSON Schema for the request and the validation for the response, plus rules that a schema cannot express. The code below is illustrative, using a made-up invoice example.</p>
+<pre><code># Illustrative only. Requires Pydantic v2.
+from datetime import date
+from typing import Literal
+
+from pydantic import BaseModel, ConfigDict, ValidationError, model_validator
+
+
+class Invoice(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    supplier: str
+    issue_date: date | None
+    due_date: date | None
+    currency: Literal["GBP", "EUR", "USD", "INR", "other"]
+    total_minor_units: int | None
+
+    @model_validator(mode="after")
+    def check_rules(self):
+        if self.issue_date and self.due_date and self.due_date &lt; self.issue_date:
+            raise ValueError("due_date is before issue_date")
+        if self.total_minor_units is not None and self.total_minor_units &lt; 0:
+            raise ValueError("total_minor_units is negative")
+        return self</code></pre>
+<p>Cross-field rules like these are exactly what schema enforcement does not catch. For business rules that depend on other data, such as whether a supplier exists in your system, run a further check against your database after parsing.</p>
+
+<h2>Retry with the error, and only once or twice</h2>
+<p>When validation fails, sending the error back gives the model something specific to fix. Keep the number of attempts low, because each one costs tokens and time, and repeated failure usually points to a bad schema or an ambiguous input. The illustrative function below handles refusals and truncation separately, since neither should be treated as a repairable format problem. Here <code>call_model</code> is a placeholder for your own adapter.</p>
+<pre><code># Illustrative only. call_model returns an object with .status and .text.
+class OutputFailed(Exception):
+    pass
+
+
+def get_invoice(document, call_model, max_attempts=2):
+    messages = [{"role": "user", "content": build_prompt(document)}]
+    for _ in range(max_attempts):
+        reply = call_model(messages, schema=Invoice.model_json_schema())
+        if reply.status == "refused":
+            raise OutputFailed("refused")
+        if reply.status == "truncated":
+            raise OutputFailed("hit the token limit; shorten input or raise it")
+        try:
+            return Invoice.model_validate_json(reply.text)
+        except ValidationError as exc:
+            messages.append({"role": "assistant", "content": reply.text})
+            messages.append({
+                "role": "user",
+                "content": f"That output failed validation: {exc}. "
+                           "Return corrected JSON only.",
+            })
+    raise OutputFailed("validation failed after retries")
+
+
+def build_prompt(document):
+    return (
+        "Extract the invoice fields from the document below. "
+        "Use null for anything not stated. Do not guess.\n\n"
+        "&lt;document&gt;\n" + document + "\n&lt;/document&gt;"
+    )</code></pre>
+<p>Decide what happens after the final failure. Sending the item to a review queue or returning a clear error is almost always better than saving a best guess. Be careful with validation messages too, as they can echo input values into logs, which matters if your documents contain personal data.</p>
+
+<h2>Treat output as untrusted</h2>
+<p>Valid JSON can still carry harmful values. If a document contains injected instructions, the model may place attacker-chosen text in perfectly valid fields. Use parameterised queries, escape values before showing them in a page and never pass a field straight to a shell or an <code>eval</code>. <a href="/blog/llm-guardrails-and-prompt-injection-defence/">LLM guardrails and prompt injection defence</a> explains the wider approach.</p>
+
+<h2>Streaming and schema changes</h2>
+<p>Partial JSON is not valid JSON, so a streamed response cannot be fully validated until it ends. If you stream into an interface, use a tolerant partial parser for display only, and validate the complete object before acting on it. <a href="/blog/streaming-llm-responses-to-a-web-ui/">Streaming LLM responses to a web UI</a> covers the transport side.</p>
+<p>Treat a schema as a versioned contract as well. Record the schema version with each stored result and re-run your tests whenever you change a field, since renaming one can change what the model produces.</p>
+
+<h2>Test more than the format</h2>
+<p>Once the format is enforced, your failure rate for parsing may look excellent while accuracy remains unknown. Build a small labelled set and measure correctness per field, with a separate look at how often the model returns null when a value was present, or a value when none was. Include inputs that lack the information altogether, along with empty or very long documents, and log refusal, truncation and retry rates in production so that you can see changes over time.</p>
+<p>If you are adding this kind of feature to a product, the <a href="/services/generative-ai-llm-development/">generative AI and LLM development</a> page describes what I can help with.</p>
+      <h2>Frequently asked questions</h2>
+      <h3>What is the difference between JSON mode and structured outputs?</h3>
+      <p>JSON mode aims for syntactically valid JSON without enforcing any particular shape. Structured outputs also constrain the response to a schema you supply. OpenAI's documentation draws this distinction and recommends structured outputs where they are available.</p>
+      <h3>Do structured outputs guarantee correct data?</h3>
+      <p>No. They address the shape of the output and not whether the values are true. A model can return a schema-valid date that is wrong, so validate business rules in your code and measure accuracy on labelled examples.</p>
+      <h3>Should I still validate if the provider enforces my schema?</h3>
+      <p>Yes. Refusals and truncation can produce output that does not match, some schema constraints may not be enforced, and cross-field rules cannot be expressed. Your own validation also protects you if you change model or provider.</p>
+      <h3>Should I use a tool call or a response format to get JSON?</h3>
+      <p>Use a response format when the JSON is the final answer, for example extracted data. Use a tool call when the model is choosing an action your application will carry out. Some requests legitimately combine both.</p>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="foot-cta">
+      <div>
+        <h2>Have an AI or full stack project in mind?</h2>
+        <p>Tell me what you want to build.</p>
+      </div>
+      <div class="foot-cta-btns">
+        <a class="btn" href="/#contact">Start a conversation</a>
+        <a class="btn btn-line" href="mailto:shivanigupta4876@gmail.com">Send an email</a>
+      </div>
+    </div>
+    <div class="foot-grid">
+      <div>
+        <a href="/" aria-label="Shivani, home"><img src="/assets/logo.svg" alt="Shivani" width="144" height="40"></a>
+        <p>AI/ML engineer working across generative AI, LLMs, RAG, agentic AI and NLP, plus full stack development.</p>
+        <span class="avail">Taking new projects</span>
+      </div>
+      <div>
+        <h3>Explore</h3>
+        <ul>
+          <li><a href="/services/">Services</a></li>
+          <li><a href="/#work">Projects</a></li>
+          <li><a href="/#process">Process</a></li>
+          <li><a href="/#faq">FAQ</a></li>
+          <li><a href="/blog/">Blog</a></li>
+          <li><a href="/#contact">Contact</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Services</h3>
+        <ul>
+          <li><a href="/services/generative-ai-llm-development/">Generative AI and LLMs</a></li>
+          <li><a href="/services/rag-development/">RAG development</a></li>
+          <li><a href="/services/multi-agent-systems/">Multi-agent systems</a></li>
+          <li><a href="/services/ai-orchestration-langgraph/">Orchestration with LangGraph</a></li>
+          <li><a href="/services/nlp-development/">NLP development</a></li>
+          <li><a href="/services/full-stack-development/">Full stack development</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Contact</h3>
+        <ul>
+          <li><a href="mailto:shivanigupta4876@gmail.com">shivanigupta4876@gmail.com</a></li>
+          <li><a href="tel:+919720466504">+91 97204 66504</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="foot-bottom">&copy; <span id="year">2026</span> Shivani. All rights reserved.</div>
+  </div>
+</footer>
+<a class="wa-float" href="https://wa.me/919720466504?text=Hi%20Shivani%2C%20I%20saw%20your%20website%20and%20would%20like%20to%20talk%20about%20a%20project." target="_blank" rel="noopener" aria-label="Chat on WhatsApp"><svg viewBox="0 0 24 24" width="28" height="28" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15L2 22l5.1-1.3A10 10 0 1 0 12 2zm0 18.2a8.2 8.2 0 0 1-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1a6.700 6.700 0 0 1-3.300-2.900c-.2-.3 0-.4.1-.6l.4-.4.2-.4v-.5l-.8-1.800c-.2-.5-.4-.4-.6-.4h-.5c-.2 0-.4.1-.6.3-.2.2-.8.8-.8 2s.9 2.300 1 2.500c.1.2 1.700 2.600 4.100 3.600 1.500.7 2.100.7 2.900.6.500-.1 1.500-.6 1.700-1.200.2-.6.2-1.100.1-1.200l-.2-.2z"/></svg></a>
+<script src="/assets/js/site.js" defer></script>
+</body>
+</html>

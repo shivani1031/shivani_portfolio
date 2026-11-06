@@ -1,0 +1,229 @@
+<!doctype html>
+<html lang="en">
+<head>
+<script async src="https://www.googletagmanager.com/gtm.js?id=GTM-THN7RV8R"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+</script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="canonical" href="https://shivanigupta.store/blog/pgvector-vs-dedicated-vector-databases/">
+<title>pgvector vs Dedicated Vector Databases | Shivani</title>
+<meta name="description" content="When Postgres with pgvector is enough for vector search, when a dedicated vector database earns its place, and how to test the decision on your own data.">
+<meta name="robots" content="index,follow">
+<meta name="author" content="Shivani">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<link rel="manifest" href="/site.webmanifest">
+<meta name="theme-color" content="#080b0f">
+<meta property="og:type" content="article">
+<meta property="og:title" content="pgvector vs Dedicated Vector Databases | Shivani">
+<meta property="og:description" content="When Postgres with pgvector is enough for vector search, when a dedicated vector database earns its place, and how to test the decision on your own data.">
+<meta property="og:url" content="https://shivanigupta.store/blog/pgvector-vs-dedicated-vector-databases/">
+<meta property="og:image" content="https://shivanigupta.store/assets/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"pgvector vs dedicated vector databases: when Postgres is enough","description":"When Postgres with pgvector is enough for vector search, when a dedicated vector database earns its place, and how to test the decision on your own data.","mainEntityOfPage":"https://shivanigupta.store/blog/pgvector-vs-dedicated-vector-databases/","datePublished":"2026-11-06","dateModified":"2026-11-06","author":{"@type":"Person","name":"Shivani"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://shivanigupta.store/"},{"@type":"ListItem","position":2,"name":"Blog","item":"https://shivanigupta.store/blog/"},{"@type":"ListItem","position":3,"name":"pgvector vs dedicated vector databases","item":"https://shivanigupta.store/blog/pgvector-vs-dedicated-vector-databases/"}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"How many vectors can pgvector handle?","acceptedAnswer":{"@type":"Answer","text":"There is no single dependable figure. Capacity depends on dimensions, memory, filters, recall targets, write rate and the other work your database is doing. Load test with your own embeddings and queries instead of relying on a general threshold."}},{"@type":"Question","name":"Should I use HNSW or IVFFlat in pgvector?","acceptedAnswer":{"@type":"Answer","text":"HNSW is a common starting point when you want good query performance, though it uses more memory and takes longer to build. IVFFlat is quicker and lighter to build, but should be created after data is loaded. Test both if the resources matter."}},{"@type":"Question","name":"Can pgvector do hybrid search?","acceptedAnswer":{"@type":"Answer","text":"Yes. You can combine pgvector with Postgres full-text search and merge the rankings, for example using reciprocal rank fusion. You write more of this yourself than in systems with built-in fusion, and keyword ranking differs from BM25."}},{"@type":"Question","name":"Should vector search run on my main Postgres database?","acceptedAnswer":{"@type":"Answer","text":"It can, particularly at small scale, as it keeps things simple. If searches or index builds start affecting your application, try a read replica or a separate Postgres instance before you move to a different database technology."}}]}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&family=Poppins:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+<header class="nav">
+  <div class="wrap nav-in">
+    <a class="logo" href="/" aria-label="Shivani, home"><img src="/assets/logo.svg" alt="Shivani" width="144" height="40"></a>
+    <nav id="nav-links" aria-label="Main">
+      <a href="/#services">Services</a>
+      <a href="/#skills">Skills</a>
+      <a href="/#work">Work</a>
+      <a href="/#process">Process</a>
+      <a href="/#faq">FAQ</a>
+      <a href="/blog/">Blog</a>
+      <a class="btn btn-sm" href="/#contact">Hire Me</a>
+    </nav>
+    <button id="menu-toggle" class="menu-toggle" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="nav-links"><span></span><span></span><span></span></button>
+  </div>
+</header>
+
+<main id="top">
+  <section class="page-head">
+    <div class="wrap">
+      <nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a><span aria-hidden="true">/</span><a href="/blog/">Blog</a><span aria-hidden="true">/</span><span aria-current="page">pgvector vs dedicated vector databases</span></nav>
+      <p class="eyebrow">Guide</p>
+      <h1>pgvector vs dedicated vector databases: when Postgres is enough</h1>
+      <p class="lead">Postgres with pgvector is usually enough if you already run Postgres, your vectors fit comfortably on it and your metadata lives alongside them. A dedicated vector database earns its place when your own load tests show that vector search is overloading the database or needs features pgvector lacks.</p>
+    </div>
+  </section>
+  <section class="article">
+    <div class="wrap prose">
+<h2>The real choice</h2>
+<p>This is less a contest between two products than a decision about how many systems you want to run. Keeping vectors in Postgres means one database, one backup process and one set of permissions, at the price of sharing resources with everything else. A dedicated system separates that workload and offers features built for vector search, at the price of something else to deploy, secure and keep in sync.</p>
+<p>The broader guide on <a href="/blog/embeddings-and-choosing-a-vector-database/">embeddings and choosing a vector database</a> covers embedding models and general criteria. This one looks specifically at the Postgres question. Version-sensitive details below come from the pgvector README at version 0.8.7, so check it again before relying on them.</p>
+
+<h2>What pgvector gives you</h2>
+<p>pgvector is an open-source Postgres extension, supporting Postgres 13 and later, that adds vector types, distance operators and approximate indexes.</p>
+<ul>
+<li><strong>Types.</strong> <code>vector</code> and <code>halfvec</code> for dense embeddings, <code>sparsevec</code> for sparse ones and <code>bit</code> for binary vectors.</li>
+<li><strong>Distance operators.</strong> These include <code>&lt;-&gt;</code> for Euclidean distance, <code>&lt;#&gt;</code> for negative inner product and <code>&lt;=&gt;</code> for cosine distance.</li>
+<li><strong>Indexes.</strong> HNSW and IVFFlat. Without an index, you get exact search, with perfect recall and a scan of every row in scope.</li>
+</ul>
+<p>Because it is still Postgres, vectors sit next to your data, so you get joins, transactions and existing backup and access tooling. A document and its embedding can change in one transaction, and there is no pipeline that can drift out of sync. That property is easy to undervalue until you have debugged a stale external index.</p>
+<p>Here is an illustrative setup with a tenant filter and an HNSW index. The 1024 dimensions are only an example and must match your embedding model:</p>
+<pre><code>-- Illustrative only. Adjust names, dimensions and options to your data.
+CREATE EXTENSION IF NOT EXISTS vector;
+
+CREATE TABLE chunks (
+    id bigserial PRIMARY KEY,
+    tenant_id bigint NOT NULL,
+    body text NOT NULL,
+    embedding vector(1024) NOT NULL
+);
+
+CREATE INDEX ON chunks USING hnsw (embedding vector_cosine_ops);
+CREATE INDEX ON chunks (tenant_id);
+
+SET hnsw.iterative_scan = strict_order;
+
+SELECT id, body
+FROM chunks
+WHERE tenant_id = $1
+ORDER BY embedding &lt;=&gt; $2
+LIMIT 10;</code></pre>
+
+<h2>Limits that are worth knowing</h2>
+<h3>Dimensions</h3>
+<p>A <code>vector</code> column can hold up to 16,000 dimensions, but only up to 2,000 can be indexed. <code>halfvec</code> raises the indexable limit to 4,000, using half-precision values. If your embedding model produces more than that, you will need a shorter output from the model, if it offers one, or another route such as the binary quantisation options described in the README.</p>
+<h3>Filtered search</h3>
+<p>This is the most common surprise. With an approximate index, filters are applied after the index scan. By default HNSW considers 40 candidates (<code>hnsw.ef_search</code>), so if a filter matches only a small fraction of rows, a query for ten results may return fewer.</p>
+<p>Version 0.8.0 added iterative index scans, which keep scanning until there are enough results or a limit is reached. For HNSW you enable them through <code>hnsw.iterative_scan</code>, with <code>strict_order</code> or <code>relaxed_order</code>, and <code>hnsw.max_scan_tuples</code> caps the work. The README also suggests ordinary indexes for selective filters, partial indexes for a few distinct values and partitioning for many. For tenant isolation specifically, it points to list partitioning or separate tables.</p>
+<h3>Tuning and memory</h3>
+<p>HNSW is built using options <code>m</code> and <code>ef_construction</code>, which default to 16 and 64, and searched with <code>hnsw.ef_search</code>. Higher values generally trade speed and resources for better recall. Index builds can be demanding on a busy primary, and search performs best when the index fits in memory. A vector-heavy workload can therefore compete with your transactions for cache, CPU and I/O, which you should measure instead of assuming either way.</p>
+<h3>Hybrid search</h3>
+<p>Postgres has built-in full-text search, and the README suggests combining it with vector search using reciprocal rank fusion or a cross-encoder. That works, and it avoids another system, though you assemble the query yourself. Ranking functions such as <code>ts_rank_cd</code> are not the same as the BM25 scoring offered by many search engines, so test keyword quality on your own queries if it matters. <a href="/blog/hybrid-search-and-reranking-for-rag/">Hybrid search and reranking for RAG</a> explains the fusion approach.</p>
+
+<h2>When Postgres is enough</h2>
+<p>Staying with pgvector is a strong default when most of the following are true:</p>
+<ul>
+<li><strong>You already run Postgres</strong> and have people who know how to operate it.</li>
+<li><strong>Vectors belong with relational data.</strong> You need joins to documents, users or permissions, or transactional updates.</li>
+<li><strong>Your collection fits comfortably.</strong> The index and its working data fit in the memory you can afford, leaving room for everything else.</li>
+<li><strong>Query volume is moderate.</strong> Your load tests hit your latency target with headroom.</li>
+<li><strong>Exact search may be practical.</strong> With a small collection, or where filters narrow each query to a small set of rows, you might not need an approximate index at all.</li>
+<li><strong>You value fewer moving parts.</strong> For an early product, one less system to secure and sync can matter more than peak search performance.</li>
+</ul>
+<p>Beware of published thresholds such as "pgvector works up to N million vectors". The answer depends on dimensions, hardware, filters, recall targets and write rates, so a number from someone else's benchmark tells you little about your system.</p>
+
+<h2>When a dedicated database earns its place</h2>
+<p>Consider moving, or adding one, when you can point to a specific reason such as these:</p>
+<ul>
+<li><strong>Measured contention.</strong> Vector queries or index builds are hurting your transactional workload, and a read replica or a separate Postgres instance has not solved it. Try those first, as they are often cheaper than changing technology.</li>
+<li><strong>Scale beyond a comfortable single node.</strong> The index no longer fits in memory on hardware you are willing to pay for, and you want built-in sharding. Postgres can be scaled out, but that is its own project.</li>
+<li><strong>Selective filters at high volume.</strong> You cannot reach your recall and latency targets for your filter patterns after tuning.</li>
+<li><strong>Features you would otherwise build.</strong> Native sparse and dense fusion, built-in embedding or reranking, or specific quantisation options may matter. Availability varies by product and changes often, so check each vendor's current documentation.</li>
+<li><strong>No Postgres to begin with.</strong> If your stack does not use it, adopting it purely for vectors removes much of the main advantage. Compare it fairly with your other options, including vector support in whatever database you do run.</li>
+<li><strong>A managed service fits your team.</strong> If nobody wants to tune indexes, paying someone else to run search may be reasonable. Include data residency and exit costs in that decision.</li>
+</ul>
+
+<h2>The costs of a second system</h2>
+<p>Licence or hosting fees are the visible part. The less visible costs often decide the matter:</p>
+<ul>
+<li><strong>Synchronisation.</strong> Changes must reach the index, including deletes, and you need a way of detecting and repairing drift. A deleted document that remains searchable can be a compliance problem.</li>
+<li><strong>Permissions.</strong> Access rules must be copied across as metadata and enforced correctly. A mistake here leaks data between users.</li>
+<li><strong>Query splitting.</strong> Joins now happen in your application, and that often means fetching IDs from one system and then rows from another.</li>
+<li><strong>Operations.</strong> Backups, monitoring, upgrades and incident response all have to cover another service.</li>
+</ul>
+
+<h2>Test the decision on your own data</h2>
+<p>A short experiment beats any comparison article, including this one.</p>
+<ol>
+<li><strong>Use realistic data.</strong> Your real embeddings at your expected size, or at a multiple of today's if you expect growth.</li>
+<li><strong>Replay realistic queries.</strong> Include your filters, particularly the selective ones, at your expected concurrency and alongside normal database load.</li>
+<li><strong>Measure recall against exact search.</strong> Fast but wrong results are not a win, so compare approximate results with an exact baseline.</li>
+<li><strong>Test writes and rebuilds.</strong> Measure index build time, how searches behave during bulk updates, and how routine maintenance such as vacuum copes.</li>
+<li><strong>Compare at a fixed recall.</strong> Latency numbers mean little unless both systems are tuned to the same recall.</li>
+</ol>
+<p>Recall itself is simple to compute once you have both sets of results. The sample below is an illustrative sketch, and both arguments are assumed to be lists of result IDs per query:</p>
+<pre><code># Illustrative only. Compares approximate results with an exact baseline.
+def recall_at_k(approx_results, exact_results, k):
+    total = 0.0
+    for approx, exact in zip(approx_results, exact_results):
+        expected = set(exact[:k])
+        total += len(set(approx[:k]) &amp; expected) / len(expected)
+    return total / len(exact_results)</code></pre>
+<p>Remember that index recall is not the same as answer quality. It tells you how well the index approximates exact search, so you still need <a href="/blog/how-to-evaluate-a-rag-system/">retrieval evaluation against real questions</a>, and a better <a href="/blog/choosing-chunking-strategies-for-rag/">chunking strategy</a> may help far more than a different database.</p>
+
+<h2>Keep the decision reversible</h2>
+<p>Put retrieval behind a small interface of your own, such as a function that takes a query, filters and a limit and returns passages with scores. Store your source text and embedding model version, so that you can rebuild an index anywhere. Then starting on pgvector is low-risk: if it stops being enough, you will have real measurements showing why, and a clear boundary at which to swap it.</p>
+<p>If you are designing retrieval for a product, the <a href="/services/rag-development/">RAG development</a> page describes what I can help with.</p>
+      <h2>Frequently asked questions</h2>
+      <h3>How many vectors can pgvector handle?</h3>
+      <p>There is no single dependable figure. Capacity depends on dimensions, memory, filters, recall targets, write rate and the other work your database is doing. Load test with your own embeddings and queries instead of relying on a general threshold.</p>
+      <h3>Should I use HNSW or IVFFlat in pgvector?</h3>
+      <p>HNSW is a common starting point when you want good query performance, though it uses more memory and takes longer to build. IVFFlat is quicker and lighter to build, but should be created after data is loaded. Test both if the resources matter.</p>
+      <h3>Can pgvector do hybrid search?</h3>
+      <p>Yes. You can combine pgvector with Postgres full-text search and merge the rankings, for example using reciprocal rank fusion. You write more of this yourself than in systems with built-in fusion, and keyword ranking differs from BM25.</p>
+      <h3>Should vector search run on my main Postgres database?</h3>
+      <p>It can, particularly at small scale, as it keeps things simple. If searches or index builds start affecting your application, try a read replica or a separate Postgres instance before you move to a different database technology.</p>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="foot-cta">
+      <div>
+        <h2>Have an AI or full stack project in mind?</h2>
+        <p>Tell me what you want to build.</p>
+      </div>
+      <div class="foot-cta-btns">
+        <a class="btn" href="/#contact">Start a conversation</a>
+        <a class="btn btn-line" href="mailto:shivanigupta4876@gmail.com">Send an email</a>
+      </div>
+    </div>
+    <div class="foot-grid">
+      <div>
+        <a href="/" aria-label="Shivani, home"><img src="/assets/logo.svg" alt="Shivani" width="144" height="40"></a>
+        <p>AI/ML engineer working across generative AI, LLMs, RAG, agentic AI and NLP, plus full stack development.</p>
+        <span class="avail">Taking new projects</span>
+      </div>
+      <div>
+        <h3>Explore</h3>
+        <ul>
+          <li><a href="/services/">Services</a></li>
+          <li><a href="/#work">Projects</a></li>
+          <li><a href="/#process">Process</a></li>
+          <li><a href="/#faq">FAQ</a></li>
+          <li><a href="/blog/">Blog</a></li>
+          <li><a href="/#contact">Contact</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Services</h3>
+        <ul>
+          <li><a href="/services/generative-ai-llm-development/">Generative AI and LLMs</a></li>
+          <li><a href="/services/rag-development/">RAG development</a></li>
+          <li><a href="/services/multi-agent-systems/">Multi-agent systems</a></li>
+          <li><a href="/services/ai-orchestration-langgraph/">Orchestration with LangGraph</a></li>
+          <li><a href="/services/nlp-development/">NLP development</a></li>
+          <li><a href="/services/full-stack-development/">Full stack development</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Contact</h3>
+        <ul>
+          <li><a href="mailto:shivanigupta4876@gmail.com">shivanigupta4876@gmail.com</a></li>
+          <li><a href="tel:+919720466504">+91 97204 66504</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="foot-bottom">&copy; <span id="year">2026</span> Shivani. All rights reserved.</div>
+  </div>
+</footer>
+<a class="wa-float" href="https://wa.me/919720466504?text=Hi%20Shivani%2C%20I%20saw%20your%20website%20and%20would%20like%20to%20talk%20about%20a%20project." target="_blank" rel="noopener" aria-label="Chat on WhatsApp"><svg viewBox="0 0 24 24" width="28" height="28" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15L2 22l5.1-1.3A10 10 0 1 0 12 2zm0 18.2a8.2 8.2 0 0 1-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1a6.700 6.700 0 0 1-3.300-2.900c-.2-.3 0-.4.1-.6l.4-.4.2-.4v-.5l-.8-1.800c-.2-.5-.4-.4-.6-.4h-.5c-.2 0-.4.1-.6.3-.2.2-.8.8-.8 2s.9 2.300 1 2.500c.1.2 1.700 2.600 4.100 3.600 1.500.7 2.100.7 2.900.6.500-.1 1.500-.6 1.700-1.200.2-.6.2-1.100.1-1.200l-.2-.2z"/></svg></a>
+<script src="/assets/js/site.js" defer></script>
+</body>
+</html>

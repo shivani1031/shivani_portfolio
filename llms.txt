@@ -46,6 +46,11 @@ The site describes the services on offer and publishes general technical guides.
 - [Model Context Protocol: what it is and how agents use it](/blog/model-context-protocol-for-ai-agents/): hosts, clients and servers, how agents discover and call tools, transports and the security decisions that remain yours
 - [CrewAI vs LangGraph for multi-agent systems](/blog/crewai-vs-langgraph/): comparing role-based crews with explicit graphs on control, state, recovery and human review, and how to test the choice
 - [How to build a RAG chatbot in Python](/blog/build-a-rag-chatbot-in-python/): a provider-neutral walkthrough of chunking, indexing, retrieval, cited answers, follow-up questions and testing
+- [What agentic AI is, and how it differs from chatbots and automation](/blog/what-is-agentic-ai/): What makes a system agentic, how it differs from chatbots and rule-based automation, and how to judge whether a task justifies the extra risk and cost.
+- [How to build an AI agent in Python, step by step](/blog/how-to-build-an-ai-agent-in-python/): A step-by-step Python walkthrough: scoping the job, defining validated tools, writing the agent loop, setting hard limits, logging each step and testing with a scripted model.
+- [Structured output from LLMs: getting reliable JSON](/blog/structured-output-from-llms/): How to get dependable JSON from a language model: choosing a schema-constrained mode, validating in code, handling refusals and truncation, and catching valid but wrong data.
+- [LLM observability and tracing: monitoring LLM apps in production](/blog/llm-observability-and-tracing/): How to see what an LLM app is doing in production: what to trace, which metrics to alert on, OpenTelemetry GenAI conventions, handling sensitive prompts and scoring live quality.
+- [pgvector vs dedicated vector databases: when Postgres is enough](/blog/pgvector-vs-dedicated-vector-databases/): When Postgres with pgvector is enough, including its limits on dimensions, filtering and hybrid search, the signs you have outgrown it and how to test the choice on your own data.
 
 ## Projects
 

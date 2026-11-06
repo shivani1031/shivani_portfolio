@@ -22,6 +22,7 @@ document.addEventListener('DOMContentLoaded', function () {
     link.textContent = 'Open WhatsApp';
     status.textContent = 'Almost done: press Send in WhatsApp to reach Shivani. Not opened? ';
     status.appendChild(link);
+    if (window.gtag) gtag('event', 'generate_lead', { method: 'contact_form', service: data.get('service') || 'not_given' });
     window.open(url, '_blank', 'noopener');
   });
 });
