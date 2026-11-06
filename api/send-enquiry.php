@@ -1,5 +1,5 @@
 <?php
-// Emails contact form enquiries. Recipient comes from api/mail-config.php, which returns ['mail_to' => '...', 'mail_from' => '...'].
+// Emails contact form enquiries. Recipient comes from api/mail-config.php.
 header('Content-Type: application/json');
 function reply($code, $ok, $msg) { http_response_code($code); echo json_encode(['ok' => $ok, 'message' => $msg]); exit; }
 
