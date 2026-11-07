@@ -1,0 +1,216 @@
+<!doctype html>
+<html lang="en">
+<head>
+<script async src="https://www.googletagmanager.com/gtm.js?id=GTM-THN7RV8R"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+</script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="canonical" href="https://shivanigupta.store/blog/llm-function-calling-vs-mcp/">
+<title>LLM Function Calling vs MCP: How They Relate | Shivani</title>
+<meta name="description" content="Function calling and MCP solve different problems at different layers. See how they fit together, the three ways to wire them and how to choose for your app.">
+<meta name="robots" content="index,follow">
+<meta name="author" content="Shivani">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<link rel="manifest" href="/site.webmanifest">
+<meta name="theme-color" content="#080b0f">
+<meta property="og:type" content="article">
+<meta property="og:title" content="LLM Function Calling vs MCP: How They Relate | Shivani">
+<meta property="og:description" content="Function calling and MCP solve different problems at different layers. See how they fit together, the three ways to wire them and how to choose for your app.">
+<meta property="og:url" content="https://shivanigupta.store/blog/llm-function-calling-vs-mcp/">
+<meta property="og:image" content="https://shivanigupta.store/assets/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"LLM function calling vs MCP: how they relate and when each applies","description":"Function calling and MCP solve different problems at different layers. See how they fit together, the three ways to wire them and how to choose for your app.","mainEntityOfPage":"https://shivanigupta.store/blog/llm-function-calling-vs-mcp/","datePublished":"2026-11-07","dateModified":"2026-11-07","author":{"@type":"Person","name":"Shivani"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://shivanigupta.store/"},{"@type":"ListItem","position":2,"name":"Blog","item":"https://shivanigupta.store/blog/"},{"@type":"ListItem","position":3,"name":"LLM function calling vs MCP: how they relate and when each applies","item":"https://shivanigupta.store/blog/llm-function-calling-vs-mcp/"}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Does MCP replace function calling?","acceptedAnswer":{"@type":"Answer","text":"No. They work at different layers. Function calling is how a model requests a tool through a provider's API, while MCP standardises how a client discovers and calls tools on a server. An application often uses both for one tool call."}},{"@type":"Question","name":"Can I use MCP without function calling?","acceptedAnswer":{"@type":"Answer","text":"Yes, as a protocol. A client can call an MCP tool directly with no model involved, and that is useful for testing. To let a model choose the tool, though, it needs a way of requesting one, which is usually its provider's tool mechanism."}},{"@type":"Question","name":"Does MCP work with any LLM?","acceptedAnswer":{"@type":"Answer","text":"The server does not depend on a particular model. Your application can translate MCP tool definitions into the tool format of any model that supports tool use. Hosted connectors are different, since each is a feature of a specific provider's API."}},{"@type":"Question","name":"Should I build an MCP server for my own app's tools?","acceptedAnswer":{"@type":"Answer","text":"Often not at first. If one application uses a few of its own functions, in-process function calling is simpler. A server becomes worthwhile when other applications or teams need the same tools, or when you want them available in MCP-compatible clients."}}]}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&family=Poppins:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+<header class="nav">
+  <div class="wrap nav-in">
+    <a class="logo" href="/" aria-label="Shivani, home"><img src="/assets/logo.svg" alt="Shivani" width="144" height="40"></a>
+    <nav id="nav-links" aria-label="Main">
+      <a href="/#services">Services</a>
+      <a href="/#skills">Skills</a>
+      <a href="/#work">Work</a>
+      <a href="/#process">Process</a>
+      <a href="/#faq">FAQ</a>
+      <a href="/blog/">Blog</a>
+      <a class="btn btn-sm" href="/#contact">Hire Me</a>
+    </nav>
+    <button id="menu-toggle" class="menu-toggle" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="nav-links"><span></span><span></span><span></span></button>
+  </div>
+</header>
+
+<main id="top">
+  <section class="page-head">
+    <div class="wrap">
+      <nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a><span aria-hidden="true">/</span><a href="/blog/">Blog</a><span aria-hidden="true">/</span><span aria-current="page">LLM function calling vs MCP: how they relate and when each applies</span></nav>
+      <p class="eyebrow">Guide</p>
+      <h1>LLM function calling vs MCP: how they relate and when each applies</h1>
+      <p class="lead">Function calling and MCP are not competing options. Function calling is how a model asks for a tool to be used. MCP is a protocol for how an application discovers and calls tools that live in a separate server. Use plain function calling for tools inside your own app, and add MCP when tools need to be shared or are already available as servers.</p>
+    </div>
+  </section>
+  <section class="article">
+    <div class="wrap prose">
+<h2>Two different conversations</h2>
+<p>The confusion comes from both being described as "giving a model tools". They in fact govern two separate conversations, and a single tool use can involve both.</p>
+<ul>
+<li><strong>Function calling is between your application and the model provider.</strong> You send tool definitions with a request, and the model may reply with a structured request to call one. The format is set by each provider's API.</li>
+<li><strong>MCP is between an MCP client and an MCP server.</strong> The client asks which tools exist with <code>tools/list</code> and runs one with <code>tools/call</code>, using JSON-RPC messages. The format is set by the protocol's specification, whichever model is in use.</li>
+</ul>
+<p>So the two meet at your application, or at a provider acting on its behalf. This guide assumes you know the basics of each. If not, begin with <a href="/blog/tool-calling-for-ai-agents/">tool calling for AI agents</a>, which covers designing and validating tools, and <a href="/blog/model-context-protocol-for-ai-agents/">Model Context Protocol for AI agents</a>, which covers the protocol's participants and primitives. Here the question is only how the two relate.</p>
+
+<h2>One tool use, step by step</h2>
+<p>Suppose a user asks an assistant to look up a support ticket, and the search tool lives in an MCP server. In the classic arrangement the steps are:</p>
+<ol>
+<li><strong>MCP:</strong> the application's client sends <code>tools/list</code> and receives the tool's name, description and input schema.</li>
+<li><strong>Translation:</strong> the application rewrites that definition into its model provider's tool format.</li>
+<li><strong>Function calling:</strong> the application sends the conversation and the tools to the model, which returns a structured call with arguments.</li>
+<li><strong>Your code:</strong> the application checks the call against its own rules.</li>
+<li><strong>MCP:</strong> the client sends <code>tools/call</code> to the server and receives a result.</li>
+<li><strong>Function calling:</strong> the application passes the result back to the model in the provider's format, and the model continues.</li>
+</ol>
+<p>The model never has to know about MCP. It sees a tool definition, just as it would for a local function. In the same way, the MCP server does not need to know which model is being used.</p>
+
+<h2>What each one leaves out</h2>
+<div class="table-wrap"><table>
+<thead><tr><th>Question</th><th>Function calling</th><th>MCP</th></tr></thead>
+<tbody>
+<tr><td>Who defines the format?</td><td>Each model provider</td><td>The MCP specification</td></tr>
+<tr><td>Decides that a tool is needed?</td><td>The model</td><td>Out of scope; the host handles the model</td></tr>
+<tr><td>Finds out which tools exist?</td><td>You supply them on each request</td><td><code>tools/list</code>, which can be paged</td></tr>
+<tr><td>Where does the tool run?</td><td>Usually your application</td><td>In a separate server, local or remote</td></tr>
+<tr><td>Offers more than tools?</td><td>Depends on the provider's API</td><td>Also defines resources and prompts</td></tr>
+</tbody>
+</table></div>
+<p>Function calling on its own gives no standard way to share a tool with another application. MCP on its own does not make a model pick a tool. Each covers the gap in the other, which is why they so often appear together.</p>
+
+<h2>Three ways to wire them up</h2>
+<h3>1. Plain function calling</h3>
+<p>Tool definitions and code live in your application. As OpenAI's <a href="https://developers.openai.com/api/docs/guides/function-calling" rel="noopener">function calling guide</a> describes, the model returns a call and your application runs it and sends the output back. Anthropic's <a href="https://platform.claude.com/docs/en/agents-and-tools/tool-use/overview" rel="noopener">tool use documentation</a> calls these client tools and follows the same round trip. There is no extra process to deploy, and every call passes directly through your code.</p>
+
+<h3>2. Your application as an MCP client</h3>
+<p>Your application connects to MCP servers and handles the translation in steps 1 to 6 above. This is the only one of the three options that can reach a local stdio server, since the client launches that server as a subprocess. It also keeps a checkpoint in your code before every <code>tools/call</code>.</p>
+<p>The translation itself is usually short. Field names differ by provider; this example targets Anthropic's documented <code>input_schema</code> field:</p>
+<pre><code># Illustrative only. Converts one MCP tool definition for a provider
+# whose tool format uses name, description and input_schema.
+def to_provider_tool(server_name, mcp_tool):
+    return {
+        "name": f"{server_name}__{mcp_tool['name']}",
+        "description": mcp_tool.get("description", ""),
+        "input_schema": mcp_tool["inputSchema"],
+    }
+
+def split_tool_name(provider_name):
+    server_name, tool_name = provider_name.split("__", 1)
+    return server_name, tool_name</code></pre>
+<p>This sample is illustrative, and it assumes server names contain no double underscore. The prefix matters because tool names are unique only within a single server. The specification notes that two servers may each expose a <code>search</code> tool and that clients should disambiguate them, for instance with a server prefix. Check your provider's limits on tool name length and characters as well, since a prefix makes names longer.</p>
+<p>Errors need mapping too. The specification separates protocol errors, such as an unknown tool, from tool execution errors, reported in a result with <code>isError: true</code>. It says clients should pass execution errors to the model so that it can correct itself, whereas protocol errors are less likely to help. An adapter that treats both alike loses that distinction.</p>
+
+<h3>3. The provider connects to the server</h3>
+<p>Some APIs can call a remote MCP server for you. You name the server in the request, and the provider handles listing and calling, so your application writes no client code. OpenAI documents a <a href="https://developers.openai.com/api/docs/guides/tools-connectors-mcp" rel="noopener">remote MCP tool</a> in its Responses API, and Anthropic documents an <a href="https://platform.claude.com/docs/en/agents-and-tools/mcp-connector" rel="noopener">MCP connector</a> for its Messages API, marked as beta when this was written.</p>
+<p>The convenience comes with constraints. Anthropic's connector supports only tool calls from the MCP feature set, requires a server publicly exposed over HTTP and cannot reach local stdio servers directly. A call also runs without passing through your code first, so your checks have to use whatever the provider offers. OpenAI's tool, for example, requests approval by default and can limit which tools are imported. Its documentation warns that a malicious server could exfiltrate sensitive data from anything in the model's context, and advises connecting only to servers you trust. Features vary by provider and change quickly, so read the current documentation before relying on this option.</p>
+
+<h2>How to choose</h2>
+<div class="table-wrap"><table>
+<thead><tr><th>Your situation</th><th>Reasonable starting point</th></tr></thead>
+<tbody>
+<tr><td>A few tools used only by one application</td><td>Plain function calling</td></tr>
+<tr><td>Several applications or teams need the same integration</td><td>An MCP server, with each application as a client</td></tr>
+<tr><td>You want to use an existing MCP server inside your product</td><td>Your own client, or a provider connector if it is remote and trusted</td></tr>
+<tr><td>You want your tools available in existing MCP-compatible assistants</td><td>Build an MCP server</td></tr>
+<tr><td>Tools need local files or processes on the user's machine</td><td>Your own client with a stdio server</td></tr>
+<tr><td>Each call must pass your own policy checks</td><td>Function calling or your own client</td></tr>
+<tr><td>You need to swap model providers easily</td><td>Keep tools behind your own client or layer, whichever protocol sits beneath it</td></tr>
+</tbody>
+</table></div>
+<p>The options can also be mixed. A common shape keeps a handful of application-specific functions in-process, where they can use your session and database directly, while reaching shared capabilities through MCP. The model sees one flat list of tools, and your dispatcher decides where each call goes.</p>
+
+<h2>Common misconceptions</h2>
+<ul>
+<li><strong>"MCP replaces function calling."</strong> In the classic arrangement above, the model still asks for a tool through its provider's mechanism. MCP changes where the tool comes from and how it is reached.</li>
+<li><strong>"MCP makes tools safe."</strong> The specification states that servers must validate inputs and apply access controls, and that clients should confirm sensitive operations and validate results. Those duties still have to be carried out by someone.</li>
+<li><strong>"A schema guarantees a sensible call."</strong> A valid call can still be the wrong action or target the wrong record. Business rules belong in your code or the server.</li>
+<li><strong>"Adding a server costs nothing."</strong> Each definition uses context, and a long list makes selection harder. Importing a server's whole catalogue can quietly degrade tool choice, so expose only what the agent needs.</li>
+<li><strong>"A standard protocol fixes the version."</strong> MCP versions its revisions by date, and 2026-07-28 was the current one when this guide was written. That revision moved away from the handshake used in earlier ones, so confirm what your SDKs and servers support.</li>
+</ul>
+
+<h2>A sensible path</h2>
+<p>Start with plain function calling unless you already know the tools must be shared. Keep each tool's logic in an ordinary function behind a thin wrapper, because exposing that same function through an MCP server later is then a small change. Move to MCP when a second consumer appears or a useful server already exists, and treat that decision as being about integration and ownership, not model capability.</p>
+<p>If you are planning an LLM feature and working out how it should reach your systems, the <a href="/services/generative-ai-llm-development/">generative AI and LLM development</a> page describes what I can help with.</p>
+      <h2>Frequently asked questions</h2>
+      <h3>Does MCP replace function calling?</h3>
+      <p>No. They work at different layers. Function calling is how a model requests a tool through a provider's API, while MCP standardises how a client discovers and calls tools on a server. An application often uses both for one tool call.</p>
+      <h3>Can I use MCP without function calling?</h3>
+      <p>Yes, as a protocol. A client can call an MCP tool directly with no model involved, and that is useful for testing. To let a model choose the tool, though, it needs a way of requesting one, which is usually its provider's tool mechanism.</p>
+      <h3>Does MCP work with any LLM?</h3>
+      <p>The server does not depend on a particular model. Your application can translate MCP tool definitions into the tool format of any model that supports tool use. Hosted connectors are different, since each is a feature of a specific provider's API.</p>
+      <h3>Should I build an MCP server for my own app's tools?</h3>
+      <p>Often not at first. If one application uses a few of its own functions, in-process function calling is simpler. A server becomes worthwhile when other applications or teams need the same tools, or when you want them available in MCP-compatible clients.</p>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="foot-cta">
+      <div>
+        <h2>Have an AI or full stack project in mind?</h2>
+        <p>Tell me what you want to build.</p>
+      </div>
+      <div class="foot-cta-btns">
+        <a class="btn" href="/#contact">Start a conversation</a>
+        <a class="btn btn-line" href="mailto:shivanigupta4876@gmail.com">Send an email</a>
+      </div>
+    </div>
+    <div class="foot-grid">
+      <div>
+        <a href="/" aria-label="Shivani, home"><img src="/assets/logo.svg" alt="Shivani" width="144" height="40"></a>
+        <p>AI/ML engineer working across generative AI, LLMs, RAG, agentic AI and NLP, plus full stack development.</p>
+        <span class="avail">Taking new projects</span>
+      </div>
+      <div>
+        <h3>Explore</h3>
+        <ul>
+          <li><a href="/services/">Services</a></li>
+          <li><a href="/#work">Projects</a></li>
+          <li><a href="/#process">Process</a></li>
+          <li><a href="/#faq">FAQ</a></li>
+          <li><a href="/blog/">Blog</a></li>
+          <li><a href="/#contact">Contact</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Services</h3>
+        <ul>
+          <li><a href="/services/generative-ai-llm-development/">Generative AI and LLMs</a></li>
+          <li><a href="/services/rag-development/">RAG development</a></li>
+          <li><a href="/services/multi-agent-systems/">Multi-agent systems</a></li>
+          <li><a href="/services/ai-orchestration-langgraph/">Orchestration with LangGraph</a></li>
+          <li><a href="/services/nlp-development/">NLP development</a></li>
+          <li><a href="/services/full-stack-development/">Full stack development</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Contact</h3>
+        <ul>
+          <li><a href="mailto:shivanigupta4876@gmail.com">shivanigupta4876@gmail.com</a></li>
+          <li><a href="tel:+919720466504">+91 97204 66504</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="foot-bottom">&copy; <span id="year">2026</span> Shivani. All rights reserved.</div>
+  </div>
+</footer>
+<a class="wa-float" href="https://wa.me/919720466504?text=Hi%20Shivani%2C%20I%20saw%20your%20website%20and%20would%20like%20to%20talk%20about%20a%20project." target="_blank" rel="noopener" aria-label="Chat on WhatsApp"><svg viewBox="0 0 24 24" width="28" height="28" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15L2 22l5.1-1.3A10 10 0 1 0 12 2zm0 18.2a8.2 8.2 0 0 1-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1a6.700 6.700 0 0 1-3.300-2.900c-.2-.3 0-.4.1-.6l.4-.4.2-.4v-.5l-.8-1.800c-.2-.5-.4-.4-.6-.4h-.5c-.2 0-.4.1-.6.3-.2.2-.8.8-.8 2s.9 2.300 1 2.500c.1.2 1.700 2.600 4.100 3.600 1.500.7 2.100.7 2.900.6.500-.1 1.500-.6 1.700-1.200.2-.6.2-1.100.1-1.200l-.2-.2z"/></svg></a>
+<script src="/assets/js/site.js" defer></script>
+</body>
+</html>

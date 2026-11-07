@@ -1,0 +1,217 @@
+<!doctype html>
+<html lang="en">
+<head>
+<script async src="https://www.googletagmanager.com/gtm.js?id=GTM-THN7RV8R"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+</script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="canonical" href="https://shivanigupta.store/blog/rag-evaluation-metrics-explained/">
+<title>RAG Evaluation Metrics Explained with Examples | Shivani</title>
+<meta name="description" content="Faithfulness, context precision, context recall and answer relevance defined and calculated by hand on one worked example, with what each score can miss.">
+<meta name="robots" content="index,follow">
+<meta name="author" content="Shivani">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<link rel="manifest" href="/site.webmanifest">
+<meta name="theme-color" content="#080b0f">
+<meta property="og:type" content="article">
+<meta property="og:title" content="RAG Evaluation Metrics Explained with Examples | Shivani">
+<meta property="og:description" content="Faithfulness, context precision, context recall and answer relevance defined and calculated by hand on one worked example, with what each score can miss.">
+<meta property="og:url" content="https://shivanigupta.store/blog/rag-evaluation-metrics-explained/">
+<meta property="og:image" content="https://shivanigupta.store/assets/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"RAG evaluation metrics explained with worked examples","description":"Faithfulness, context precision, context recall and answer relevance defined and calculated by hand on one worked example, with what each score can miss.","mainEntityOfPage":"https://shivanigupta.store/blog/rag-evaluation-metrics-explained/","datePublished":"2026-11-07","dateModified":"2026-11-07","author":{"@type":"Person","name":"Shivani"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://shivanigupta.store/"},{"@type":"ListItem","position":2,"name":"Blog","item":"https://shivanigupta.store/blog/"},{"@type":"ListItem","position":3,"name":"RAG evaluation metrics explained with worked examples","item":"https://shivanigupta.store/blog/rag-evaluation-metrics-explained/"}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"What is the difference between context precision and context recall?","acceptedAnswer":{"@type":"Answer","text":"Context precision looks at how well relevant chunks are ranked among those retrieved. Context recall looks at whether the retrieved context covers what the reference answer needs. A system can rank its few results well and still miss necessary information."}},{"@type":"Question","name":"Does a high faithfulness score mean an answer is correct?","acceptedAnswer":{"@type":"Answer","text":"No. It means the answer's claims agree with the retrieved context. If that context is out of date or wrong, a faithful answer will be wrong too, so correctness needs a separate comparison with a trusted reference."}},{"@type":"Question","name":"Which RAG metrics need a reference answer?","acceptedAnswer":{"@type":"Answer","text":"Context recall always requires a reference. In the forms described here, faithfulness and answer relevance compare the answer with the context and the question instead. Context precision needs a relevance judgement for each chunk, which may come from labels or a model."}},{"@type":"Question","name":"What is a good faithfulness or context recall score?","acceptedAnswer":{"@type":"Answer","text":"There is no universal threshold, because acceptable risk varies by use and scores vary by tool and model. Establish a baseline on your own test set, then watch for changes, especially on critical question groups."}}]}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&family=Poppins:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+<header class="nav">
+  <div class="wrap nav-in">
+    <a class="logo" href="/" aria-label="Shivani, home"><img src="/assets/logo.svg" alt="Shivani" width="144" height="40"></a>
+    <nav id="nav-links" aria-label="Main">
+      <a href="/#services">Services</a>
+      <a href="/#skills">Skills</a>
+      <a href="/#work">Work</a>
+      <a href="/#process">Process</a>
+      <a href="/#faq">FAQ</a>
+      <a href="/blog/">Blog</a>
+      <a class="btn btn-sm" href="/#contact">Hire Me</a>
+    </nav>
+    <button id="menu-toggle" class="menu-toggle" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="nav-links"><span></span><span></span><span></span></button>
+  </div>
+</header>
+
+<main id="top">
+  <section class="page-head">
+    <div class="wrap">
+      <nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a><span aria-hidden="true">/</span><a href="/blog/">Blog</a><span aria-hidden="true">/</span><span aria-current="page">RAG evaluation metrics explained with worked examples</span></nav>
+      <p class="eyebrow">Guide</p>
+      <h1>RAG evaluation metrics explained with worked examples</h1>
+      <p class="lead">Faithfulness asks whether an answer's claims are supported by the retrieved context. Context precision asks whether relevant chunks are ranked near the top. Context recall asks whether the context covers everything the reference answer needs. Answer relevance asks whether the response addresses the question. Together they locate a failure; none shows on its own that an answer is true.</p>
+    </div>
+  </section>
+  <section class="article">
+    <div class="wrap prose">
+<h2>What this guide adds</h2>
+<p>The guide on <a href="/blog/how-to-evaluate-a-rag-system/">how to evaluate a RAG system</a> covers the overall process: building a test set, scoring stages, reading failures and catching regressions. This one looks closely at four named metrics and works through the arithmetic, so that when a dashboard reports 0.5 you can say what happened to produce it.</p>
+<p>The names and formulas here follow the <a href="https://docs.ragas.io/en/stable/concepts/metrics/available_metrics/faithfulness/" rel="noopener">Ragas documentation</a>. Ragas is an evaluation library, and its authors set out their approach in a <a href="https://arxiv.org/abs/2309.15217" rel="noopener">paper</a>. Other tools may use the same names with different definitions, so check before comparing numbers across them.</p>
+
+<h2>One running example</h2>
+<p>All the numbers below come from a single hypothetical case, an invented shop's returns policy. The scores are calculated for teaching and are not measurements of any real system.</p>
+<p><strong>Question:</strong> "How long do I have to return an unopened item, and who pays the postage?"</p>
+<p><strong>Reference answer:</strong> "Unopened items can be returned within 30 days. The customer pays return postage, unless the item is faulty."</p>
+<p><strong>Retrieved chunks, in ranked order:</strong></p>
+<ol>
+<li>Standard delivery takes three to five working days. (Not relevant)</li>
+<li>Unopened items may be returned within 30 days of delivery. (Relevant)</li>
+<li>Gift cards cannot be exchanged for cash. (Not relevant)</li>
+<li>Customers pay return postage unless the item is faulty. (Relevant)</li>
+</ol>
+<p><strong>Generated answer:</strong> "You have 30 days to return an unopened item. You pay the return postage, and your refund will arrive within five working days."</p>
+
+<h2>Faithfulness</h2>
+<p><strong>Definition.</strong> The share of claims in the answer that the retrieved context supports.</p>
+<p><code>faithfulness = supported claims / total claims in the answer</code></p>
+<p>Split the answer into claims and check each against the chunks:</p>
+<ul>
+<li>Unopened items can be returned within 30 days: supported by chunk 2.</li>
+<li>The customer pays return postage: supported by chunk 4.</li>
+<li>The refund arrives within five working days: not supported. Chunk 1 mentions five working days, but for delivery.</li>
+</ul>
+<p>The score is 2 / 3, or about 0.67. Notice how the unsupported claim borrows a phrase from an unrelated chunk, which is a kind of slip a quick reading can miss.</p>
+<p><strong>What it misses.</strong> Faithfulness measures agreement with the context, not with reality. If chunk 2 were an out-of-date policy saying 14 days, an answer repeating "14 days" would score perfectly and still mislead the customer. It also says nothing about completeness: this answer leaves out the exception for faulty items, and no claim is penalised for that.</p>
+
+<h2>Context precision</h2>
+<p><strong>Definition.</strong> How well the retriever places relevant chunks towards the top of its ranking. At each rank holding a relevant chunk, take the precision up to that rank, sum these values, then divide by the number of relevant chunks in the top K.</p>
+<p>With K = 4 and relevant chunks at ranks 2 and 4:</p>
+<ul>
+<li>At rank 2, one of the first two chunks is relevant: 1 / 2 = 0.50.</li>
+<li>At rank 4, two of the first four are relevant: 2 / 4 = 0.50.</li>
+</ul>
+<p>The score is (0.50 + 0.50) / 2 = 0.50.</p>
+<p>Now suppose a reranker moves the same four chunks so that the relevant ones sit at ranks 1 and 3. The values become 1 / 1 and 2 / 3, giving (1.00 + 0.67) / 2, or about 0.83. If they reach ranks 1 and 2, the score is (1 / 1 + 2 / 2) / 2 = 1.00. The set of chunks has not changed, only their order, so this metric rewards ranking.</p>
+<pre><code># Illustrative only: context precision from relevance flags in rank order.
+def context_precision(flags):
+    relevant_seen = 0
+    total = 0.0
+    for rank, is_relevant in enumerate(flags, start=1):
+        if is_relevant:
+            relevant_seen += 1
+            total += relevant_seen / rank
+    return total / relevant_seen if relevant_seen else 0.0
+
+print(context_precision([False, True, False, True]))  # 0.5
+print(context_precision([True, False, True, False]))  # about 0.83</code></pre>
+<p>This sample is illustrative and takes the relevance flags as given. Producing those flags is the hard part, and in practice they come from human labels or an LLM judgement. Returning 0.0 when nothing is relevant is a choice made here.</p>
+<p><strong>What it misses.</strong> It only looks at what was retrieved. Shorten the list to the top two chunks, and the single relevant chunk at rank 2 gives (1 / 2) / 1 = 0.50, exactly the same score as before, even though the postage information is now gone. Spotting that loss is the job of the next metric.</p>
+
+<h2>Context recall</h2>
+<p><strong>Definition.</strong> The share of claims in the reference answer that the retrieved context can support. It always requires a reference to compare against.</p>
+<p><code>context recall = reference claims supported by the context / total reference claims</code></p>
+<p>The reference contains three claims: the 30-day window, that the customer pays postage, and the exception for faulty items. Chunks 2 and 4 cover all of them when all four chunks are passed on, so the score is 3 / 3 = 1.00.</p>
+<p>Keep only the top two chunks and chunk 4 is lost. Only the 30-day claim is now supported, so the score falls to 1 / 3, or about 0.33. Precision held steady at 0.50 while recall collapsed, which is why the two should be read together.</p>
+<p><strong>What it misses.</strong> The score is only as good as the reference. A reference that omits an important condition cannot reveal that the context omits it too. This claim-based form also differs from the ID-based recall at k described in the evaluation guide, which counts labelled passages rather than claims, so the two are not interchangeable. If re-chunking keeps breaking your ID labels, a claim-based check can survive it, though it adds the cost and error of an LLM judgement.</p>
+
+<h2>Answer relevance</h2>
+<p><strong>Definition.</strong> How directly the response addresses the question, whether or not it is correct. Ragas calls this answer relevancy and calculates it indirectly. An LLM generates several questions that the answer appears to respond to, each is embedded, and the score is the mean cosine similarity between those questions and the user's original question.</p>
+<p>For our answer, suppose the generated questions have similarities of 0.91, 0.88 and 0.94 with the original question. These values are invented for illustration. The score is (0.91 + 0.88 + 0.94) / 3 = 0.91.</p>
+<p>Compare an evasive response: "Our returns policy was recently updated and can be found in your account area." The questions it implies are about where to find the policy. With invented similarities of 0.62, 0.58 and 0.66, the score drops to 0.62, correctly signalling that the customer has not been answered.</p>
+<p><strong>What it misses.</strong> It does not test truth. "You have 90 days, and we pay the postage" addresses the question closely, so it could score highly despite being wrong, and faithfulness is what would catch it. Because cosine similarity is technically able to go below zero, the score is not strictly bounded between 0 and 1, and its absolute level depends on the embedding model. Compare runs that use the same one.</p>
+
+<h2>Reading the four together</h2>
+<p>Patterns across metrics tell you more than any single value. The evaluation guide maps observed failures to causes; this table maps score patterns to where to look first.</p>
+<div class="table-wrap"><table>
+<thead><tr><th>Pattern</th><th>Likely meaning</th><th>Look at</th></tr></thead>
+<tbody>
+<tr><td>Low recall</td><td>Needed information never reached the model</td><td>Parsing, chunking, search method, the value of k</td></tr>
+<tr><td>High recall, low precision</td><td>The information is there but ranked below noise</td><td><a href="/blog/hybrid-search-and-reranking-for-rag/">Hybrid search and reranking</a></td></tr>
+<tr><td>Good context, low faithfulness</td><td>The model goes beyond its sources</td><td>Prompt instructions, model choice</td></tr>
+<tr><td>High faithfulness, low relevance</td><td>Accurate statements that dodge the question</td><td>Prompt, query rewriting, what was retrieved</td></tr>
+<tr><td>All high, yet users complain</td><td>The sources or the references may be wrong</td><td>Content freshness, your test set</td></tr>
+</tbody>
+</table></div>
+
+<h2>Practical cautions</h2>
+<ul>
+<li><strong>LLM grading adds noise.</strong> Splitting claims and judging support are model decisions. Different splits change the denominator, so hand-score a sample and compare before trusting a trend.</li>
+<li><strong>Decide how refusals score.</strong> "I could not find that" contains no factual claims to count. Check how your tool treats it, and measure refusal behaviour separately on questions that cannot be answered.</li>
+<li><strong>Avoid universal thresholds.</strong> A sound target depends on your content and on the cost of errors. Compare a score with your own baseline, and do not combine the four into one number, as this hides which stage failed.</li>
+<li><strong>Keep run details.</strong> Metric definitions can change between library versions, so record the version and models alongside each score.</li>
+</ul>
+<p>If you want these measures wired into a pipeline, or need to find out where an existing one loses quality, see <a href="/services/rag-development/">RAG development</a>. For background on the system being measured, start with <a href="/blog/what-is-rag-and-when-to-use-it/">what RAG is and when to use it</a>.</p>
+      <h2>Frequently asked questions</h2>
+      <h3>What is the difference between context precision and context recall?</h3>
+      <p>Context precision looks at how well relevant chunks are ranked among those retrieved. Context recall looks at whether the retrieved context covers what the reference answer needs. A system can rank its few results well and still miss necessary information.</p>
+      <h3>Does a high faithfulness score mean an answer is correct?</h3>
+      <p>No. It means the answer's claims agree with the retrieved context. If that context is out of date or wrong, a faithful answer will be wrong too, so correctness needs a separate comparison with a trusted reference.</p>
+      <h3>Which RAG metrics need a reference answer?</h3>
+      <p>Context recall always requires a reference. In the forms described here, faithfulness and answer relevance compare the answer with the context and the question instead. Context precision needs a relevance judgement for each chunk, which may come from labels or a model.</p>
+      <h3>What is a good faithfulness or context recall score?</h3>
+      <p>There is no universal threshold, because acceptable risk varies by use and scores vary by tool and model. Establish a baseline on your own test set, then watch for changes, especially on critical question groups.</p>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="foot-cta">
+      <div>
+        <h2>Have an AI or full stack project in mind?</h2>
+        <p>Tell me what you want to build.</p>
+      </div>
+      <div class="foot-cta-btns">
+        <a class="btn" href="/#contact">Start a conversation</a>
+        <a class="btn btn-line" href="mailto:shivanigupta4876@gmail.com">Send an email</a>
+      </div>
+    </div>
+    <div class="foot-grid">
+      <div>
+        <a href="/" aria-label="Shivani, home"><img src="/assets/logo.svg" alt="Shivani" width="144" height="40"></a>
+        <p>AI/ML engineer working across generative AI, LLMs, RAG, agentic AI and NLP, plus full stack development.</p>
+        <span class="avail">Taking new projects</span>
+      </div>
+      <div>
+        <h3>Explore</h3>
+        <ul>
+          <li><a href="/services/">Services</a></li>
+          <li><a href="/#work">Projects</a></li>
+          <li><a href="/#process">Process</a></li>
+          <li><a href="/#faq">FAQ</a></li>
+          <li><a href="/blog/">Blog</a></li>
+          <li><a href="/#contact">Contact</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Services</h3>
+        <ul>
+          <li><a href="/services/generative-ai-llm-development/">Generative AI and LLMs</a></li>
+          <li><a href="/services/rag-development/">RAG development</a></li>
+          <li><a href="/services/multi-agent-systems/">Multi-agent systems</a></li>
+          <li><a href="/services/ai-orchestration-langgraph/">Orchestration with LangGraph</a></li>
+          <li><a href="/services/nlp-development/">NLP development</a></li>
+          <li><a href="/services/full-stack-development/">Full stack development</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Contact</h3>
+        <ul>
+          <li><a href="mailto:shivanigupta4876@gmail.com">shivanigupta4876@gmail.com</a></li>
+          <li><a href="tel:+919720466504">+91 97204 66504</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="foot-bottom">&copy; <span id="year">2026</span> Shivani. All rights reserved.</div>
+  </div>
+</footer>
+<a class="wa-float" href="https://wa.me/919720466504?text=Hi%20Shivani%2C%20I%20saw%20your%20website%20and%20would%20like%20to%20talk%20about%20a%20project." target="_blank" rel="noopener" aria-label="Chat on WhatsApp"><svg viewBox="0 0 24 24" width="28" height="28" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15L2 22l5.1-1.3A10 10 0 1 0 12 2zm0 18.2a8.2 8.2 0 0 1-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1a6.700 6.700 0 0 1-3.300-2.900c-.2-.3 0-.4.1-.6l.4-.4.2-.4v-.5l-.8-1.800c-.2-.5-.4-.4-.6-.4h-.5c-.2 0-.4.1-.6.3-.2.2-.8.8-.8 2s.9 2.300 1 2.500c.1.2 1.700 2.600 4.100 3.600 1.500.7 2.100.7 2.900.6.500-.1 1.500-.6 1.700-1.200.2-.6.2-1.100.1-1.200l-.2-.2z"/></svg></a>
+<script src="/assets/js/site.js" defer></script>
+</body>
+</html>

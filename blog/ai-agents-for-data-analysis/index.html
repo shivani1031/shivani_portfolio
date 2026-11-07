@@ -1,0 +1,223 @@
+<!doctype html>
+<html lang="en">
+<head>
+<script async src="https://www.googletagmanager.com/gtm.js?id=GTM-THN7RV8R"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+</script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="canonical" href="https://shivanigupta.store/blog/ai-agents-for-data-analysis/">
+<title>AI Agents for Data Analysis: Safe Uses and Checks | Shivani</title>
+<meta name="description" content="What AI agents can safely do in data analysis, where they need limits, and practical checks for catching wrong joins, totals and conclusions before use.">
+<meta name="robots" content="index,follow">
+<meta name="author" content="Shivani">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<link rel="manifest" href="/site.webmanifest">
+<meta name="theme-color" content="#080b0f">
+<meta property="og:type" content="article">
+<meta property="og:title" content="AI Agents for Data Analysis: Safe Uses and Checks | Shivani">
+<meta property="og:description" content="What AI agents can safely do in data analysis, where they need limits, and practical checks for catching wrong joins, totals and conclusions before use.">
+<meta property="og:url" content="https://shivanigupta.store/blog/ai-agents-for-data-analysis/">
+<meta property="og:image" content="https://shivanigupta.store/assets/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"AI agents for data analysis: safe uses and how to check results","description":"What AI agents can safely do in data analysis, where they need limits, and practical checks for catching wrong joins, totals and conclusions before use.","mainEntityOfPage":"https://shivanigupta.store/blog/ai-agents-for-data-analysis/","datePublished":"2026-11-07","dateModified":"2026-11-07","author":{"@type":"Person","name":"Shivani"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://shivanigupta.store/"},{"@type":"ListItem","position":2,"name":"Blog","item":"https://shivanigupta.store/blog/"},{"@type":"ListItem","position":3,"name":"AI agents for data analysis: safe uses and how to check results","item":"https://shivanigupta.store/blog/ai-agents-for-data-analysis/"}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Can I give an AI agent direct access to production data?","acceptedAnswer":{"@type":"Answer","text":"It is better not to. Give it a read-only snapshot or a restricted view with only the columns it needs, and run its code in an isolated environment. This limits the damage from both mistakes and manipulated input."}},{"@type":"Question","name":"How do I know an AI agent's analysis is correct?","acceptedAnswer":{"@type":"Answer","text":"Reconcile its figures with trusted totals, inspect row counts through joins and filters, confirm that each number in the write-up came from computed output, and recalculate important results independently. For decisions, have someone who knows the data review the conclusion."}},{"@type":"Question","name":"Can an AI agent replace a data analyst?","acceptedAnswer":{"@type":"Answer","text":"It can speed up profiling, drafting code and routine variations, but it lacks context the data does not hold, such as tracking changes or business events. Treat it as a way to reach a checkable draft sooner, with a person accountable for conclusions."}},{"@type":"Question","name":"Should the agent check its own work?","acceptedAnswer":{"@type":"Answer","text":"Self-checks can catch simple slips, but an agent may repeat the assumption that caused the error. Automated checks written in advance and an independent recalculation provide much stronger evidence."}}]}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&family=Poppins:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+<header class="nav">
+  <div class="wrap nav-in">
+    <a class="logo" href="/" aria-label="Shivani, home"><img src="/assets/logo.svg" alt="Shivani" width="144" height="40"></a>
+    <nav id="nav-links" aria-label="Main">
+      <a href="/#services">Services</a>
+      <a href="/#skills">Skills</a>
+      <a href="/#work">Work</a>
+      <a href="/#process">Process</a>
+      <a href="/#faq">FAQ</a>
+      <a href="/blog/">Blog</a>
+      <a class="btn btn-sm" href="/#contact">Hire Me</a>
+    </nav>
+    <button id="menu-toggle" class="menu-toggle" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="nav-links"><span></span><span></span><span></span></button>
+  </div>
+</header>
+
+<main id="top">
+  <section class="page-head">
+    <div class="wrap">
+      <nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a><span aria-hidden="true">/</span><a href="/blog/">Blog</a><span aria-hidden="true">/</span><span aria-current="page">AI agents for data analysis: safe uses and how to check results</span></nav>
+      <p class="eyebrow">Guide</p>
+      <h1>AI agents for data analysis: safe uses and how to check results</h1>
+      <p class="lead">AI agents can safely profile data, draft analysis code, run it on a read-only copy in a sandbox and propose charts and explanations. They should not change source data or publish conclusions unchecked. Trust a result only after it reconciles with known totals, traces back to computed output and survives review by someone who knows the data.</p>
+    </div>
+  </section>
+  <section class="article">
+    <div class="wrap prose">
+<h2>Think in levels of consequence</h2>
+<p>"Data analysis" covers tasks with very different risks. Summarising the columns in a file does little harm if it goes wrong. A revenue figure repeated to a board can do a lot. Sorting an agent's work by what happens when it is wrong gives a better guide to its permissions than any general view on whether agents can be trusted.</p>
+<div class="table-wrap"><table>
+<thead><tr><th>Level</th><th>Example task</th><th>Reasonable control</th></tr></thead>
+<tbody>
+<tr><td>Describe</td><td>Profile columns, count nulls, list value ranges</td><td>Read-only access; light review</td></tr>
+<tr><td>Explore</td><td>Suggest segments or hypotheses worth testing</td><td>Label output as leads, not findings</td></tr>
+<tr><td>Compute</td><td>Calculate a metric or fit a simple model</td><td>Sandbox, automated checks, visible code</td></tr>
+<tr><td>Conclude</td><td>Say why a number moved or what to do about it</td><td>Named human reviewer before anyone relies on it</td></tr>
+<tr><td>Act</td><td>Change prices, update records, send a report</td><td>Separate approval step outside the agent</td></tr>
+</tbody>
+</table></div>
+<p>Most of the value sits in the first three levels. An agent that gets an analyst to a checked first draft sooner is useful even if it never concludes anything by itself.</p>
+
+<h2>What an agent does well</h2>
+<ul>
+<li><strong>First-pass profiling.</strong> Column types, missing values, duplicates and odd ranges are tedious to check and easy to verify, which makes them a natural starting point.</li>
+<li><strong>Drafting analysis code.</strong> Generating a first version of a pandas script or chart is quick, and because the output is code, a person can read it and run it again.</li>
+<li><strong>Trying routine variations.</strong> Repeating an analysis by region, month or product is mechanical work that a person may skip when short of time.</li>
+<li><strong>Explaining a table in plain language.</strong> Provided the numbers come from computed output, a model can describe them for a reader who does not work with data.</li>
+</ul>
+<p>Agents are weaker where the answer depends on knowledge the data does not contain: that a drop in March reflects a tracking change, that one customer is really a test account, or that a field stopped being filled in after a system migration. A confident explanation of such a pattern can be entirely invented, so causes need a person who knows the business.</p>
+
+<h2>Contain the code it runs</h2>
+<p>An analysis agent often writes and runs Python, so it needs an execution environment you would be comfortable giving to unreviewed code. When the agent queries a database directly, the separate guide on <a href="/blog/text-to-sql-agents-risks-and-safeguards/">text-to-SQL risks and safeguards</a> covers that surface, and it applies alongside what follows. For code execution, the essentials are these:</p>
+<ul>
+<li><strong>Work on a copy.</strong> Mount an extract or snapshot read-only, so that a bad script cannot alter the source.</li>
+<li><strong>Isolate the runtime.</strong> Use a disposable container or similar sandbox with no credentials inside it and no network access unless a specific destination is required. A file can contain instructions as well as data, and without a network route a manipulated script has a much harder time sending anything out.</li>
+<li><strong>Limit resources.</strong> Cap time, memory and output size, and record when output was cut short.</li>
+<li><strong>Minimise the data.</strong> Remove columns the question does not need. If a hosted model will see results, check that your privacy obligations and provider terms allow it, and consider sending aggregates in place of rows.</li>
+<li><strong>Keep every artefact.</strong> Save the code, the input version, the outputs and the final narrative together, so that anyone can reproduce a result later.</li>
+</ul>
+
+<h2>How to check the results</h2>
+<p>Code that runs without an error has only shown that it runs. The mistakes that matter in analysis usually produce plausible figures, so each check below looks for a specific way of being wrong.</p>
+
+<h3>Reconcile with something you already trust</h3>
+<p>Before accepting a breakdown, confirm that its parts add up to a total from an independent source, such as a finance report or a figure already signed off. Suppose an agent splits last quarter's sales by region, and the regions sum to noticeably more than the known company total. That points to double counting somewhere, however neat the table looks. Agree on these control totals in advance so that the check does not depend on what the agent happened to report.</p>
+
+<h3>Watch row counts through each step</h3>
+<p>Joins are a common source of silent error. If one order matches two rows in a poorly keyed customer table, the order is counted twice and every downstream sum inflates. Have the agent's code record row counts before and after each join and filter, and fail when a count changes in a way the step should not allow.</p>
+<pre><code># Illustrative only: a guard an analysis script can call after a join.
+# The DataFrames and the key name are placeholders.
+def check_join(before, after, key):
+    if len(after) != len(before):
+        raise ValueError(
+            f"Row count changed from {len(before)} to {len(after)}"
+        )
+    if after[key].duplicated().any():
+        raise ValueError(f"Duplicate values in {key} after the join")
+    return after</code></pre>
+<p>This sample is illustrative and assumes a join that should keep exactly one row per key. A deliberate one-to-many join needs a different rule, which is part of why the expected result should be stated before the code runs.</p>
+
+<h3>Interrogate nulls and denominators</h3>
+<p>Missing values change answers without raising errors. In PostgreSQL, for example, <code>count(column)</code> counts only rows where that column is not null, whereas <code>count(*)</code> counts every row, so an average or a rate can be built on a smaller population than the reader assumes. Ask the agent to state, for every percentage, what the denominator is, how many rows it covers and how many were excluded.</p>
+
+<h3>Trace every number in the narrative</h3>
+<p>A language model can restate a figure wrongly, round it oddly or produce one that was never calculated. A simple code check catches a good share of these slips: extract each number from the written summary and flag any that do not appear in the computed results.</p>
+<pre><code># Illustrative only: flags narrative numbers absent from computed output.
+# It will not catch a real number attached to the wrong label.
+import re
+
+NUMBER = re.compile(r"\d[\d,]*(?:\.\d+)?")
+
+def untraced_numbers(summary, computed_values):
+    known = {round(float(value), 2) for value in computed_values}
+    flagged = []
+    for match in NUMBER.findall(summary):
+        value = round(float(match.replace(",", "")), 2)
+        if value not in known:
+            flagged.append(match)
+    return flagged</code></pre>
+<p>Treat a flag as a prompt to look, because derived values, dates and rounded figures will also trigger it. Better still, generate the figures in the report from the results directly, and let the model write only the sentences around them.</p>
+
+<h3>Recompute independently</h3>
+<p>For a figure that matters, calculate it a second way: a different tool, a hand-written query, or a second person starting only from the metric's definition. Agreement between two separately built calculations is much stronger evidence than a review of one. Asking the same agent to check its own answer is weaker, since it may repeat its original assumption.</p>
+
+<h3>Test the conclusion, not only the arithmetic</h3>
+<p>Correct arithmetic can still support a poor conclusion. These questions are worth asking of any finding an agent presents:</p>
+<ul>
+<li><strong>Does it hold within groups?</strong> Under Simpson's paradox, a pattern seen in separate groups can vanish or reverse when they are combined, so try the obvious segments.</li>
+<li><strong>How many cuts were tried?</strong> An agent can test dozens of segments in seconds, and some will look striking by chance. Ask for the full list tried, not only the winner.</li>
+<li><strong>How sensitive is it?</strong> Change the date window slightly or remove the largest customer. A conclusion that flips deserves much less confidence.</li>
+<li><strong>Does it claim a cause?</strong> Observational data can show that two things moved together. It rarely shows why, and the wording should say so.</li>
+</ul>
+
+<h2>Measure the agent with planted problems</h2>
+<p>Run the agent against test data whose answers you already know. Then seed that data with defects a careful analyst would notice: a duplicated key, a block of missing dates, a mislabelled unit, or an outlier from a data entry error. Score whether it reports each defect as well as whether the final figure is right. This reveals something an accuracy check on clean data cannot, namely whether the agent notices when it should stop and raise a concern. Keep the set under version control and re-run it when the model, prompt or tools change. <a href="/blog/testing-ai-agents/">Testing AI agents</a> covers the wider practice, including how to deal with varying output.</p>
+
+<h2>Make review easy</h2>
+<p>A reviewer can only challenge what they can see. Present results with the question as interpreted, the data version and date range, any exclusions and assumptions, the code, and the outcome of each automated check. For findings that feed a decision, route them through a defined sign-off, using the patterns in <a href="/blog/human-in-the-loop-approval-for-ai-agents/">human-in-the-loop approval for AI agents</a>.</p>
+<p>Whether an agent is the right tool at all depends on the question. Figures over structured data call for computation, whereas answers written in documents do not, a distinction set out in <a href="/blog/sql-agents-vs-rag/">SQL agents vs RAG</a>.</p>
+<p>If you are planning an analysis workflow with several steps or specialised agents, the <a href="/services/multi-agent-systems/">multi-agent systems</a> page describes what I can help with.</p>
+      <h2>Frequently asked questions</h2>
+      <h3>Can I give an AI agent direct access to production data?</h3>
+      <p>It is better not to. Give it a read-only snapshot or a restricted view with only the columns it needs, and run its code in an isolated environment. This limits the damage from both mistakes and manipulated input.</p>
+      <h3>How do I know an AI agent's analysis is correct?</h3>
+      <p>Reconcile its figures with trusted totals, inspect row counts through joins and filters, confirm that each number in the write-up came from computed output, and recalculate important results independently. For decisions, have someone who knows the data review the conclusion.</p>
+      <h3>Can an AI agent replace a data analyst?</h3>
+      <p>It can speed up profiling, drafting code and routine variations, but it lacks context the data does not hold, such as tracking changes or business events. Treat it as a way to reach a checkable draft sooner, with a person accountable for conclusions.</p>
+      <h3>Should the agent check its own work?</h3>
+      <p>Self-checks can catch simple slips, but an agent may repeat the assumption that caused the error. Automated checks written in advance and an independent recalculation provide much stronger evidence.</p>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="foot-cta">
+      <div>
+        <h2>Have an AI or full stack project in mind?</h2>
+        <p>Tell me what you want to build.</p>
+      </div>
+      <div class="foot-cta-btns">
+        <a class="btn" href="/#contact">Start a conversation</a>
+        <a class="btn btn-line" href="mailto:shivanigupta4876@gmail.com">Send an email</a>
+      </div>
+    </div>
+    <div class="foot-grid">
+      <div>
+        <a href="/" aria-label="Shivani, home"><img src="/assets/logo.svg" alt="Shivani" width="144" height="40"></a>
+        <p>AI/ML engineer working across generative AI, LLMs, RAG, agentic AI and NLP, plus full stack development.</p>
+        <span class="avail">Taking new projects</span>
+      </div>
+      <div>
+        <h3>Explore</h3>
+        <ul>
+          <li><a href="/services/">Services</a></li>
+          <li><a href="/#work">Projects</a></li>
+          <li><a href="/#process">Process</a></li>
+          <li><a href="/#faq">FAQ</a></li>
+          <li><a href="/blog/">Blog</a></li>
+          <li><a href="/#contact">Contact</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Services</h3>
+        <ul>
+          <li><a href="/services/generative-ai-llm-development/">Generative AI and LLMs</a></li>
+          <li><a href="/services/rag-development/">RAG development</a></li>
+          <li><a href="/services/multi-agent-systems/">Multi-agent systems</a></li>
+          <li><a href="/services/ai-orchestration-langgraph/">Orchestration with LangGraph</a></li>
+          <li><a href="/services/nlp-development/">NLP development</a></li>
+          <li><a href="/services/full-stack-development/">Full stack development</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Contact</h3>
+        <ul>
+          <li><a href="mailto:shivanigupta4876@gmail.com">shivanigupta4876@gmail.com</a></li>
+          <li><a href="tel:+919720466504">+91 97204 66504</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="foot-bottom">&copy; <span id="year">2026</span> Shivani. All rights reserved.</div>
+  </div>
+</footer>
+<a class="wa-float" href="https://wa.me/919720466504?text=Hi%20Shivani%2C%20I%20saw%20your%20website%20and%20would%20like%20to%20talk%20about%20a%20project." target="_blank" rel="noopener" aria-label="Chat on WhatsApp"><svg viewBox="0 0 24 24" width="28" height="28" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15L2 22l5.1-1.3A10 10 0 1 0 12 2zm0 18.2a8.2 8.2 0 0 1-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1a6.700 6.700 0 0 1-3.300-2.900c-.2-.3 0-.4.1-.6l.4-.4.2-.4v-.5l-.8-1.800c-.2-.5-.4-.4-.6-.4h-.5c-.2 0-.4.1-.6.3-.2.2-.8.8-.8 2s.9 2.300 1 2.500c.1.2 1.700 2.600 4.100 3.600 1.500.7 2.100.7 2.900.6.500-.1 1.500-.6 1.700-1.200.2-.6.2-1.100.1-1.200l-.2-.2z"/></svg></a>
+<script src="/assets/js/site.js" defer></script>
+</body>
+</html>

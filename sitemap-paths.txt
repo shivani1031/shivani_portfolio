@@ -64,3 +64,8 @@
 /blog/named-tool-routing-in-langgraph/
 /blog/fine-tuning-llms-when-and-how/
 /blog/ai-automation-for-small-business/
+/blog/ai-agents-for-data-analysis/
+/blog/rag-evaluation-metrics-explained/
+/blog/llm-function-calling-vs-mcp/
+/blog/nextjs-and-fastapi-for-ai-apps/
+/blog/keyword-extraction-with-python/

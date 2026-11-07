@@ -76,6 +76,11 @@ The site describes the services on offer and publishes general technical guides.
 - [Named tool routing in LangGraph](/blog/named-tool-routing-in-langgraph/): How to route tool calls by name to dedicated nodes and subgraphs with conditional edges, with safe handling of unknown names.
 - [Fine-tuning LLMs: when and how](/blog/fine-tuning-llms-when-and-how/): A practical guide to the readiness checks, data preparation and evaluation needed for fine-tuning an LLM.
 - [AI automation for small business: choosing a first workflow](/blog/ai-automation-for-small-business/): A practical method for a small business to choose, score and trial a first workflow to automate.
+- [AI agents for data analysis: safe uses and how to check results](/blog/ai-agents-for-data-analysis/): Which analysis tasks suit an agent, how to contain its code and the checks that catch wrong numbers and weak conclusions.
+- [RAG evaluation metrics explained with worked examples](/blog/rag-evaluation-metrics-explained/): Faithfulness, context precision, context recall and answer relevance calculated by hand on a single hypothetical example.
+- [LLM function calling vs MCP: how they relate and when each applies](/blog/llm-function-calling-vs-mcp/): Why function calling and MCP are different layers, the three ways to connect them and how to choose between them.
+- [Next.js and FastAPI for AI apps: structure, auth and streaming](/blog/nextjs-and-fastapi-for-ai-apps/): Where to draw the boundary between Next.js and FastAPI, how identity crosses it and two ways to stream model output through it.
+- [Keyword extraction with Python: statistical, embedding and LLM approaches](/blog/keyword-extraction-with-python/): TF-IDF, YAKE, KeyBERT and LLM extraction compared in Python, with trade-offs and a simple way to test them on your own data.
 
 ## Projects
 
