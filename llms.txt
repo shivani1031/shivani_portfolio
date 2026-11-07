@@ -1,6 +1,6 @@
-# Shivani
+# Shivani Gupta
 
-> Portfolio of Shivani, an AI/ML Engineer working on generative AI, LLMs, RAG, agentic AI, multi-agent systems, orchestrators, NLP, Python, LangGraph, UI, backend, front-end and full stack development.
+> Portfolio of Shivani Gupta, an AI/ML Engineer working on generative AI, LLMs, RAG, agentic AI, multi-agent systems, orchestrators, NLP, Python, LangGraph, UI, backend, front-end and full stack development.
 
 The site describes the services on offer and publishes general technical guides. Wayfarer is a live project. The home page also lists other systems Shivani can build.
 
