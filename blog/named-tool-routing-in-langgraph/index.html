@@ -1,0 +1,315 @@
+<!doctype html>
+<html lang="en">
+<head>
+<script async src="https://www.googletagmanager.com/gtm.js?id=GTM-THN7RV8R"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+</script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="canonical" href="https://shivanigupta.store/blog/named-tool-routing-in-langgraph/">
+<title>Named Tool Routing in LangGraph | Shivani</title>
+<meta name="description" content="Route an LLM's tool calls by name in LangGraph with conditional edges: send each to its own node or subgraph, handle unknown names and test the routes.">
+<meta name="robots" content="index,follow">
+<meta name="author" content="Shivani">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<link rel="manifest" href="/site.webmanifest">
+<meta name="theme-color" content="#080b0f">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Named Tool Routing in LangGraph | Shivani">
+<meta property="og:description" content="Route an LLM's tool calls by name in LangGraph with conditional edges: send each to its own node or subgraph, handle unknown names and test the routes.">
+<meta property="og:url" content="https://shivanigupta.store/blog/named-tool-routing-in-langgraph/">
+<meta property="og:image" content="https://shivanigupta.store/assets/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Named tool routing in LangGraph","description":"Route an LLM's tool calls by name in LangGraph with conditional edges: send each to its own node or subgraph, handle unknown names and test the routes.","mainEntityOfPage":"https://shivanigupta.store/blog/named-tool-routing-in-langgraph/","datePublished":"2026-11-06","dateModified":"2026-11-06","author":{"@type":"Person","name":"Shivani"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://shivanigupta.store/"},{"@type":"ListItem","position":2,"name":"Blog","item":"https://shivanigupta.store/blog/"},{"@type":"ListItem","position":3,"name":"Named tool routing in LangGraph","item":"https://shivanigupta.store/blog/named-tool-routing-in-langgraph/"}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"When should I use ToolNode instead of named routing?","acceptedAnswer":{"@type":"Answer","text":"Use ToolNode when all tools share the same handling and need nothing extra. Named routing earns its keep when particular tools need their own approval, retries, state or a whole subgraph of further steps."}},{"@type":"Question","name":"Can a routing function send one message to several nodes?","acceptedAnswer":{"@type":"Answer","text":"Yes. It can return a list of node names, and LangGraph runs them in the same step. Any state field they all write to, such as messages, needs a reducer so that their updates are merged."}},{"@type":"Question","name":"Should I use Command or conditional edges for routing?","acceptedAnswer":{"@type":"Answer","text":"The LangGraph documentation advises preferring conditional edges for routing alone. Command is for when one function needs to update state and choose the next node together, or when a subgraph node needs to reach its parent graph."}},{"@type":"Question","name":"What happens if the model calls a tool that does not exist?","acceptedAnswer":{"@type":"Answer","text":"With the design in this guide, the unknown name goes to a dedicated node that returns an error as a ToolMessage. The model then sees the failure and can correct itself, while no real tool is executed."}}]}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&family=Poppins:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+<header class="nav">
+  <div class="wrap nav-in">
+    <a class="logo" href="/" aria-label="Shivani, home"><img src="/assets/logo.svg" alt="Shivani" width="144" height="40"></a>
+    <nav id="nav-links" aria-label="Main">
+      <a href="/#services">Services</a>
+      <a href="/#skills">Skills</a>
+      <a href="/#work">Work</a>
+      <a href="/#process">Process</a>
+      <a href="/#faq">FAQ</a>
+      <a href="/blog/">Blog</a>
+      <a class="btn btn-sm" href="/#contact">Hire Me</a>
+    </nav>
+    <button id="menu-toggle" class="menu-toggle" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="nav-links"><span></span><span></span><span></span></button>
+  </div>
+</header>
+
+<main id="top">
+  <section class="page-head">
+    <div class="wrap">
+      <nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a><span aria-hidden="true">/</span><a href="/blog/">Blog</a><span aria-hidden="true">/</span><span aria-current="page">Named tool routing in LangGraph</span></nav>
+      <p class="eyebrow">Guide</p>
+      <h1>Named tool routing in LangGraph</h1>
+      <p class="lead">To route tools by name in LangGraph, add a conditional edge after the model node. Its routing function reads the <code>tool_calls</code> on the latest message, maps each name to a node or subgraph, and returns those destinations, or <code>END</code> if there are none. Unknown names get their own route, and every call must receive a matching <code>ToolMessage</code>.</p>
+    </div>
+  </section>
+  <section class="article">
+    <div class="wrap prose">
+<h2>What named routing is for</h2>
+<p>When a model requests a tool, something has to decide what happens next. The simplest arrangement sends every call to one shared executor. LangGraph provides that as <code>ToolNode</code>, usually paired with <code>tools_condition</code>, which goes to a node called <code>tools</code> if the last message has tool calls, or otherwise ends the run.</p>
+<p>That is a good default, and you should keep it while your tools are interchangeable. Named routing is useful once they are not. A documentation search can run freely, whereas a refund request might need an eligibility check, a review step and its own state. Giving tools their own destinations makes those differences visible in the graph.</p>
+<p>This guide concentrates on that one decision. For state design, retries and checkpointing, read <a href="/blog/building-an-orchestrator-with-langgraph/">building an orchestrator with LangGraph</a>. If graphs are new to you, begin with the <a href="/blog/langgraph-tutorial-for-beginners/">LangGraph tutorial for beginners</a>. For how a model requests a tool in the first place, see <a href="/blog/tool-calling-for-ai-agents/">tool calling for AI agents</a>.</p>
+<p>All the samples below ran together against <code>langgraph</code> 1.2.20, with stub functions in place of the model and tools. They have not been run with a live model. Check the current <a href="https://docs.langchain.com/oss/python/langgraph/graph-api">LangGraph Graph API documentation</a> for the version you install.</p>
+
+<h2>Step 1: map tool names to destinations</h2>
+<p>This illustrative sample defines the state, a table of routes and the routing function:</p>
+<pre><code># Illustrative: routes each tool call by name, using stub tool bodies.
+from typing import Annotated, TypedDict
+
+from langchain_core.messages import ToolMessage
+from langgraph.graph import END, START, StateGraph
+from langgraph.graph.message import add_messages
+
+
+class State(TypedDict):
+    messages: Annotated[list, add_messages]
+
+
+ROUTES = {
+    "search_docs": "docs_tool",
+    "get_order": "orders_tool",
+    "request_refund": "refund_flow",
+}
+
+
+def route_tool_calls(state):
+    calls = getattr(state["messages"][-1], "tool_calls", [])
+    if not calls:
+        return END
+    return sorted({ROUTES.get(call["name"], "unknown_tool") for call in calls})</code></pre>
+<p>The <code>add_messages</code> reducer appends new messages to the list instead of overwriting it, and it is essential here because several nodes can write in the same step. The explicit table has a further advantage over using the tool name as a node name. It separates what the model sees from your graph structure, so a node can be renamed without changing the tool's description. It also means that text produced by a model can never select an arbitrary node.</p>
+<p>The function returns a sorted list of destinations with duplicates removed. According to the LangGraph documentation, a routing function may return a node name, <code>END</code> or a list of names for fan-out. Models can request several tools at once, so the list is needed. A set of two calls to <code>search_docs</code> still routes once, and that node then answers both calls.</p>
+
+<h2>Step 2: write the tool nodes</h2>
+<p>Each destination handles only the calls intended for it. In this illustrative sample, <code>search_docs</code> and <code>get_order</code> stand for your own functions:</p>
+<pre><code># Illustrative: each node answers only the calls routed to it.
+def calls_for(state, names):
+    last = state["messages"][-1]
+    return [call for call in last.tool_calls if call["name"] in names]
+
+
+def reply(call, content):
+    return ToolMessage(content=content, tool_call_id=call["id"])
+
+
+def docs_tool(state):
+    calls = calls_for(state, {"search_docs"})
+    return {"messages": [
+        reply(call, search_docs(**call["args"])) for call in calls
+    ]}
+
+
+def orders_tool(state):
+    calls = calls_for(state, {"get_order"})
+    return {"messages": [
+        reply(call, get_order(**call["args"])) for call in calls
+    ]}
+
+
+def unknown_tool(state):
+    last = state["messages"][-1]
+    calls = [call for call in last.tool_calls if call["name"] not in ROUTES]
+    return {"messages": [
+        reply(call, f"Unknown tool: {call['name']}") for call in calls
+    ]}</code></pre>
+<p>Providers generally expect every tool call in an assistant message to be answered, so each call gets a <code>ToolMessage</code> carrying the matching <code>tool_call_id</code>. If a parallel call goes unanswered, the next model request may be rejected. This is why the filtering matters: a node that answered every call would duplicate the replies of the other nodes in its step.</p>
+<p>The <code>unknown_tool</code> node is a deliberate route, not an afterthought. Although a model is given a fixed list of tools, nothing guarantees that its output will stay on the list. Returning the error as a message gives the model a chance to correct itself without running anything. You should also validate arguments before use, since they too are model output. <a href="/blog/structured-output-from-llms/">Structured output from LLMs</a> covers validation.</p>
+
+<h2>Step 3: route to a subgraph</h2>
+<p>A tool that requires several steps can be a graph of its own. LangGraph's <a href="https://docs.langchain.com/oss/python/langgraph/use-subgraphs">subgraph documentation</a> describes two ways to attach one. If the parent and subgraph share state keys, you can pass the compiled subgraph directly to <code>add_node</code>. If their schemas differ, you call the subgraph from inside a node function and translate the state in both directions.</p>
+<p>The refund flow here uses the second form. It has no use for the conversation, and the model has no need to see its internal fields. In this illustrative sample, <code>refund_allowed</code> stands for your own business rule:</p>
+<pre><code># Illustrative: a subgraph with its own schema, behind a wrapper node.
+class RefundState(TypedDict):
+    order_id: str
+    eligible: bool
+    outcome: str
+
+
+def check_eligibility(state):
+    return {"eligible": refund_allowed(state["order_id"])}
+
+
+def record_outcome(state):
+    text = "Sent for review" if state["eligible"] else "Not eligible"
+    return {"outcome": text}
+
+
+refund_builder = StateGraph(RefundState)
+refund_builder.add_node("check_eligibility", check_eligibility)
+refund_builder.add_node("record_outcome", record_outcome)
+refund_builder.add_edge(START, "check_eligibility")
+refund_builder.add_edge("check_eligibility", "record_outcome")
+refund_builder.add_edge("record_outcome", END)
+refund_graph = refund_builder.compile()
+
+
+def refund_flow(state):
+    messages = []
+    for call in calls_for(state, {"request_refund"}):
+        result = refund_graph.invoke({"order_id": call["args"]["order_id"]})
+        messages.append(reply(call, result["outcome"]))
+    return {"messages": messages}</code></pre>
+<p>The wrapper acts as a narrow interface. Only the order ID goes in, and only a short outcome comes out, so the model's history stays free of internal details. Note that the outcome here says "Sent for review". The eligibility decision is made in ordinary code, and no money moves in this sample. A real flow would pause for approval before any action of that kind, as <a href="/blog/human-in-the-loop-approval-for-ai-agents/">human-in-the-loop approval for AI agents</a> explains.</p>
+<p>If the subgraph needs checkpointing, interrupts or streaming from inside, read the current documentation for how those behave across the graph boundary, because the details depend on how it is attached.</p>
+
+<h2>Step 4: wire the graph</h2>
+<p>The conditional edge connects everything. This illustrative sample assumes <code>call_model</code> is your own node, which invokes a model with the tools bound and returns its message:</p>
+<pre><code># Illustrative: assembles the graph; call_model is your own node.
+builder = StateGraph(State)
+builder.add_node("call_model", call_model)
+builder.add_node("docs_tool", docs_tool)
+builder.add_node("orders_tool", orders_tool)
+builder.add_node("refund_flow", refund_flow)
+builder.add_node("unknown_tool", unknown_tool)
+
+builder.add_edge(START, "call_model")
+builder.add_conditional_edges(
+    "call_model",
+    route_tool_calls,
+    ["docs_tool", "orders_tool", "refund_flow", "unknown_tool", END],
+)
+for name in ["docs_tool", "orders_tool", "refund_flow", "unknown_tool"]:
+    builder.add_edge(name, "call_model")
+
+graph = builder.compile()</code></pre>
+<p>The list passed as the third argument names the possible destinations. The documentation also allows a dictionary that maps a function's return values to node names, which is a handy alternative when you would rather have your router return labels. Each tool node leads back to <code>call_model</code>, so the model can read the results and either finish or ask for more.</p>
+<p>In the stubbed run, a single assistant message requested <code>search_docs</code>, <code>request_refund</code> and a made-up tool. Each call received its own <code>ToolMessage</code> with the right ID, and the model then ran again with all three replies in place.</p>
+<p>That cycle needs a limit. The documentation states that, from version 1.1.4, the default recursion limit is 10,007 super-steps, and that exceeding it raises <code>GraphRecursionError</code>. That is far too many to rely on as protection against a looping model that costs money on every turn. Pass a much lower <code>recursion_limit</code> as a top-level config key, and track attempts in state if you want a graceful exit, because hitting the limit is an error rather than a designed fallback.</p>
+
+<h2>Step 5: hand control back to the parent</h2>
+<p>Sometimes a node inside a subgraph discovers that the whole workflow must change course. Returning a <code>Command</code> with <code>graph=Command.PARENT</code> jumps to a node in the parent graph. This illustrative sample shows the node:</p>
+<pre><code># Illustrative: a subgraph node hands control to a parent graph node.
+from langgraph.types import Command
+
+
+def escalate(state):
+    return Command(
+        update={"escalation_reason": "Refund needs a person"},
+        goto="human_review",
+        graph=Command.PARENT,
+    )</code></pre>
+<p>Two details are worth knowing. The documentation says that if you update a parent key that the subgraph also uses, the parent needs a reducer for that key. And although the documentation shows a return annotation listing the destination, adding <code>Command[Literal["human_review"]]</code> to a subgraph node caused a compile error when tested against 1.2.20, because the subgraph has no node of that name. Leaving the annotation off worked. Test this against the version you use.</p>
+<p>Also note that this pattern suits a subgraph attached directly as a node. Test it carefully if you call the subgraph from a wrapper function, which adds its own layer between the two graphs.</p>
+
+<h2>Conditional edges or Command?</h2>
+<p>LangGraph's guidance is clear: "For routing alone, prefer conditional edges." Use <code>Command</code> when a function needs to combine a state update with a routing decision. The documentation also warns against mixing <code>Command</code> routing with <code>add_edge</code> from the same node, as static edges still run. For parallel work where each branch needs different input, such as one job per item in a list, a routing function can return <code>Send</code> objects instead.</p>
+<p>Conditional edges have a further advantage for this use: the routing function is a separate, side-effect-free piece of code that you can test alone.</p>
+
+<h2>Step 6: test the routes without a model</h2>
+<p>Because the router is an ordinary function, its behaviour can be checked by building messages by hand. This illustrative sample uses plain assertions:</p>
+<pre><code># Illustrative: routing tests need no model and no compiled graph.
+from langchain_core.messages import AIMessage
+
+
+def state_with(*names):
+    calls = [
+        {"name": name, "args": {}, "id": str(i), "type": "tool_call"}
+        for i, name in enumerate(names)
+    ]
+    return {"messages": [AIMessage(content="", tool_calls=calls)]}
+
+
+def test_no_tool_call_ends_the_run():
+    assert route_tool_calls(state_with()) == END
+
+
+def test_unknown_name_has_a_safe_route():
+    assert route_tool_calls(state_with("delete_all")) == ["unknown_tool"]
+
+
+def test_parallel_calls_fan_out():
+    routes = route_tool_calls(state_with("search_docs", "get_order"))
+    assert routes == ["docs_tool", "orders_tool"]</code></pre>
+<p>Add a test with stubbed tools to check that every tool call receives exactly one reply, because this is the failure most likely to surface only with parallel calls. Then evaluate with real models, since the choice of tool is a separate matter from the routing that follows it. <a href="/blog/testing-ai-agents/">Testing AI agents</a> covers that next layer.</p>
+
+<h2>Common pitfalls</h2>
+<ul>
+<li><strong>A branch for every tool.</strong> If several tools share the same handling, group them on one node. A separate route should reflect a real difference.</li>
+<li><strong>Forgetting parallel calls.</strong> Code that reads only the first tool call leaves the others unanswered.</li>
+<li><strong>Letting the router do work.</strong> Keep routing free of model calls and side effects, and place any judgement in a node.</li>
+<li><strong>Treating routing as permission.</strong> A route decides where a call goes, not whether this user may make it. Check authorisation inside the tool.</li>
+</ul>
+<p>If you need help designing a workflow of this kind, see <a href="/services/ai-orchestration-langgraph/">AI orchestration with LangGraph</a>.</p>
+      <h2>Frequently asked questions</h2>
+      <h3>When should I use ToolNode instead of named routing?</h3>
+      <p>Use ToolNode when all tools share the same handling and need nothing extra. Named routing earns its keep when particular tools need their own approval, retries, state or a whole subgraph of further steps.</p>
+      <h3>Can a routing function send one message to several nodes?</h3>
+      <p>Yes. It can return a list of node names, and LangGraph runs them in the same step. Any state field they all write to, such as messages, needs a reducer so that their updates are merged.</p>
+      <h3>Should I use Command or conditional edges for routing?</h3>
+      <p>The LangGraph documentation advises preferring conditional edges for routing alone. Command is for when one function needs to update state and choose the next node together, or when a subgraph node needs to reach its parent graph.</p>
+      <h3>What happens if the model calls a tool that does not exist?</h3>
+      <p>With the design in this guide, the unknown name goes to a dedicated node that returns an error as a ToolMessage. The model then sees the failure and can correct itself, while no real tool is executed.</p>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="foot-cta">
+      <div>
+        <h2>Have an AI or full stack project in mind?</h2>
+        <p>Tell me what you want to build.</p>
+      </div>
+      <div class="foot-cta-btns">
+        <a class="btn" href="/#contact">Start a conversation</a>
+        <a class="btn btn-line" href="mailto:shivanigupta4876@gmail.com">Send an email</a>
+      </div>
+    </div>
+    <div class="foot-grid">
+      <div>
+        <a href="/" aria-label="Shivani, home"><img src="/assets/logo.svg" alt="Shivani" width="144" height="40"></a>
+        <p>AI/ML engineer working across generative AI, LLMs, RAG, agentic AI and NLP, plus full stack development.</p>
+        <span class="avail">Taking new projects</span>
+      </div>
+      <div>
+        <h3>Explore</h3>
+        <ul>
+          <li><a href="/services/">Services</a></li>
+          <li><a href="/#work">Projects</a></li>
+          <li><a href="/#process">Process</a></li>
+          <li><a href="/#faq">FAQ</a></li>
+          <li><a href="/blog/">Blog</a></li>
+          <li><a href="/#contact">Contact</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Services</h3>
+        <ul>
+          <li><a href="/services/generative-ai-llm-development/">Generative AI and LLMs</a></li>
+          <li><a href="/services/rag-development/">RAG development</a></li>
+          <li><a href="/services/multi-agent-systems/">Multi-agent systems</a></li>
+          <li><a href="/services/ai-orchestration-langgraph/">Orchestration with LangGraph</a></li>
+          <li><a href="/services/nlp-development/">NLP development</a></li>
+          <li><a href="/services/full-stack-development/">Full stack development</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Contact</h3>
+        <ul>
+          <li><a href="mailto:shivanigupta4876@gmail.com">shivanigupta4876@gmail.com</a></li>
+          <li><a href="tel:+919720466504">+91 97204 66504</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="foot-bottom">&copy; <span id="year">2026</span> Shivani. All rights reserved.</div>
+  </div>
+</footer>
+<a class="wa-float" href="https://wa.me/919720466504?text=Hi%20Shivani%2C%20I%20saw%20your%20website%20and%20would%20like%20to%20talk%20about%20a%20project." target="_blank" rel="noopener" aria-label="Chat on WhatsApp"><svg viewBox="0 0 24 24" width="28" height="28" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15L2 22l5.1-1.3A10 10 0 1 0 12 2zm0 18.2a8.2 8.2 0 0 1-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1a6.700 6.700 0 0 1-3.300-2.900c-.2-.3 0-.4.1-.6l.4-.4.2-.4v-.5l-.8-1.800c-.2-.5-.4-.4-.6-.4h-.5c-.2 0-.4.1-.6.3-.2.2-.8.8-.8 2s.9 2.300 1 2.500c.1.2 1.700 2.600 4.100 3.600 1.500.7 2.100.7 2.900.6.500-.1 1.500-.6 1.700-1.200.2-.6.2-1.100.1-1.200l-.2-.2z"/></svg></a>
+<script src="/assets/js/site.js" defer></script>
+</body>
+</html>

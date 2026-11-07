@@ -71,6 +71,11 @@ The site describes the services on offer and publishes general technical guides.
 - [How to build an AI document processing pipeline](/blog/ai-document-processing-pipeline/): The stages from intake to audit, with validation in code, review design, measurement and gradual automation.
 - [Conversational AI vs chatbots: what differs and how to choose](/blog/conversational-ai-vs-chatbots/): Compares scripted, intent-based and LLM designs, their failure modes, hybrids and six questions for choosing.
 - [How to hire an AI engineer: what to look for and what to ask](/blog/hire-an-ai-engineer-what-to-look-for/): A buyer's guide covering the evidence that counts, 14 questions, warning signs and a small paid test.
+- [LangChain RAG tutorial: a minimal pipeline](/blog/langchain-rag-tutorial/): A minimal retrieval pipeline using current LangChain APIs, with a two-step answer function and an agent variant.
+- [AI chatbots for customer support: a buyer's guide](/blog/ai-chatbot-for-customer-support/): A buyer's guide to choosing what a support chatbot should handle, designing escalation and measuring quality.
+- [Named tool routing in LangGraph](/blog/named-tool-routing-in-langgraph/): How to route tool calls by name to dedicated nodes and subgraphs with conditional edges, with safe handling of unknown names.
+- [Fine-tuning LLMs: when and how](/blog/fine-tuning-llms-when-and-how/): A practical guide to the readiness checks, data preparation and evaluation needed for fine-tuning an LLM.
+- [AI automation for small business: choosing a first workflow](/blog/ai-automation-for-small-business/): A practical method for a small business to choose, score and trial a first workflow to automate.
 
 ## Projects
 
