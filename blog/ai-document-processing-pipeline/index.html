@@ -1,0 +1,219 @@
+<!doctype html>
+<html lang="en">
+<head>
+<script async src="https://www.googletagmanager.com/gtm.js?id=GTM-THN7RV8R"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+</script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="canonical" href="https://shivanigupta.store/blog/ai-document-processing-pipeline/">
+<title>AI Document Processing: Pipeline and Human Review | Shivani</title>
+<meta name="description" content="How an AI document pipeline works: intake, classification, extraction, validation in code and human review, plus how to measure it before automating.">
+<meta name="robots" content="index,follow">
+<meta name="author" content="Shivani">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<link rel="manifest" href="/site.webmanifest">
+<meta name="theme-color" content="#080b0f">
+<meta property="og:type" content="article">
+<meta property="og:title" content="AI Document Processing: Pipeline and Human Review | Shivani">
+<meta property="og:description" content="How an AI document pipeline works: intake, classification, extraction, validation in code and human review, plus how to measure it before automating.">
+<meta property="og:url" content="https://shivanigupta.store/blog/ai-document-processing-pipeline/">
+<meta property="og:image" content="https://shivanigupta.store/assets/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"How to build an AI document processing pipeline","description":"How an AI document pipeline works: intake, classification, extraction, validation in code and human review, plus how to measure it before automating.","mainEntityOfPage":"https://shivanigupta.store/blog/ai-document-processing-pipeline/","datePublished":"2026-11-06","dateModified":"2026-11-06","author":{"@type":"Person","name":"Shivani"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://shivanigupta.store/"},{"@type":"ListItem","position":2,"name":"Blog","item":"https://shivanigupta.store/blog/"},{"@type":"ListItem","position":3,"name":"How to build an AI document processing pipeline","item":"https://shivanigupta.store/blog/ai-document-processing-pipeline/"}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Can AI fully replace manual document processing?","acceptedAnswer":{"@type":"Answer","text":"Sometimes for narrow, well-tested cases, but rarely across the board. Most pipelines keep people for records that fail validation and for high-risk fields, while auditing a sample of what passes. Evidence from your own documents should decide how far to go."}},{"@type":"Question","name":"Do I still need OCR if I use an LLM?","acceptedAnswer":{"@type":"Answer","text":"It depends on the file. Digital PDFs often have a usable text layer, and scans need OCR or a vision-capable model. Compare options on your own documents, and check that you can still trace each value to its location."}},{"@type":"Question","name":"How do you catch extraction errors?","acceptedAnswer":{"@type":"Answer","text":"Combine checks in code: format rules, a supporting quote found in the source, arithmetic checks, and lookups against reference data. Send failures to a reviewer, and audit a random sample of passing records to find errors the checks miss."}},{"@type":"Question","name":"What should a reviewer see?","acceptedAnswer":{"@type":"Answer","text":"The original document beside the extracted values, with the source of each value highlighted and the reason for referral stated. Corrections should be quick to make, and they should be recorded so they can improve the test set."}}]}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&family=Poppins:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+<header class="nav">
+  <div class="wrap nav-in">
+    <a class="logo" href="/" aria-label="Shivani, home"><img src="/assets/logo.svg" alt="Shivani" width="144" height="40"></a>
+    <nav id="nav-links" aria-label="Main">
+      <a href="/#services">Services</a>
+      <a href="/#skills">Skills</a>
+      <a href="/#work">Work</a>
+      <a href="/#process">Process</a>
+      <a href="/#faq">FAQ</a>
+      <a href="/blog/">Blog</a>
+      <a class="btn btn-sm" href="/#contact">Hire Me</a>
+    </nav>
+    <button id="menu-toggle" class="menu-toggle" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="nav-links"><span></span><span></span><span></span></button>
+  </div>
+</header>
+
+<main id="top">
+  <section class="page-head">
+    <div class="wrap">
+      <nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a><span aria-hidden="true">/</span><a href="/blog/">Blog</a><span aria-hidden="true">/</span><span aria-current="page">How to build an AI document processing pipeline</span></nav>
+      <p class="eyebrow">Guide</p>
+      <h1>How to build an AI document processing pipeline</h1>
+      <p class="lead">An AI document processing pipeline takes in business documents, identifies each type, extracts the fields you need against a schema, validates them in code and sends anything doubtful to a person. The model handles variation in layout and wording; rules and reviewers decide what is trusted enough to enter your systems.</p>
+    </div>
+  </section>
+  <section class="article">
+    <div class="wrap prose">
+<h2>Think in stages, not in one prompt</h2>
+<p>It is tempting to send a PDF to a model and ask for JSON. That can make an impressive demonstration on a clean invoice, but it leaves no answer to the questions that matter in operation. What happens with a blurred scan? What if a file holds three documents? Who catches a wrong total? How do you find out afterwards where a value came from?</p>
+<p>A pipeline answers those by splitting the work into stages with an inspectable output each. If the supplier name is wrong, you can tell whether the text was misread, the wrong field was picked or the validation rule was too loose. The technique for pulling fields from text is covered in <a href="/blog/named-entity-recognition-and-data-extraction-with-llms/">NER and data extraction with LLMs</a>. This guide is about the system around it.</p>
+
+<h2>Is it the right process to automate?</h2>
+<p>Good candidates have a steady flow of documents, a defined set of output fields and a downstream system waiting for the result. Think of supplier invoices, purchase orders, claim forms, onboarding packs or delivery notes. Poor candidates are rare, one-off documents, or decisions that depend on judgement with no agreed answer.</p>
+<p>Before building, gather a real sample that includes the bad scans and odd suppliers, and time how the work is done today. <a href="/blog/how-to-scope-an-ai-project/">How to scope an AI project</a> explains why this baseline matters. Without it, you cannot show that the new process is better.</p>
+
+<h2>The stages</h2>
+
+<h3>1. Intake</h3>
+<p>Documents arrive by email, upload, scanner or API. At this stage, give each file a unique ID, store the untouched original and record where it came from. Compute a hash to catch exact duplicates, since the same invoice often arrives twice. Reject files that are too large, corrupt or password-protected, and send them to someone rather than losing them quietly. Treat files as untrusted, because they may contain malware or text designed to manipulate the model.</p>
+
+<h3>2. Text and layout</h3>
+<p>Digital PDFs usually contain a text layer, whereas scans need optical character recognition (OCR) or a vision-capable model. Keep the page number and position of the text if you can, so that reviewers can be shown where a value came from. Tables are a frequent source of trouble, because reading order can scramble rows. <a href="/blog/rag-for-pdfs-and-tables/">RAG for PDFs and tables</a> covers the parsing options, which apply here as well.</p>
+
+<h3>3. Splitting and classification</h3>
+<p>A single scanned file may hold an invoice, a delivery note and a covering letter. Split it into logical documents first, then classify each one so the right schema applies. Always include an "other" class. Without one, an unexpected document is forced into the nearest type and may then have values extracted from it that look convincing. Classification often needs no large model, as discussed in <a href="/blog/text-classification-llms-vs-traditional-nlp/">text classification: LLMs vs traditional NLP</a>.</p>
+
+<h3>4. Extraction</h3>
+<p>Each document type gets a schema, defined with your domain experts. State the format of each field and how to handle ambiguity: which date counts as the "invoice date", and whether a total includes tax. Allow null for missing values, or the model is pushed to invent them. Ask for a supporting quote, and if possible a page number. Mechanisms for getting valid JSON are covered in <a href="/blog/structured-output-from-llms/">structured output from LLMs</a>, but note that a schema-valid response can still be factually wrong.</p>
+
+<h3>5. Validation</h3>
+<p>This stage is ordinary code, and it is where much of the pipeline's reliability comes from. Use several kinds of check:</p>
+<ul>
+<li><strong>Format.</strong> Are dates real, and do currency codes and identifiers follow the expected pattern?</li>
+<li><strong>Grounding.</strong> Does the supporting quote appear in the source text?</li>
+<li><strong>Internal consistency.</strong> Do the line items add up to the subtotal, and subtotal plus tax to the total? Is the due date after the issue date?</li>
+<li><strong>Reference data.</strong> Does the supplier exist in your master data? Does the purchase order exist and have enough remaining value?</li>
+<li><strong>Business rules.</strong> Is the amount above an approval limit? Has this supplier and invoice number been seen before?</li>
+</ul>
+<pre><code># Illustrative only. Fields, rules and thresholds are placeholders.
+from decimal import Decimal
+
+def validate_invoice(inv, known_suppliers, seen_invoices):
+    issues = []
+    if inv.supplier_id not in known_suppliers:
+        issues.append("unknown_supplier")
+    if (inv.supplier_id, inv.number) in seen_invoices:
+        issues.append("possible_duplicate")
+
+    line_total = sum((line.amount for line in inv.lines), Decimal("0"))
+    if line_total != inv.subtotal:
+        issues.append("lines_do_not_match_subtotal")
+    if inv.subtotal + inv.tax != inv.total:
+        issues.append("total_does_not_add_up")
+    return issues</code></pre>
+<p>This sample is illustrative, and real rules would come from your finance or operations team. Using <code>Decimal</code> rather than floats avoids rounding surprises in money, though you may still need a small tolerance for rounding on real invoices. The list of named issues also gives reviewers a reason for each referral, which is more useful than a bare score.</p>
+
+<h3>6. Human review</h3>
+<p>Records that fail validation go to a person, along with a sample of those that pass. Confidence scores can help with routing, but test them first: a model's stated confidence is not necessarily well calibrated, so check that low scores really do correspond to more errors in your own data.</p>
+<p>The review screen does much to determine the value of the whole system:</p>
+<ul>
+<li>Show the original document beside the extracted values, and highlight the source of each one.</li>
+<li>Show why it was referred, and focus attention on the doubtful fields.</li>
+<li>Make correcting a field quicker than retyping the record.</li>
+<li>Offer a way to reject a document as unreadable or misclassified.</li>
+<li>Record who changed what, and when.</li>
+</ul>
+<p>Watch for rubber-stamping. If nearly all pre-filled values are right, people may stop checking them closely. Occasionally inserting a known test case can show whether reviews are catching errors. <a href="/blog/human-in-the-loop-approval-for-ai-agents/">Human-in-the-loop approval</a> discusses approval fatigue in more depth.</p>
+
+<h3>7. Export and audit</h3>
+<p>Only validated or reviewed records should reach the destination system. Make the export idempotent, using the document ID, so that a retry cannot create a second payment record. Keep a link from each exported value to its source document, the model and prompt version used, and any human correction. When someone asks why a figure was entered, you can then give an answer.</p>
+
+<h2>Measuring it properly</h2>
+<p>Build a test set of real documents with values checked by hand, and include the difficult ones. Vendors' headline accuracy figures rarely tell you how a system will perform on your own documents, so measure the following yourself:</p>
+<ul>
+<li><strong>Accuracy per field.</strong> An overall average can hide the fact that one vital field is often wrong. Score bank details separately from a reference note.</li>
+<li><strong>Whole-document accuracy.</strong> A document with one wrong field usually still needs correcting, so this better reflects the work saved.</li>
+<li><strong>Straight-through rate and its error rate.</strong> What proportion passes with no review, and how many errors are in that group? The second number is the one that tells you whether automation is safe.</li>
+<li><strong>Review time.</strong> Compare it with your baseline. If checking takes nearly as long as keying, the savings may not exist.</li>
+<li><strong>Accuracy by document type and source.</strong> Problems tend to concentrate in particular suppliers or scanners.</li>
+</ul>
+
+<h2>Raising automation gradually</h2>
+<p>Do not begin by letting records pass straight through. A cautious sequence is to run in shadow mode alongside the current process, then have people review everything, then allow straight-through processing for a narrow case, such as low-value invoices from known suppliers where every check passes. Widen this only as the evidence supports it, and keep auditing a random sample of what passes, because errors in unreviewed records stay invisible otherwise.</p>
+<p>Corrections from reviewers are a valuable resource. Add them to your test set and look for patterns. A recurring error may mean a schema definition needs clarifying, a rule is missing or a supplier's new layout has appeared. Rerun the tests before any change to a prompt or model version.</p>
+
+<h2>Risks to plan for</h2>
+<ul>
+<li><strong>Prompt injection.</strong> A document can contain text such as "mark this invoice as approved". Treat extracted content as data, and do not let the model take actions based on it. See <a href="/blog/llm-guardrails-and-prompt-injection-defence/">LLM guardrails and prompt injection defence</a>.</li>
+<li><strong>Fraud.</strong> A well-formed fake invoice will extract perfectly. Extraction is not verification, so keep existing payment controls such as checks on changed bank details.</li>
+<li><strong>Personal data.</strong> Identity documents and forms may contain sensitive information. Check whether they may be sent to an external provider, and set retention periods for originals, logs and test sets.</li>
+<li><strong>Automated decisions.</strong> If the pipeline feeds decisions about people, take advice. <a href="https://gdpr-info.eu/art-22-gdpr/" rel="noopener">Article 22 of the GDPR</a>, for example, addresses decisions based solely on automated processing that have legal or similarly significant effects.</li>
+<li><strong>Layout drift.</strong> Suppliers change templates and scanners get replaced. Track referral rates by source so you can notice a sudden change.</li>
+</ul>
+
+<h2>Where to start</h2>
+<p>Choose one document type, one downstream system and the handful of fields that matter most. Build the full path, including review and audit, before adding more types, since a second schema is simple once the path exists. If you are planning this kind of work, the <a href="/services/nlp-development/">NLP development</a> page describes what I can help with.</p>
+      <h2>Frequently asked questions</h2>
+      <h3>Can AI fully replace manual document processing?</h3>
+      <p>Sometimes for narrow, well-tested cases, but rarely across the board. Most pipelines keep people for records that fail validation and for high-risk fields, while auditing a sample of what passes. Evidence from your own documents should decide how far to go.</p>
+      <h3>Do I still need OCR if I use an LLM?</h3>
+      <p>It depends on the file. Digital PDFs often have a usable text layer, and scans need OCR or a vision-capable model. Compare options on your own documents, and check that you can still trace each value to its location.</p>
+      <h3>How do you catch extraction errors?</h3>
+      <p>Combine checks in code: format rules, a supporting quote found in the source, arithmetic checks, and lookups against reference data. Send failures to a reviewer, and audit a random sample of passing records to find errors the checks miss.</p>
+      <h3>What should a reviewer see?</h3>
+      <p>The original document beside the extracted values, with the source of each value highlighted and the reason for referral stated. Corrections should be quick to make, and they should be recorded so they can improve the test set.</p>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="foot-cta">
+      <div>
+        <h2>Have an AI or full stack project in mind?</h2>
+        <p>Tell me what you want to build.</p>
+      </div>
+      <div class="foot-cta-btns">
+        <a class="btn" href="/#contact">Start a conversation</a>
+        <a class="btn btn-line" href="mailto:shivanigupta4876@gmail.com">Send an email</a>
+      </div>
+    </div>
+    <div class="foot-grid">
+      <div>
+        <a href="/" aria-label="Shivani, home"><img src="/assets/logo.svg" alt="Shivani" width="144" height="40"></a>
+        <p>AI/ML engineer working across generative AI, LLMs, RAG, agentic AI and NLP, plus full stack development.</p>
+        <span class="avail">Taking new projects</span>
+      </div>
+      <div>
+        <h3>Explore</h3>
+        <ul>
+          <li><a href="/services/">Services</a></li>
+          <li><a href="/#work">Projects</a></li>
+          <li><a href="/#process">Process</a></li>
+          <li><a href="/#faq">FAQ</a></li>
+          <li><a href="/blog/">Blog</a></li>
+          <li><a href="/#contact">Contact</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Services</h3>
+        <ul>
+          <li><a href="/services/generative-ai-llm-development/">Generative AI and LLMs</a></li>
+          <li><a href="/services/rag-development/">RAG development</a></li>
+          <li><a href="/services/multi-agent-systems/">Multi-agent systems</a></li>
+          <li><a href="/services/ai-orchestration-langgraph/">Orchestration with LangGraph</a></li>
+          <li><a href="/services/nlp-development/">NLP development</a></li>
+          <li><a href="/services/full-stack-development/">Full stack development</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Contact</h3>
+        <ul>
+          <li><a href="mailto:shivanigupta4876@gmail.com">shivanigupta4876@gmail.com</a></li>
+          <li><a href="tel:+919720466504">+91 97204 66504</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="foot-bottom">&copy; <span id="year">2026</span> Shivani. All rights reserved.</div>
+  </div>
+</footer>
+<a class="wa-float" href="https://wa.me/919720466504?text=Hi%20Shivani%2C%20I%20saw%20your%20website%20and%20would%20like%20to%20talk%20about%20a%20project." target="_blank" rel="noopener" aria-label="Chat on WhatsApp"><svg viewBox="0 0 24 24" width="28" height="28" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15L2 22l5.1-1.3A10 10 0 1 0 12 2zm0 18.2a8.2 8.2 0 0 1-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1a6.700 6.700 0 0 1-3.300-2.900c-.2-.3 0-.4.1-.6l.4-.4.2-.4v-.5l-.8-1.800c-.2-.5-.4-.4-.6-.4h-.5c-.2 0-.4.1-.6.3-.2.2-.8.8-.8 2s.9 2.300 1 2.500c.1.2 1.700 2.600 4.100 3.600 1.500.7 2.100.7 2.900.6.500-.1 1.500-.6 1.700-1.200.2-.6.2-1.100.1-1.200l-.2-.2z"/></svg></a>
+<script src="/assets/js/site.js" defer></script>
+</body>
+</html>

@@ -1,0 +1,221 @@
+<!doctype html>
+<html lang="en">
+<head>
+<script async src="https://www.googletagmanager.com/gtm.js?id=GTM-THN7RV8R"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+</script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="canonical" href="https://shivanigupta.store/blog/rag-access-control-and-permissions/">
+<title>RAG Access Control: Enforcing User Permissions | Shivani</title>
+<meta name="description" content="How to keep RAG retrieval within each user&#x27;s permissions: filtering in the search, syncing access rules, closing side channels and testing for leaks.">
+<meta name="robots" content="index,follow">
+<meta name="author" content="Shivani">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<link rel="manifest" href="/site.webmanifest">
+<meta name="theme-color" content="#080b0f">
+<meta property="og:type" content="article">
+<meta property="og:title" content="RAG Access Control: Enforcing User Permissions | Shivani">
+<meta property="og:description" content="How to keep RAG retrieval within each user&#x27;s permissions: filtering in the search, syncing access rules, closing side channels and testing for leaks.">
+<meta property="og:url" content="https://shivanigupta.store/blog/rag-access-control-and-permissions/">
+<meta property="og:image" content="https://shivanigupta.store/assets/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"RAG access control: keeping retrieval within each user's permissions","description":"How to keep RAG retrieval within each user's permissions: filtering in the search, syncing access rules, closing side channels and testing for leaks.","mainEntityOfPage":"https://shivanigupta.store/blog/rag-access-control-and-permissions/","datePublished":"2026-11-06","dateModified":"2026-11-06","author":{"@type":"Person","name":"Shivani"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://shivanigupta.store/"},{"@type":"ListItem","position":2,"name":"Blog","item":"https://shivanigupta.store/blog/"},{"@type":"ListItem","position":3,"name":"RAG access control: keeping retrieval within each user's permissions","item":"https://shivanigupta.store/blog/rag-access-control-and-permissions/"}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Can a system prompt enforce permissions in RAG?","acceptedAnswer":{"@type":"Answer","text":"No. A prompt can shape behaviour, but it is not a security control, and any text placed in it has already reached the model. Enforce permissions before retrieval results are assembled, in code or in the data layer."}},{"@type":"Question","name":"Should each customer have a separate vector index?","acceptedAnswer":{"@type":"Answer","text":"Not necessarily. Separate indexes give strong isolation but can be costly with many tenants, while a shared index relies on a correct filter. Check your store's guidance and weigh it against the sensitivity of the data."}},{"@type":"Question","name":"What is the difference between early and late binding?","acceptedAnswer":{"@type":"Answer","text":"Early binding stores permissions with each chunk and filters during the search, which is fast but can lag behind the source. Late binding asks the source system at query time, which is fresher but slower. Many systems combine them."}},{"@type":"Question","name":"How quickly must revoked access take effect?","acceptedAnswer":{"@type":"Answer","text":"That is a business and compliance decision, so agree it with the content owner. Design the sync to meet that limit, monitor for failures and use a live check against the source for content where no delay is acceptable."}}]}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&family=Poppins:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+<header class="nav">
+  <div class="wrap nav-in">
+    <a class="logo" href="/" aria-label="Shivani, home"><img src="/assets/logo.svg" alt="Shivani" width="144" height="40"></a>
+    <nav id="nav-links" aria-label="Main">
+      <a href="/#services">Services</a>
+      <a href="/#skills">Skills</a>
+      <a href="/#work">Work</a>
+      <a href="/#process">Process</a>
+      <a href="/#faq">FAQ</a>
+      <a href="/blog/">Blog</a>
+      <a class="btn btn-sm" href="/#contact">Hire Me</a>
+    </nav>
+    <button id="menu-toggle" class="menu-toggle" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="nav-links"><span></span><span></span><span></span></button>
+  </div>
+</header>
+
+<main id="top">
+  <section class="page-head">
+    <div class="wrap">
+      <nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a><span aria-hidden="true">/</span><a href="/blog/">Blog</a><span aria-hidden="true">/</span><span aria-current="page">RAG access control: keeping retrieval within each user's permissions</span></nav>
+      <p class="eyebrow">Guide</p>
+      <h1>RAG access control: keeping retrieval within each user's permissions</h1>
+      <p class="lead">To keep RAG within each user's permissions, attach access information to every chunk, work out who the user is from the authenticated session, and apply the permission filter inside the search, before any text reaches the model. Never ask the model to withhold content. Then close the side channels and test for leaks.</p>
+    </div>
+  </section>
+  <section class="article">
+    <div class="wrap prose">
+<h2>Why the prompt is the wrong place for this</h2>
+<p>A common first attempt is to retrieve from the whole index and add an instruction: "only use documents this user may see". That fails for a simple reason. Once a passage is in the prompt, it has already been disclosed to a component that can repeat it. The model has no reliable knowledge of your access rules, and a cleverly worded question or a planted instruction in a document can change what it does. <a href="/blog/llm-guardrails-and-prompt-injection-defence/">LLM guardrails and prompt injection defence</a> explains why such instructions cannot be treated as a security boundary.</p>
+<p>So the rule is that the model should only ever receive text the current user could already open in the source system. If that holds, a manipulated model has nothing extra to reveal. OWASP lists this class of problem under <a href="https://genai.owasp.org/llmrisk/llm082025-vector-and-embedding-weaknesses/" rel="noopener">LLM08:2025 Vector and Embedding Weaknesses</a>, including data from one group surfacing in another group's queries when they share a vector store, and it recommends permission-aware stores and logical partitioning.</p>
+
+<h2>Decide what model of access you are copying</h2>
+<p>An index is a copy of your content, but it does not automatically copy the rules that protected it. Before designing anything, write down how access works in each source:</p>
+<ul>
+<li><strong>Tenant separation.</strong> In a multi-customer product, each customer sees only their own data. The rule is simple and the cost of failure is severe.</li>
+<li><strong>Role or group access.</strong> Finance can read one space and engineering another. Most internal knowledge bases work roughly like this.</li>
+<li><strong>Per-document sharing.</strong> Individual files are shared with named people, as in many drive and wiki products, often with inheritance from folders.</li>
+<li><strong>Attribute rules.</strong> Access depends on values such as region, clearance or contract, and can be difficult to reduce to a list of names.</li>
+</ul>
+<p>Sources often differ, so a single assistant may need all of these at once. If a source's rules cannot be represented or queried, leave it out of the first version rather than approximating them. <a href="/blog/how-to-scope-an-ai-project/">How to scope an AI project</a> covers raising this question early, while it is still cheap to answer.</p>
+
+<h2>Three ways to enforce permissions at query time</h2>
+
+<h3>Separate indexes or partitions</h3>
+<p>Each tenant gets its own collection, namespace or table partition. Mistakes are harder to make, because a query can only touch one partition, and deleting a tenant is straightforward. The weakness is scale and flexibility: it suits a tenant boundary, but not documents shared across many overlapping groups. Vendors' advice also varies. <a href="https://qdrant.tech/documentation/guides/multiple-partitions/" rel="noopener">Qdrant's multitenancy guide</a>, for example, recommends one collection partitioned by payload for most cases, and multiple collections only for a limited number of tenants needing strict isolation. Check the guidance for your own store.</p>
+
+<h3>Early binding: permissions stored in the index</h3>
+<p>Each chunk carries metadata listing the groups or users allowed to read it, and the query filters on the caller's identities. This is fast and works well with ranking, because only permitted chunks compete for the top places. Its weakness is staleness: the index reflects permissions as they were at the last sync.</p>
+<p>The filter is only as trustworthy as the code that builds it. Microsoft's <a href="https://learn.microsoft.com/en-us/azure/search/search-security-trimming-for-azure-search" rel="noopener">security filter pattern for Azure AI Search</a> makes this explicit: the principal is just a string in a filter expression, with no authentication or authorisation behind it. The same document points to built-in access control list support as the first option where it can be used.</p>
+
+<h3>Late binding: checking with the source</h3>
+<p>The system retrieves candidates, then asks the source system whether this user may read each one. This gives the freshest answer, but it adds latency and load, and it can leave too few results if most candidates are rejected. In practice it pairs well with early binding: filter in the index for speed, then recheck the final passages for sensitive sources.</p>
+
+<h2>Filter during the search, not after it</h2>
+<p>Running a top-20 search and then dropping forbidden results looks safe, and it does prevent the leak. But if 19 of the 20 are forbidden, the user gets a thin answer even though permitted documents exist further down. This failure is easy to miss, because it looks like poor retrieval rather than an access problem.</p>
+<p>Some approximate indexes behave this way even when the filter is written into the query. The <a href="https://github.com/pgvector/pgvector" rel="noopener">pgvector README</a> states that with approximate indexes, filtering is applied after the index is scanned. Its example is a condition matching 10% of rows, which with HNSW and the default <code>hnsw.ef_search</code> of 40 returns only 4 rows on average. It suggests iterative index scans, partial indexes or partitioning, depending on the filter. Test recall for users with narrow access, not only for administrators, whose results can look perfect.</p>
+<p>Here is the shape of the query path. The identity comes from the verified session and never from the request body or the model's output:</p>
+<pre><code># Illustrative only. Helpers and field names are placeholders.
+def retrieve_for_user(session, question):
+    principals = resolve_principals(session.verified_user_id)
+    if not principals:
+        return []
+
+    chunks = vector_search(
+        embed(question),
+        limit=20,
+        filter={"tenant_id": session.tenant_id,
+                "allowed_principals": {"any_of": principals}},
+    )
+    # Fail closed: a chunk with no access data is never returned.
+    return [c for c in chunks if c.metadata.get("allowed_principals")]</code></pre>
+<p>This sample is illustrative: the helpers and filter syntax are placeholders and will differ by store. It fails closed, returning nothing when the identity or the access data is missing. A retrieval tool given to an agent needs the same treatment, with the identity bound in code rather than offered as an argument the model can fill in. <a href="/blog/agentic-rag-explained/">Agentic RAG explained</a> shows how such tools fit together.</p>
+
+<h3>Using row-level security as a second layer</h3>
+<p>If your vectors live in PostgreSQL, row-level security can enforce the rule below the application, so a forgotten filter does not become a leak:</p>
+<pre><code>-- Illustrative only. Table, column and setting names are placeholders.
+ALTER TABLE chunks ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY tenant_isolation ON chunks
+  USING (tenant_id = current_setting('app.tenant_id')::uuid);</code></pre>
+<p>This SQL is illustrative, and needs testing against your schema. Read the <a href="https://www.postgresql.org/docs/current/ddl-rowsecurity.html" rel="noopener">PostgreSQL documentation</a> closely: superusers and roles with <code>BYPASSRLS</code> always bypass row security, and table owners normally do too unless you use <code>FORCE ROW LEVEL SECURITY</code>. An application that connects as the table owner may therefore have no protection at all. Connect as a restricted role. With connection pooling, also make sure the tenant setting cannot carry over from one request to the next.</p>
+
+<h2>Keeping permissions in sync</h2>
+<p>A person leaves a team and a file is unshared, yet the index still says otherwise. Plan for this directly:</p>
+<ul>
+<li><strong>Treat permission changes as their own events.</strong> Updating access metadata should not require re-embedding the content, and it may need to run far more often than a content sync.</li>
+<li><strong>Agree a maximum lag.</strong> Ask the content owner how long a revoked permission may remain effective, and use late binding where the answer is "not at all".</li>
+<li><strong>Store groups, and resolve members at query time.</strong> This means a change in team membership takes effect without touching any chunks.</li>
+<li><strong>Handle inheritance.</strong> Flatten folder or space permissions on to each chunk, and recompute when a parent changes.</li>
+<li><strong>Delete properly.</strong> Remove every chunk, summary and cached result derived from a deleted document, and confirm that the deletion took effect.</li>
+<li><strong>Alert on sync failures.</strong> A sync that fails silently turns into wrong permissions that nobody notices.</li>
+</ul>
+
+<h2>Close the side channels</h2>
+<p>Filtering retrieval handles the main path, but restricted content can still escape by other routes:</p>
+<ul>
+<li><strong>Caches.</strong> An answer cached for a director must not be reused for an intern. Scope cache keys by permissions, as described in <a href="/blog/llm-caching-strategies/">LLM caching strategies</a>.</li>
+<li><strong>Conversation history.</strong> Shared threads can expose answers built from documents the new reader cannot open.</li>
+<li><strong>Derived content.</strong> A summary spanning several documents needs permissions no broader than the most restrictive source, or it should stay out of shared indexes.</li>
+<li><strong>Long-term memory.</strong> A fact remembered from one user's session can resurface in another's unless memory is scoped.</li>
+<li><strong>Logs and traces.</strong> Prompts usually contain retrieved text, so tracing tools can give engineers access they would not otherwise have. See <a href="/blog/llm-observability-and-tracing/">LLM observability and tracing</a>.</li>
+<li><strong>Existence signals.</strong> Citations, titles, result counts and suggested questions can reveal that a confidential project exists, even if no content is shown. Filter them too.</li>
+<li><strong>Index access.</strong> Embeddings derive from the source text, so give the vector store the same protection as the documents themselves.</li>
+</ul>
+
+<h2>Test it as a security feature</h2>
+<p>Ordinary quality testing will not find these bugs, because it usually runs under a single account. Add tests such as these:</p>
+<ol>
+<li><strong>Seed marker documents.</strong> Plant unique strings in restricted test documents, then run queries as users who lack access and assert that the markers never appear in retrieved chunks, answers, citations or logs.</li>
+<li><strong>Test retrieval directly.</strong> Check the retrieved set rather than only the final answer, since a model may happen not to mention a passage it received.</li>
+<li><strong>Test revocation.</strong> Remove access, wait for your agreed lag, and confirm the content has gone.</li>
+<li><strong>Test empty states.</strong> A missing identity, group lookup failure or chunk with no metadata should return nothing.</li>
+<li><strong>Test tampering.</strong> Try changing identifiers in API requests, and asking the assistant to act as another user.</li>
+</ol>
+<p>Run these on every change to ingestion or retrieval, and log which principal saw which documents so that you can investigate an incident. Add the recall checks for narrow-access users to the wider evaluation described in <a href="/blog/how-to-evaluate-a-rag-system/">how to evaluate a RAG system</a>.</p>
+
+<h2>A sensible starting point</h2>
+<p>Start with a tenant boundary enforced by the data layer, plus group metadata on each chunk, filtered during the search and failing closed. Add a recheck against the source for your most sensitive content. If you would like help designing this, the <a href="/services/rag-development/">RAG development</a> page describes what I can help with.</p>
+      <h2>Frequently asked questions</h2>
+      <h3>Can a system prompt enforce permissions in RAG?</h3>
+      <p>No. A prompt can shape behaviour, but it is not a security control, and any text placed in it has already reached the model. Enforce permissions before retrieval results are assembled, in code or in the data layer.</p>
+      <h3>Should each customer have a separate vector index?</h3>
+      <p>Not necessarily. Separate indexes give strong isolation but can be costly with many tenants, while a shared index relies on a correct filter. Check your store's guidance and weigh it against the sensitivity of the data.</p>
+      <h3>What is the difference between early and late binding?</h3>
+      <p>Early binding stores permissions with each chunk and filters during the search, which is fast but can lag behind the source. Late binding asks the source system at query time, which is fresher but slower. Many systems combine them.</p>
+      <h3>How quickly must revoked access take effect?</h3>
+      <p>That is a business and compliance decision, so agree it with the content owner. Design the sync to meet that limit, monitor for failures and use a live check against the source for content where no delay is acceptable.</p>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="foot-cta">
+      <div>
+        <h2>Have an AI or full stack project in mind?</h2>
+        <p>Tell me what you want to build.</p>
+      </div>
+      <div class="foot-cta-btns">
+        <a class="btn" href="/#contact">Start a conversation</a>
+        <a class="btn btn-line" href="mailto:shivanigupta4876@gmail.com">Send an email</a>
+      </div>
+    </div>
+    <div class="foot-grid">
+      <div>
+        <a href="/" aria-label="Shivani, home"><img src="/assets/logo.svg" alt="Shivani" width="144" height="40"></a>
+        <p>AI/ML engineer working across generative AI, LLMs, RAG, agentic AI and NLP, plus full stack development.</p>
+        <span class="avail">Taking new projects</span>
+      </div>
+      <div>
+        <h3>Explore</h3>
+        <ul>
+          <li><a href="/services/">Services</a></li>
+          <li><a href="/#work">Projects</a></li>
+          <li><a href="/#process">Process</a></li>
+          <li><a href="/#faq">FAQ</a></li>
+          <li><a href="/blog/">Blog</a></li>
+          <li><a href="/#contact">Contact</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Services</h3>
+        <ul>
+          <li><a href="/services/generative-ai-llm-development/">Generative AI and LLMs</a></li>
+          <li><a href="/services/rag-development/">RAG development</a></li>
+          <li><a href="/services/multi-agent-systems/">Multi-agent systems</a></li>
+          <li><a href="/services/ai-orchestration-langgraph/">Orchestration with LangGraph</a></li>
+          <li><a href="/services/nlp-development/">NLP development</a></li>
+          <li><a href="/services/full-stack-development/">Full stack development</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Contact</h3>
+        <ul>
+          <li><a href="mailto:shivanigupta4876@gmail.com">shivanigupta4876@gmail.com</a></li>
+          <li><a href="tel:+919720466504">+91 97204 66504</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="foot-bottom">&copy; <span id="year">2026</span> Shivani. All rights reserved.</div>
+  </div>
+</footer>
+<a class="wa-float" href="https://wa.me/919720466504?text=Hi%20Shivani%2C%20I%20saw%20your%20website%20and%20would%20like%20to%20talk%20about%20a%20project." target="_blank" rel="noopener" aria-label="Chat on WhatsApp"><svg viewBox="0 0 24 24" width="28" height="28" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15L2 22l5.1-1.3A10 10 0 1 0 12 2zm0 18.2a8.2 8.2 0 0 1-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1a6.700 6.700 0 0 1-3.300-2.900c-.2-.3 0-.4.1-.6l.4-.4.2-.4v-.5l-.8-1.800c-.2-.5-.4-.4-.6-.4h-.5c-.2 0-.4.1-.6.3-.2.2-.8.8-.8 2s.9 2.300 1 2.500c.1.2 1.700 2.600 4.100 3.600 1.500.7 2.100.7 2.900.6.500-.1 1.500-.6 1.700-1.200.2-.6.2-1.100.1-1.200l-.2-.2z"/></svg></a>
+<script src="/assets/js/site.js" defer></script>
+</body>
+</html>

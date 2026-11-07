@@ -1,0 +1,227 @@
+<!doctype html>
+<html lang="en">
+<head>
+<script async src="https://www.googletagmanager.com/gtm.js?id=GTM-THN7RV8R"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+</script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="canonical" href="https://shivanigupta.store/blog/llm-caching-strategies/">
+<title>LLM Caching: Exact and Semantic Cache Risks | Shivani</title>
+<meta name="description" content="How exact and semantic LLM caching work, how to design cache keys and thresholds, and how to avoid wrong, stale or leaked answers in production.">
+<meta name="robots" content="index,follow">
+<meta name="author" content="Shivani">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<link rel="manifest" href="/site.webmanifest">
+<meta name="theme-color" content="#080b0f">
+<meta property="og:type" content="article">
+<meta property="og:title" content="LLM Caching: Exact and Semantic Cache Risks | Shivani">
+<meta property="og:description" content="How exact and semantic LLM caching work, how to design cache keys and thresholds, and how to avoid wrong, stale or leaked answers in production.">
+<meta property="og:url" content="https://shivanigupta.store/blog/llm-caching-strategies/">
+<meta property="og:image" content="https://shivanigupta.store/assets/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"LLM caching strategies: exact and semantic caching and their risks","description":"How exact and semantic LLM caching work, how to design cache keys and thresholds, and how to avoid wrong, stale or leaked answers in production.","mainEntityOfPage":"https://shivanigupta.store/blog/llm-caching-strategies/","datePublished":"2026-11-06","dateModified":"2026-11-06","author":{"@type":"Person","name":"Shivani"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://shivanigupta.store/"},{"@type":"ListItem","position":2,"name":"Blog","item":"https://shivanigupta.store/blog/"},{"@type":"ListItem","position":3,"name":"LLM caching strategies: exact and semantic caching and their risks","item":"https://shivanigupta.store/blog/llm-caching-strategies/"}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"What is the difference between exact and semantic caching?","acceptedAnswer":{"@type":"Answer","text":"Exact caching returns a stored answer only when a key built from the full request matches. Semantic caching returns one when a new request is close in embedding space to an earlier one, which raises hit rates but can return the wrong answer."}},{"@type":"Question","name":"Is provider prompt caching the same as response caching?","acceptedAnswer":{"@type":"Answer","text":"No. Prompt caching reuses the processing of a repeated prompt prefix, and the model still generates a new response. Response caching skips the model and returns a stored output, so it can serve stale or wrongly matched answers."}},{"@type":"Question","name":"What similarity threshold should a semantic cache use?","acceptedAnswer":{"@type":"Answer","text":"There is no universal value, because it depends on the embedding model and your traffic. Label real request pairs, including near misses, measure false hits at several thresholds and choose according to what a wrong answer would cost."}},{"@type":"Question","name":"Should LLM responses be cached per user?","acceptedAnswer":{"@type":"Answer","text":"Scope them by whatever changes the answer or who may see it. Personal or permission-dependent answers need user or permission scope, while general public answers can be shared within a tenant or more widely if that is safe."}}]}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&family=Poppins:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+<header class="nav">
+  <div class="wrap nav-in">
+    <a class="logo" href="/" aria-label="Shivani, home"><img src="/assets/logo.svg" alt="Shivani" width="144" height="40"></a>
+    <nav id="nav-links" aria-label="Main">
+      <a href="/#services">Services</a>
+      <a href="/#skills">Skills</a>
+      <a href="/#work">Work</a>
+      <a href="/#process">Process</a>
+      <a href="/#faq">FAQ</a>
+      <a href="/blog/">Blog</a>
+      <a class="btn btn-sm" href="/#contact">Hire Me</a>
+    </nav>
+    <button id="menu-toggle" class="menu-toggle" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="nav-links"><span></span><span></span><span></span></button>
+  </div>
+</header>
+
+<main id="top">
+  <section class="page-head">
+    <div class="wrap">
+      <nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a><span aria-hidden="true">/</span><a href="/blog/">Blog</a><span aria-hidden="true">/</span><span aria-current="page">LLM caching strategies: exact and semantic caching and their risks</span></nav>
+      <p class="eyebrow">Guide</p>
+      <h1>LLM caching strategies: exact and semantic caching and their risks</h1>
+      <p class="lead">Use exact caching when identical requests repeat and the answer depends only on inputs you can put in the key. Use semantic caching only when similar wording really does mean the same answer, and after testing it for false hits. The main risks are wrong matches, stale answers and one user's data reaching another.</p>
+    </div>
+  </section>
+  <section class="article">
+    <div class="wrap prose">
+<h2>What this guide covers</h2>
+<p>Caching is one of several levers covered in <a href="/blog/controlling-llm-cost-and-latency/">controlling LLM cost and latency</a>, which explains where it fits among the others. This guide takes a closer look at the part that tends to go wrong: deciding when a stored answer is really the right answer for a new request.</p>
+<p>A cache makes a claim each time it returns a hit, namely that this earlier output is correct for this request, for this person, right now. Everything below is a way of making that claim true.</p>
+
+<h2>Three things called caching</h2>
+<p>The word covers different mechanisms, and they carry very different risks:</p>
+<ul>
+<li><strong>Exact response caching</strong> returns a stored output when a key built from the request matches exactly. The model is not called.</li>
+<li><strong>Semantic caching</strong> returns a stored output when a new request is close enough in embedding space to an earlier one. Again the model is not called, but now the match is a judgement call.</li>
+<li><strong>Provider prompt caching</strong> reuses the processing of a repeated prompt prefix, and it does not return old answers. OpenAI's <a href="https://developers.openai.com/api/docs/guides/prompt-caching" rel="noopener">prompt caching guide</a> says the model still has to process new input and generate a new response, and that the entire rendered prefix must match. Other providers have their own rules, so read their documentation.</li>
+</ul>
+<p>Because prompt caching still produces a fresh answer, it does not have the wrong-answer risks discussed here. The rest of this guide is about the first two.</p>
+
+<h2>Exact caching: the key is the design</h2>
+<p>An exact cache can only be wrong in one way: when two requests share a key but should have different answers. So the key must include everything that can change the output or who may see it:</p>
+<ul>
+<li>The model identifier, including a pinned version if the provider offers one.</li>
+<li>The complete rendered messages, including the system prompt and any retrieved passages.</li>
+<li>Parameters such as temperature, maximum tokens, tool definitions and response schema.</li>
+<li>The tenant, and the user or permission scope where answers differ by access.</li>
+<li>A version number of your own, which you can raise to discard everything at once.</li>
+</ul>
+<pre><code># Illustrative only. Field choices depend on your application.
+import hashlib
+import json
+
+CACHE_VERSION = "v3"
+
+def cache_key(model, messages, params, tenant_id, permission_scope):
+    payload = {
+        "version": CACHE_VERSION,
+        "model": model,
+        "messages": messages,
+        "params": params,
+        "tenant": tenant_id,
+        "scope": permission_scope,
+    }
+    canonical = json.dumps(payload, sort_keys=True, separators=(",", ":"))
+    return hashlib.sha256(canonical.encode("utf-8")).hexdigest()</code></pre>
+<p>This sample is illustrative. Serialising with sorted keys matters, as otherwise two equivalent requests can hash differently. Watch out too for anything that varies needlessly: a timestamp in the system prompt or a request ID in the messages will mean that the cache never hits, and the failure is silent.</p>
+<p>Exact caching suits repeatable work, such as re-running a pipeline over unchanged documents, classifying duplicate records or replaying test runs. Conversational traffic rarely repeats exactly, particularly when a long history is part of the prompt. Normalising input by trimming whitespace is safe. Lowercasing or removing punctuation changes the text, so treat it as a decision to test, since these changes can alter meaning in codes, names and identifiers.</p>
+
+<h3>Do not cache everything that succeeds</h3>
+<p>Decide what is eligible. Refusals, truncated output, failed validation and error messages should not be stored, or one bad moment will be served repeatedly. Tool calls that change something must not be replayed from a cache at all, since the second request would skip the action while reporting that it happened. Temperature matters too: if you want varied output for creative work, a cache removes that variety.</p>
+
+<h2>Semantic caching: a classifier in disguise</h2>
+<p>A semantic cache embeds the incoming request, searches earlier requests and returns the stored answer if the nearest match is within a distance threshold. This is effectively a binary classifier answering "do these two requests have the same answer?", and it should be evaluated as one.</p>
+<p>Embeddings measure similarity of meaning, and that is not the same as interchangeability. These pairs may sit close together yet need different answers:</p>
+<ul>
+<li>"How do I cancel my annual plan?" and "How do I cancel my monthly plan?"</li>
+<li>"Can I take this medication with alcohol?" and "Can I take this medication without food?"</li>
+<li>"Is the API rate limit higher on Pro?" and "Is the API rate limit lower on Pro?"</li>
+<li>"What's our refund policy?" asked by a customer in two countries with different policies.</li>
+</ul>
+<p>Short follow-ups are especially dangerous. "What about the second one?" means something different in every conversation, so either rewrite it into a standalone question first or do not use the cache for it. Likewise, a request whose answer depends on retrieved documents or personal context is only comparable if that context is comparable too.</p>
+
+<h3>Choosing a threshold</h3>
+<p>No threshold is correct in general, as it depends on your embedding model and on your traffic. Do not copy a value from a tutorial. Instead:</p>
+<ol>
+<li>Sample real request pairs across a range of distances, including near misses like those above.</li>
+<li>Have someone who knows the domain label each pair: could the stored answer be served for the new question?</li>
+<li>Measure false hits and useful hits at several thresholds, then choose based on the cost of a wrong answer.</li>
+<li>Repeat when you change embedding model, as distances from different models are not comparable. Treat that change as a new cache.</li>
+</ol>
+<p>If no threshold gives acceptably few false hits with a useful number of hits, the honest conclusion is that semantic caching does not fit this feature. A review step can help during tuning: for a sample of hits, call the model anyway and compare the results.</p>
+
+<h3>Safer designs</h3>
+<ul>
+<li><strong>Curated answers.</strong> Only approved answers to known questions are served, so a match can never return a poor generated answer. This resembles an FAQ with fuzzy matching.</li>
+<li><strong>Match, then verify.</strong> Use similarity to find a candidate, then check it with a small classifier or a model call. This costs more per request, and the saving must still justify it.</li>
+<li><strong>Cache retrieval instead of answers.</strong> Reusing search results for similar queries limits what a false hit can do, because the model still composes an answer to the actual question.</li>
+<li><strong>Restrict by intent.</strong> Allow the cache only for categories where it has been tested, such as general product questions, and not for account-specific ones.</li>
+</ul>
+
+<h2>The risks in production</h2>
+
+<h3>Leaks between users</h3>
+<p>A shared cache is a route around your permission system. An answer built from documents that one user could read should not be returned to someone who could not read them, even when the question is the same. Partition by tenant and permission scope, and filter on that scope in the lookup. For semantic caches, this must be a hard filter rather than a similarity signal. RedisVL's <a href="https://docs.redisvl.com/en/stable/user_guide/03_llmcache.html" rel="noopener">semantic cache guide</a> shows one approach, using filterable fields so that a lookup only considers entries for a given user. The wider design is in <a href="/blog/rag-access-control-and-permissions/">RAG access control and permissions</a>. Where an answer contains personal data, also treat cached copies as stored personal data, with suitable retention and deletion.</p>
+
+<h3>Stale answers</h3>
+<p>A time limit is the usual tool, but it alone leaves answers wrong until they expire. Add invalidation by storing the source document IDs and versions with each entry, then removing entries when a source changes. For a RAG system, including a content version in the key achieves something similar.</p>
+<p>Read how your library treats expiry. The same RedisVL guide notes that TTL defaults to none, so entries persist, and that its check method refreshes the TTL on matched entries. With a sliding window such as this, a frequently requested answer may never expire, which is exactly the entry you most want to keep current. Consider an absolute maximum age. Also bump the cache version when you change a prompt or model, otherwise old behaviour lingers after the release.</p>
+
+<h3>Poisoning</h3>
+<p>If one user's interaction can fill an entry that others receive, a successful prompt injection can spread. An attacker who manipulates a model into a bad answer to a common question may have that answer served to everyone who asks something similar. This is a direct consequence of sharing, and it is my reasoning rather than a statistic about attacks, but it should affect your design. Validate outputs before storing them, prevent shared entries being created from requests with personal or untrusted context, and provide a way to remove entries quickly. <a href="/blog/llm-guardrails-and-prompt-injection-defence/">LLM guardrails and prompt injection defence</a> covers the underlying problem.</p>
+
+<h3>Hidden quality problems</h3>
+<p>Caching can hide things. A wrong answer repeated from a cache produces no new errors, and a model upgrade may look like it changed nothing because most traffic never reached it. So record each hit, the matched entry and its distance in your traces, and give users' negative feedback a way to find and evict the entry involved. Bypass the cache during evaluation runs, unless the cache is what you are testing.</p>
+
+<h2>Choosing an approach</h2>
+<ol>
+<li>Start with provider prompt caching if prompts have a long stable prefix, as it has no wrong-answer risk.</li>
+<li>Add exact caching where your logs show that requests really do repeat.</li>
+<li>Look at your logs to see how many requests are near-duplicates with the same answer. If there are few, stop there.</li>
+<li>Only then trial semantic caching on a narrow, low-risk category, in shadow mode first, comparing what it would have returned with what the model produced.</li>
+</ol>
+<p>For help designing LLM features with these safeguards, see <a href="/services/generative-ai-llm-development/">generative AI and LLM development</a>.</p>
+      <h2>Frequently asked questions</h2>
+      <h3>What is the difference between exact and semantic caching?</h3>
+      <p>Exact caching returns a stored answer only when a key built from the full request matches. Semantic caching returns one when a new request is close in embedding space to an earlier one, which raises hit rates but can return the wrong answer.</p>
+      <h3>Is provider prompt caching the same as response caching?</h3>
+      <p>No. Prompt caching reuses the processing of a repeated prompt prefix, and the model still generates a new response. Response caching skips the model and returns a stored output, so it can serve stale or wrongly matched answers.</p>
+      <h3>What similarity threshold should a semantic cache use?</h3>
+      <p>There is no universal value, because it depends on the embedding model and your traffic. Label real request pairs, including near misses, measure false hits at several thresholds and choose according to what a wrong answer would cost.</p>
+      <h3>Should LLM responses be cached per user?</h3>
+      <p>Scope them by whatever changes the answer or who may see it. Personal or permission-dependent answers need user or permission scope, while general public answers can be shared within a tenant or more widely if that is safe.</p>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="foot-cta">
+      <div>
+        <h2>Have an AI or full stack project in mind?</h2>
+        <p>Tell me what you want to build.</p>
+      </div>
+      <div class="foot-cta-btns">
+        <a class="btn" href="/#contact">Start a conversation</a>
+        <a class="btn btn-line" href="mailto:shivanigupta4876@gmail.com">Send an email</a>
+      </div>
+    </div>
+    <div class="foot-grid">
+      <div>
+        <a href="/" aria-label="Shivani, home"><img src="/assets/logo.svg" alt="Shivani" width="144" height="40"></a>
+        <p>AI/ML engineer working across generative AI, LLMs, RAG, agentic AI and NLP, plus full stack development.</p>
+        <span class="avail">Taking new projects</span>
+      </div>
+      <div>
+        <h3>Explore</h3>
+        <ul>
+          <li><a href="/services/">Services</a></li>
+          <li><a href="/#work">Projects</a></li>
+          <li><a href="/#process">Process</a></li>
+          <li><a href="/#faq">FAQ</a></li>
+          <li><a href="/blog/">Blog</a></li>
+          <li><a href="/#contact">Contact</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Services</h3>
+        <ul>
+          <li><a href="/services/generative-ai-llm-development/">Generative AI and LLMs</a></li>
+          <li><a href="/services/rag-development/">RAG development</a></li>
+          <li><a href="/services/multi-agent-systems/">Multi-agent systems</a></li>
+          <li><a href="/services/ai-orchestration-langgraph/">Orchestration with LangGraph</a></li>
+          <li><a href="/services/nlp-development/">NLP development</a></li>
+          <li><a href="/services/full-stack-development/">Full stack development</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Contact</h3>
+        <ul>
+          <li><a href="mailto:shivanigupta4876@gmail.com">shivanigupta4876@gmail.com</a></li>
+          <li><a href="tel:+919720466504">+91 97204 66504</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="foot-bottom">&copy; <span id="year">2026</span> Shivani. All rights reserved.</div>
+  </div>
+</footer>
+<a class="wa-float" href="https://wa.me/919720466504?text=Hi%20Shivani%2C%20I%20saw%20your%20website%20and%20would%20like%20to%20talk%20about%20a%20project." target="_blank" rel="noopener" aria-label="Chat on WhatsApp"><svg viewBox="0 0 24 24" width="28" height="28" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15L2 22l5.1-1.3A10 10 0 1 0 12 2zm0 18.2a8.2 8.2 0 0 1-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1a6.700 6.700 0 0 1-3.300-2.900c-.2-.3 0-.4.1-.6l.4-.4.2-.4v-.5l-.8-1.800c-.2-.5-.4-.4-.6-.4h-.5c-.2 0-.4.1-.6.3-.2.2-.8.8-.8 2s.9 2.300 1 2.500c.1.2 1.700 2.600 4.100 3.600 1.500.7 2.100.7 2.900.6.500-.1 1.500-.6 1.700-1.200.2-.6.2-1.100.1-1.200l-.2-.2z"/></svg></a>
+<script src="/assets/js/site.js" defer></script>
+</body>
+</html>
