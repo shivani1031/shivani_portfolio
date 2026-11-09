@@ -174,6 +174,11 @@ def run_scenario(scenario, attempts=10):
 </ol>
 <p>Offline tests cannot anticipate everything users will do, so keep monitoring after release. Roll out significant changes gradually where you can, and watch tool error rates, step counts and escalations alongside user feedback.</p>
 <p>Frameworks that represent an agent as an explicit graph can also help, since individual nodes and routes can be tested in isolation. If you want help building an agent you can test this way, the <a href="/services/ai-orchestration-langgraph/">orchestration with LangGraph</a> page describes what I can help with.</p>
+<aside class="post-cta" aria-label="Work with Shivani">
+<h2>Need a LangGraph workflow built?</h2>
+<p>I design and build LangGraph workflows end to end, from the AI workflow to the backend and UI. Tell me what you want to build and I will reply with next steps.</p>
+<p class="post-cta-btns"><a class="btn" href="https://wa.me/919720466504?text=Hi%20Shivani%2C%20I%20read%20your%20guide%20%22Testing%20AI%20agents%3A%20how%20to%20handle%20non-deterministic%20behaviour%22%20and%20would%20like%20to%20discuss%20a%20LangGraph%20workflow." target="_blank" rel="noopener">Chat on WhatsApp</a> <a class="btn btn-line" href="/#contact">Send project details</a> <a class="post-cta-link" href="/services/ai-orchestration-langgraph/">See the service</a></p>
+</aside>
       <h2>Frequently asked questions</h2>
       <h3>Can AI agents be tested with normal unit tests?</h3>
       <p>Yes, for a large part of the system. Tools, parsing, permissions, limits and the agent loop can be tested deterministically by replacing the model with a scripted fake. Only the model's choices need repeated, statistical evaluation against the real model.</p>

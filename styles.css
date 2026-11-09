@@ -196,3 +196,9 @@ nav a:not(.btn):hover { color: var(--accent); }
 .wa-float:hover { background: #9be02f; }
 
 .subhead { font-size: 22px; margin: 40px 0 20px; }
+
+/* Call to action at the end of each guide */
+.post-cta { margin: 40px 0; padding: 28px; border: 1px solid var(--accent); border-radius: 12px; background: var(--accent-soft); }
+.prose .post-cta h2 { margin-top: 0; }
+.post-cta-btns { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin-bottom: 0; }
+.post-cta-link { color: var(--accent); font-weight: 600; }

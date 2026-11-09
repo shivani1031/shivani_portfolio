@@ -166,6 +166,11 @@ async def stream_chat(message: str) -&gt; AsyncIterable[Token]:
 <li><strong>Test your own workload.</strong> Published benchmarks rarely resemble long streaming calls. Replace the model with a stub that waits realistically, then load-test each candidate deployment.</li>
 </ol>
 <p>Whichever you choose, keep model logic in its own layer, away from the route handlers. It makes testing simple, and it also means that the framework decision is not permanent. If you are planning a backend of this kind, the <a href="/services/full-stack-development/">full stack development</a> page describes what I can help with.</p>
+<aside class="post-cta" aria-label="Work with Shivani">
+<h2>Need a full stack AI product built?</h2>
+<p>I design and build full stack AI products end to end, from the AI workflow to the backend and UI. Tell me what you want to build and I will reply with next steps.</p>
+<p class="post-cta-btns"><a class="btn" href="https://wa.me/919720466504?text=Hi%20Shivani%2C%20I%20read%20your%20guide%20%22FastAPI%20vs%20Flask%20for%20AI%20backends%22%20and%20would%20like%20to%20discuss%20a%20full%20stack%20AI%20product." target="_blank" rel="noopener">Chat on WhatsApp</a> <a class="btn btn-line" href="/#contact">Send project details</a> <a class="post-cta-link" href="/services/full-stack-development/">See the service</a></p>
+</aside>
       <h2>Frequently asked questions</h2>
       <h3>Is FastAPI faster than Flask for LLM apps?</h3>
       <p>Framework overhead is rarely what you feel, because the model call takes far longer. The practical advantage is concurrency: an async FastAPI worker can hold many waiting requests, whereas a Flask worker handles one at a time. Measure with your own workload.</p>

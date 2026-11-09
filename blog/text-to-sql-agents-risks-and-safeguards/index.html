@@ -152,6 +152,11 @@ def validate_query(sql):
 <p><strong>Write security tests as well.</strong> Include attempts to reach other tenants, write data, read system tables, run multiple statements and cause slow queries. Include injection text in stored data too, in case results are passed back to the model. A correctly configured system should refuse or contain them at the database level, even when validation is turned off for the test.</p>
 <p><strong>Log everything useful.</strong> Record the question, generated SQL, validation outcome, duration and row count, with appropriate care for sensitive values. Review rejected queries and user-flagged answers, and add them to your test set.</p>
 <p>For help building LLM features with appropriate controls, see <a href="/services/generative-ai-llm-development/">generative AI and LLM development</a>.</p>
+<aside class="post-cta" aria-label="Work with Shivani">
+<h2>Need a generative AI or LLM feature built?</h2>
+<p>I design and build generative AI or LLM features end to end, from the AI workflow to the backend and UI. Tell me what you want to build and I will reply with next steps.</p>
+<p class="post-cta-btns"><a class="btn" href="https://wa.me/919720466504?text=Hi%20Shivani%2C%20I%20read%20your%20guide%20%22Text-to-SQL%20agents%3A%20risks%20and%20safeguards%22%20and%20would%20like%20to%20discuss%20a%20generative%20AI%20or%20LLM%20feature." target="_blank" rel="noopener">Chat on WhatsApp</a> <a class="btn btn-line" href="/#contact">Send project details</a> <a class="post-cta-link" href="/services/generative-ai-llm-development/">See the service</a></p>
+</aside>
       <h2>Frequently asked questions</h2>
       <h3>Is text-to-SQL safe to use on a production database?</h3>
       <p>Direct access to the primary database is hard to justify. A read-only, narrowly scoped role on a replica or analytics copy, with validation and limits, reduces the risk considerably, although it does not remove it.</p>

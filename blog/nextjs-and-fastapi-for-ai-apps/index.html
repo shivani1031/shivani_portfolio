@@ -195,6 +195,11 @@ export async function POST(request: Request) {
 <h2>When a stream is the wrong shape</h2>
 <p>A request held open works for a chat reply. A multi-minute agent run should not depend on one connection surviving. Move it into a stored run that a worker executes, with the browser following its progress and able to reconnect, as described in <a href="/blog/building-a-backend-api-for-an-ai-agent-in-python/">building a backend API for an AI agent</a>. Next.js then only starts the run and displays its state.</p>
 <p>If you are planning a product along these lines, the <a href="/services/full-stack-development/">full stack development</a> page describes what I can help with.</p>
+<aside class="post-cta" aria-label="Work with Shivani">
+<h2>Need a full stack AI product built?</h2>
+<p>I design and build full stack AI products end to end, from the AI workflow to the backend and UI. Tell me what you want to build and I will reply with next steps.</p>
+<p class="post-cta-btns"><a class="btn" href="https://wa.me/919720466504?text=Hi%20Shivani%2C%20I%20read%20your%20guide%20%22Next.js%20and%20FastAPI%20for%20AI%20apps%3A%20structure%2C%20auth%20and%20streaming%22%20and%20would%20like%20to%20discuss%20a%20full%20stack%20AI%20product." target="_blank" rel="noopener">Chat on WhatsApp</a> <a class="btn btn-line" href="/#contact">Send project details</a> <a class="post-cta-link" href="/services/full-stack-development/">See the service</a></p>
+</aside>
       <h2>Frequently asked questions</h2>
       <h3>Do I need FastAPI if I already use Next.js?</h3>
       <p>Not always. For a simple call to a hosted model, a Route Handler can be enough. A Python service makes more sense when you rely on Python AI libraries, run long agent work or want model logic owned and deployed separately.</p>

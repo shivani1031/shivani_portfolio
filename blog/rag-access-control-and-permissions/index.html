@@ -152,6 +152,11 @@ CREATE POLICY tenant_isolation ON chunks
 
 <h2>A sensible starting point</h2>
 <p>Start with a tenant boundary enforced by the data layer, plus group metadata on each chunk, filtered during the search and failing closed. Add a recheck against the source for your most sensitive content. If you would like help designing this, the <a href="/services/rag-development/">RAG development</a> page describes what I can help with.</p>
+<aside class="post-cta" aria-label="Work with Shivani">
+<h2>Need a RAG system built?</h2>
+<p>I design and build RAG systems end to end, from the AI workflow to the backend and UI. Tell me what you want to build and I will reply with next steps.</p>
+<p class="post-cta-btns"><a class="btn" href="https://wa.me/919720466504?text=Hi%20Shivani%2C%20I%20read%20your%20guide%20%22RAG%20access%20control%3A%20keeping%20retrieval%20within%20each%20user%27s%20permissions%22%20and%20would%20like%20to%20discuss%20a%20RAG%20system." target="_blank" rel="noopener">Chat on WhatsApp</a> <a class="btn btn-line" href="/#contact">Send project details</a> <a class="post-cta-link" href="/services/rag-development/">See the service</a></p>
+</aside>
       <h2>Frequently asked questions</h2>
       <h3>Can a system prompt enforce permissions in RAG?</h3>
       <p>No. A prompt can shape behaviour, but it is not a security control, and any text placed in it has already reached the model. Enforce permissions before retrieval results are assembled, in code or in the data layer.</p>

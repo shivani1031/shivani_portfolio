@@ -198,6 +198,11 @@ async function readStream(prompt, signal) {
 <h2>Testing a stream</h2>
 <p>Replace the model with a stub that emits a scripted sequence, including splits inside events and multi-byte characters. Then test a mid-stream error, a dropped connection with no final event, a stop click, a slow first token and very long output. Network throttling in browser developer tools is useful for this, and a final check against the deployed environment is essential.</p>
 <p>For help building this layer, see <a href="/services/full-stack-development/">full stack development for AI products</a>.</p>
+<aside class="post-cta" aria-label="Work with Shivani">
+<h2>Need a full stack AI product built?</h2>
+<p>I design and build full stack AI products end to end, from the AI workflow to the backend and UI. Tell me what you want to build and I will reply with next steps.</p>
+<p class="post-cta-btns"><a class="btn" href="https://wa.me/919720466504?text=Hi%20Shivani%2C%20I%20read%20your%20guide%20%22Streaming%20LLM%20responses%20to%20a%20web%20UI%22%20and%20would%20like%20to%20discuss%20a%20full%20stack%20AI%20product." target="_blank" rel="noopener">Chat on WhatsApp</a> <a class="btn btn-line" href="/#contact">Send project details</a> <a class="post-cta-link" href="/services/full-stack-development/">See the service</a></p>
+</aside>
       <h2>Frequently asked questions</h2>
       <h3>Should I use SSE or WebSockets to stream LLM responses?</h3>
       <p>Server-sent events are often enough, because the output flows one way and they run over ordinary HTTP. WebSockets make more sense if you already use them or need frequent two-way messages during a response, such as collaborative or voice features.</p>

@@ -148,6 +148,16 @@ def recall_at_k(queries, passages, relevant, embed, k):
 <li><strong>Forgetting to sync.</strong> When a source document changes or is deleted, its old chunks must go too, or the system will keep retrieving them.</li>
 </ul>
 <p>For help designing retrieval around your own content, see <a href="/services/rag-development/">RAG development</a>.</p>
+<h2>Related guides</h2>
+<ul>
+<li><a href="/blog/llm-caching-strategies/">LLM caching strategies: exact and semantic caching and their risks</a></li>
+<li><a href="/blog/rag-access-control-and-permissions/">RAG access control: keeping retrieval within each user's permissions</a></li>
+</ul>
+<aside class="post-cta" aria-label="Work with Shivani">
+<h2>Need a RAG system built?</h2>
+<p>I design and build RAG systems end to end, from the AI workflow to the backend and UI. Tell me what you want to build and I will reply with next steps.</p>
+<p class="post-cta-btns"><a class="btn" href="https://wa.me/919720466504?text=Hi%20Shivani%2C%20I%20read%20your%20guide%20%22Embeddings%20and%20choosing%20a%20vector%20database%22%20and%20would%20like%20to%20discuss%20a%20RAG%20system." target="_blank" rel="noopener">Chat on WhatsApp</a> <a class="btn btn-line" href="/#contact">Send project details</a> <a class="post-cta-link" href="/services/rag-development/">See the service</a></p>
+</aside>
       <h2>Frequently asked questions</h2>
       <h3>Can I change embedding model later?</h3>
       <p>Yes, but you need to re-embed all your content, because vectors from different models are not comparable. Keeping the original text and building a new index alongside the old one makes this a manageable change.</p>
