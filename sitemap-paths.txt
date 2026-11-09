@@ -69,3 +69,7 @@
 /blog/llm-function-calling-vs-mcp/
 /blog/nextjs-and-fastapi-for-ai-apps/
 /blog/keyword-extraction-with-python/
+/blog/langgraph-examples/
+/blog/rag-chunk-size-and-overlap/
+/blog/choosing-an-embedding-model/
+/blog/add-an-ai-chatbot-to-your-website/

@@ -1,0 +1,227 @@
+<!doctype html>
+<html lang="en">
+<head>
+<script async src="https://www.googletagmanager.com/gtm.js?id=GTM-THN7RV8R"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+</script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="canonical" href="https://shivanigupta.store/blog/rag-chunk-size-and-overlap/">
+<title>RAG Chunk Size and Overlap: How to Choose | Shivani</title>
+<meta name="description" content="How to choose chunk size and overlap for RAG: the limits that set the range, the trade-offs, and a sweep you can run on your own documents and questions.">
+<meta name="robots" content="index,follow">
+<meta name="author" content="Shivani Gupta">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<link rel="manifest" href="/site.webmanifest">
+<meta name="theme-color" content="#080b0f">
+<meta property="og:type" content="article">
+<meta property="og:title" content="RAG Chunk Size and Overlap: How to Choose | Shivani">
+<meta property="og:description" content="How to choose chunk size and overlap for RAG: the limits that set the range, the trade-offs, and a sweep you can run on your own documents and questions.">
+<meta property="og:url" content="https://shivanigupta.store/blog/rag-chunk-size-and-overlap/">
+<meta property="og:image" content="https://shivanigupta.store/assets/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"RAG chunk size and overlap: how to choose","description":"How to choose chunk size and overlap for RAG: the limits that set the range, the trade-offs, and a sweep you can run on your own documents and questions.","mainEntityOfPage":"https://shivanigupta.store/blog/rag-chunk-size-and-overlap/","datePublished":"2026-11-10","dateModified":"2026-11-10","author":{"@type":"Person","name":"Shivani Gupta"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://shivanigupta.store/"},{"@type":"ListItem","position":2,"name":"Blog","item":"https://shivanigupta.store/blog/"},{"@type":"ListItem","position":3,"name":"RAG chunk size and overlap: how to choose","item":"https://shivanigupta.store/blog/rag-chunk-size-and-overlap/"}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"What is a good default chunk size for RAG?","acceptedAnswer":{"@type":"Answer","text":"There is no default that suits every corpus. Work out the range your embedding model's input limit and your context budget allow, start in the middle of it and test a smaller and a larger size on your own questions."}},{"@type":"Question","name":"Is chunk overlap always needed?","acceptedAnswer":{"@type":"Answer","text":"No. Overlap mainly helps when splitting ignores structure. If chunks already follow paragraphs or sections, start without it and add a small amount only if testing shows answers being cut at boundaries."}},{"@type":"Question","name":"How much overlap should I use?","acceptedAnswer":{"@type":"Answer","text":"A small fraction of the chunk size is a common starting point. Larger overlap adds chunks, storage and near-duplicate results, so compare a few values in a sweep rather than picking one by habit."}},{"@type":"Question","name":"Should chunk size be measured in characters or tokens?","acceptedAnswer":{"@type":"Answer","text":"Tokens, because embedding models and LLMs limit their input in tokens. The ratio of characters to tokens varies with language and content, so a size set in characters can exceed a model's limit."}}]}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&family=Poppins:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+<a class="skip-link" href="#top">Skip to content</a>
+<header class="nav">
+  <div class="wrap nav-in">
+    <a class="logo" href="/" aria-label="Shivani, home"><img src="/assets/logo.svg" alt="Shivani" width="144" height="40"></a>
+    <nav id="nav-links" aria-label="Main">
+      <a href="/#services">Services</a>
+      <a href="/#skills">Skills</a>
+      <a href="/#work">Work</a>
+      <a href="/#process">Process</a>
+      <a href="/#faq">FAQ</a>
+      <a href="/blog/">Blog</a>
+      <a class="btn btn-sm" href="/#contact">Hire Me</a>
+    </nav>
+    <button id="menu-toggle" class="menu-toggle" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="nav-links"><span></span><span></span><span></span></button>
+  </div>
+</header>
+
+<main id="top">
+  <section class="page-head">
+    <div class="wrap">
+      <nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a><span aria-hidden="true">/</span><a href="/blog/">Blog</a><span aria-hidden="true">/</span><span aria-current="page">RAG chunk size and overlap: how to choose</span></nav>
+      <p class="eyebrow">Guide</p>
+      <h1>RAG chunk size and overlap: how to choose</h1>
+      <p class="lead">Choose chunk size by working out the range your embedding model, context budget and documents allow, then testing a few sizes within it on your own questions. Treat overlap as a small fraction of the chunk, often zero for cleanly structured text, and keep it only if your test shows answers being lost at boundaries.</p>
+    </div>
+  </section>
+  <section class="article">
+    <div class="wrap prose">
+<h2>Why there is no single right number</h2>
+<p>Chunk size settles how much text each retrievable unit holds. Overlap settles how much text neighbouring chunks share. Both affect whether the passage that answers a question can be found, and whether it reaches the model complete.</p>
+<p>Recommended values circulate widely, but they were measured on someone else's documents and questions. A size that suits short help articles can split a contract clause in half, and a size that suits long reports can bury a one-line answer among unrelated text. The useful skill is not knowing a number but knowing how to find yours.</p>
+<p>This guide assumes you have already chosen a splitting method. If not, read <a href="/blog/choosing-chunking-strategies-for-rag/">choosing chunking strategies for RAG</a> first, which compares fixed, recursive, structure-aware, semantic and parent-child chunking. Here the focus is narrower: the two numbers, and how to test them.</p>
+
+<h2>Step 1: measure in tokens</h2>
+<p>Embedding models and LLMs limit their input in tokens, not characters or words, and the ratio between them varies by language and content. Code, tables and non-English text often use more tokens per word than plain English prose. If you set sizes in characters, some chunks may be far larger in tokens than you expect.</p>
+<p>Count with the tokeniser that matches your embedding model where you can. If that is not available, measure a sample of your own documents to find the real ratio rather than relying on a rule of thumb.</p>
+
+<h2>Step 2: find the limits that set the range</h2>
+<p>Before testing anything, three constraints narrow the range of sensible sizes.</p>
+<h3>The embedding model's input limit</h3>
+<p>Every embedding model has a maximum input length. Text beyond it may be truncated without warning or rejected, depending on the provider. Your largest chunk, including any title or heading text you prepend, must fit. Check the limit in the model's own documentation. Even well below the limit, very long inputs produce a single vector that has to represent several ideas at once, which can make specific questions harder to match.</p>
+<h3>The context budget</h3>
+<p>What reaches the model is roughly the chunk size multiplied by the number of chunks you retrieve, plus instructions, conversation history and room for the answer. If you plan to pass eight chunks, each chunk can be far smaller than if you pass three. Work this out from the other direction too: decide how many passages a typical answer needs, and how much context you are willing to pay for on every request.</p>
+<h3>The shape of the answers</h3>
+<p>Look at where answers sit in your documents. If most answers are a sentence or two, such as a deadline or a limit, smaller chunks match them more precisely. If answers are procedures or explanations that run for several paragraphs, chunks need to be large enough to hold them, or you need a parent-child arrangement that retrieves small pieces and returns their surrounding section.</p>
+
+<h2>Step 3: decide what overlap is for</h2>
+<p>Overlap exists to protect information that falls across a boundary. If a sentence starts at the end of one chunk and finishes at the start of the next, neither chunk contains it whole. Repeating some text in both chunks makes it more likely that one of them does.</p>
+<p>That benefit has costs:</p>
+<ul>
+<li><strong>More chunks.</strong> With a chunk size of 400 tokens and an overlap of 100, each new chunk advances only 300 tokens, so the index holds about a third more chunks than with no overlap. Embedding and storage grow accordingly.</li>
+<li><strong>Near-duplicate results.</strong> Adjacent chunks share text, so they often both match the same question and take two of your limited result slots with largely the same content.</li>
+<li><strong>Repeated context.</strong> If both are passed to the model, you pay for the shared text twice.</li>
+</ul>
+<p>Overlap matters most when splitting ignores structure, as fixed-size splitting does. When chunks already follow paragraphs, sections or clauses, boundaries tend to fall where ideas end, and overlap adds less. In that case, start at zero and add it only if your test shows answers being cut.</p>
+<p>Here is a minimal token-based splitter that makes the relationship between the two settings explicit:</p>
+<pre><code>def chunk_tokens(tokens, size, overlap):
+    if not 0 &lt;= overlap &lt; size:
+        raise ValueError("overlap must be at least 0 and smaller than size")
+    step = size - overlap
+    chunks = []
+    for start in range(0, len(tokens), step):
+        chunks.append(tokens[start:start + size])
+        if start + size &gt;= len(tokens):
+            break
+    return chunks</code></pre>
+<p>Illustrative sketch. It works on a list of tokens and ignores sentence and section boundaries.</p>
+<p>The step between chunk starts is the size minus the overlap, which is why an overlap equal to or larger than the size is rejected: the splitter would never move forward.</p>
+
+<h2>Step 4: build a test that checks the span</h2>
+<p>A common retrieval test checks whether the right document or chunk appears in the top results. For tuning size and overlap, a stricter check is more informative: does a retrieved chunk contain the whole answer?</p>
+<p>To set it up, collect realistic questions and, for each one, copy the shortest piece of text that fully answers it. Store that answer span as text rather than as a chunk ID, because IDs change every time you rechunk. Include questions whose answers sit near headings, inside lists and across paragraph breaks, since those are the cases that size and overlap affect.</p>
+<p>The test then asks, for every configuration, how often a top result contains the answer span in full. That catches the failure that matters here, where retrieval finds the right area but the answer has been cut in two.</p>
+
+<h2>Step 5: run a small sweep</h2>
+<p>With the test in place, try a few sizes within your range and a few overlap values for each, rebuilding the index every time:</p>
+<pre><code>def sweep(documents, questions, build_index, search, k=5):
+    results = []
+    for size in (200, 400, 800):
+        for overlap in (0, size // 10, size // 5):
+            index = build_index(documents, size=size, overlap=overlap)
+            contained = 0
+            for q in questions:
+                top = search(index, q["text"], k=k)
+                if any(q["answer_span"] in chunk for chunk in top):
+                    contained += 1
+            results.append({
+                "size": size,
+                "overlap": overlap,
+                "span_recall": contained / len(questions),
+                "chunks": len(index),
+            })
+    return results</code></pre>
+<p>Illustrative sketch. <code>build_index</code> and <code>search</code> are placeholders for your own pipeline, and the sizes are examples rather than recommendations.</p>
+<p>A few rules keep the sweep honest:</p>
+<ul>
+<li><strong>Change only size and overlap.</strong> Keep the embedding model, retrieval method and number of results fixed, or you will not know what caused a difference.</li>
+<li><strong>Compare at the number of results you will use.</strong> A configuration that wins at ten results may lose at three.</li>
+<li><strong>Record the cost.</strong> Note the number of chunks and the context each configuration sends, not just its score.</li>
+<li><strong>Use enough questions.</strong> With a small set, a difference of one or two questions can be noise. Look at which questions changed, not only the totals.</li>
+</ul>
+
+<h2>Step 6: read the results</h2>
+<p>Numbers tell you which configuration won; the failures tell you why. For questions that fail, look at what was retrieved:</p>
+<ul>
+<li><strong>The answer is split across two chunks.</strong> Overlap may help, but a structure-aware split that respects the boundary is often a cleaner fix.</li>
+<li><strong>The right chunk is found but ranks low.</strong> The chunk may be too large and mixed. Try a smaller size, or add a reranker.</li>
+<li><strong>The chunk matches but lacks context.</strong> A passage such as "this applies to both plans" needs the heading above it. Prepending the title and section path often helps more than a larger size.</li>
+<li><strong>Several near-identical chunks fill the results.</strong> Reduce overlap, or remove duplicates after retrieval.</li>
+</ul>
+<p>Often the best configuration is not the top scorer but the cheapest one that is close to it. A small gain that doubles the context sent on every request may not be worth having.</p>
+
+<h2>Content that needs its own settings</h2>
+<p>One size rarely suits a mixed collection. FAQ pages, where each answer is short and self-contained, often work best with one question and answer per chunk regardless of length. Long policies and manuals may need larger chunks or parent-child retrieval. Tables need their headers kept with every row group. If your collection mixes these types, it is reasonable to chunk each type differently and record the settings in each chunk's metadata.</p>
+
+<h2>When to test again</h2>
+<p>Size and overlap are tied to the rest of the pipeline. Rerun the sweep when you change the embedding model, since input limits and behaviour differ; when you add a reranker, which can make larger candidate sets workable; and when your content changes character, such as adding a new document type. Because rechunking means re-embedding, build ingestion so that a new index can be built and compared alongside the old one before switching.</p>
+<p>Once retrieval looks right, confirm that final answers improved as well, using the approach in <a href="/blog/how-to-evaluate-a-rag-system/">how to evaluate a RAG system</a>. For help tuning retrieval on your own documents, see <a href="/services/rag-development/">RAG development</a>.</p>
+<aside class="post-cta" aria-label="Work with Shivani">
+<h2>Need a RAG system built?</h2>
+<p>I design and build RAG systems end to end, from the AI workflow to the backend and UI. Tell me what you want to build and I will reply with next steps.</p>
+<p class="post-cta-btns"><a class="btn" href="https://wa.me/919720466504?text=Hi%20Shivani%2C%20I%20read%20your%20guide%20%22RAG%20chunk%20size%20and%20overlap%3A%20how%20to%20choose%22%20and%20would%20like%20to%20discuss%20a%20RAG%20system." target="_blank" rel="noopener">Chat on WhatsApp</a> <a class="btn btn-line" href="/#contact">Send project details</a> <a class="post-cta-link" href="/services/rag-development/">See the service</a></p>
+</aside>
+      <h2>Frequently asked questions</h2>
+      <h3>What is a good default chunk size for RAG?</h3>
+      <p>There is no default that suits every corpus. Work out the range your embedding model's input limit and your context budget allow, start in the middle of it and test a smaller and a larger size on your own questions.</p>
+      <h3>Is chunk overlap always needed?</h3>
+      <p>No. Overlap mainly helps when splitting ignores structure. If chunks already follow paragraphs or sections, start without it and add a small amount only if testing shows answers being cut at boundaries.</p>
+      <h3>How much overlap should I use?</h3>
+      <p>A small fraction of the chunk size is a common starting point. Larger overlap adds chunks, storage and near-duplicate results, so compare a few values in a sweep rather than picking one by habit.</p>
+      <h3>Should chunk size be measured in characters or tokens?</h3>
+      <p>Tokens, because embedding models and LLMs limit their input in tokens. The ratio of characters to tokens varies with language and content, so a size set in characters can exceed a model's limit.</p>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="foot-cta">
+      <div>
+        <h2>Have an AI or full stack project in mind?</h2>
+        <p>Tell me what you want to build.</p>
+      </div>
+      <div class="foot-cta-btns">
+        <a class="btn" href="/#contact">Start a conversation</a>
+        <a class="btn btn-line" href="mailto:shivanigupta4876@gmail.com">Send an email</a>
+      </div>
+    </div>
+    <div class="foot-grid">
+      <div>
+        <a href="/" aria-label="Shivani, home"><img src="/assets/logo.svg" alt="Shivani" width="144" height="40"></a>
+        <p>AI/ML engineer working across generative AI, LLMs, RAG, agentic AI and NLP, plus full stack development.</p>
+        <span class="avail">Taking new projects</span>
+      </div>
+      <div>
+        <h3>Explore</h3>
+        <ul>
+          <li><a href="/services/">Services</a></li>
+          <li><a href="/#work">Projects</a></li>
+          <li><a href="/#process">Process</a></li>
+          <li><a href="/#faq">FAQ</a></li>
+          <li><a href="/blog/">Blog</a></li>
+          <li><a href="/#contact">Contact</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Services</h3>
+        <ul>
+          <li><a href="/services/generative-ai-llm-development/">Generative AI and LLMs</a></li>
+          <li><a href="/services/rag-development/">RAG development</a></li>
+          <li><a href="/services/multi-agent-systems/">Multi-agent systems</a></li>
+          <li><a href="/services/ai-orchestration-langgraph/">Orchestration with LangGraph</a></li>
+          <li><a href="/services/nlp-development/">NLP development</a></li>
+          <li><a href="/services/full-stack-development/">Full stack development</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Contact</h3>
+        <ul>
+          <li><a href="mailto:shivanigupta4876@gmail.com">shivanigupta4876@gmail.com</a></li>
+          <li><a href="tel:+919720466504">+91 97204 66504</a></li>
+          <li><a href="https://github.com/shivani1031" rel="me noopener" target="_blank">GitHub</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="foot-bottom">&copy; <span id="year">2026</span> Shivani Gupta. All rights reserved.</div>
+  </div>
+</footer>
+<a class="wa-float" href="https://wa.me/919720466504?text=Hi%20Shivani%2C%20I%20saw%20your%20website%20and%20would%20like%20to%20talk%20about%20a%20project." target="_blank" rel="noopener" aria-label="Chat on WhatsApp"><svg viewBox="0 0 24 24" width="28" height="28" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15L2 22l5.1-1.3A10 10 0 1 0 12 2zm0 18.2a8.2 8.2 0 0 1-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1a6.700 6.700 0 0 1-3.300-2.900c-.2-.3 0-.4.1-.6l.4-.4.2-.4v-.5l-.8-1.800c-.2-.5-.4-.4-.6-.4h-.5c-.2 0-.4.1-.6.3-.2.2-.8.8-.8 2s.9 2.300 1 2.500c.1.2 1.700 2.600 4.100 3.600 1.500.7 2.100.7 2.900.6.500-.1 1.500-.6 1.700-1.200.2-.6.2-1.100.1-1.200l-.2-.2z"/></svg></a>
+<script src="/assets/js/site.js" defer></script>
+</body>
+</html>

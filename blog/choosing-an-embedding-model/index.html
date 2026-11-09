@@ -1,0 +1,215 @@
+<!doctype html>
+<html lang="en">
+<head>
+<script async src="https://www.googletagmanager.com/gtm.js?id=GTM-THN7RV8R"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+</script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="canonical" href="https://shivanigupta.store/blog/choosing-an-embedding-model/">
+<title>How to Choose an Embedding Model for RAG | Shivani</title>
+<meta name="description" content="How to choose an embedding model for RAG: rule out models on hard constraints, then compare a shortlist on your own questions, split by question type.">
+<meta name="robots" content="index,follow">
+<meta name="author" content="Shivani Gupta">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<link rel="manifest" href="/site.webmanifest">
+<meta name="theme-color" content="#080b0f">
+<meta property="og:type" content="article">
+<meta property="og:title" content="How to Choose an Embedding Model for RAG | Shivani">
+<meta property="og:description" content="How to choose an embedding model for RAG: rule out models on hard constraints, then compare a shortlist on your own questions, split by question type.">
+<meta property="og:url" content="https://shivanigupta.store/blog/choosing-an-embedding-model/">
+<meta property="og:image" content="https://shivanigupta.store/assets/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"How to choose an embedding model","description":"How to choose an embedding model for RAG: rule out models on hard constraints, then compare a shortlist on your own questions, split by question type.","mainEntityOfPage":"https://shivanigupta.store/blog/choosing-an-embedding-model/","datePublished":"2026-11-10","dateModified":"2026-11-10","author":{"@type":"Person","name":"Shivani Gupta"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://shivanigupta.store/"},{"@type":"ListItem","position":2,"name":"Blog","item":"https://shivanigupta.store/blog/"},{"@type":"ListItem","position":3,"name":"How to choose an embedding model","item":"https://shivanigupta.store/blog/choosing-an-embedding-model/"}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Can I rely on public embedding leaderboards?","acceptedAnswer":{"@type":"Answer","text":"Use them to find candidates, not to choose. They measure general test sets, and your documents, vocabulary and users' wording may behave differently. A small test on your own questions is more reliable."}},{"@type":"Question","name":"How many questions do I need to compare embedding models?","acceptedAnswer":{"@type":"Answer","text":"Enough to cover each question type that matters to you with several examples. With a small set, treat differences of one or two questions as noise and read the individual failures."}},{"@type":"Question","name":"Can I mix vectors from two embedding models in one index?","acceptedAnswer":{"@type":"Answer","text":"No. Vectors from different models are not comparable, so queries and documents must be embedded with the same model or a pair designed to work together. Changing model means re-embedding the collection."}},{"@type":"Question","name":"Is a larger embedding model always better?","acceptedAnswer":{"@type":"Answer","text":"No. A larger model may score higher on general tests but not on your content, and it can cost more and respond more slowly. Choose the cheapest model that is not meaningfully worse on your own test."}}]}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&family=Poppins:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+<a class="skip-link" href="#top">Skip to content</a>
+<header class="nav">
+  <div class="wrap nav-in">
+    <a class="logo" href="/" aria-label="Shivani, home"><img src="/assets/logo.svg" alt="Shivani" width="144" height="40"></a>
+    <nav id="nav-links" aria-label="Main">
+      <a href="/#services">Services</a>
+      <a href="/#skills">Skills</a>
+      <a href="/#work">Work</a>
+      <a href="/#process">Process</a>
+      <a href="/#faq">FAQ</a>
+      <a href="/blog/">Blog</a>
+      <a class="btn btn-sm" href="/#contact">Hire Me</a>
+    </nav>
+    <button id="menu-toggle" class="menu-toggle" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="nav-links"><span></span><span></span><span></span></button>
+  </div>
+</header>
+
+<main id="top">
+  <section class="page-head">
+    <div class="wrap">
+      <nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a><span aria-hidden="true">/</span><a href="/blog/">Blog</a><span aria-hidden="true">/</span><span aria-current="page">How to choose an embedding model</span></nav>
+      <p class="eyebrow">Guide</p>
+      <h1>How to choose an embedding model</h1>
+      <p class="lead">Choose an embedding model in two passes. First rule out models that fail your hard constraints, such as language, input length, data handling and licence. Then compare the remaining few on a labelled set of your own questions, broken down by question type, and pick the cheapest model that is not meaningfully worse.</p>
+    </div>
+  </section>
+  <section class="article">
+    <div class="wrap prose">
+<h2>Why the choice deserves a method</h2>
+<p>The embedding model decides which passages a RAG system can find. If it places a question far from the passage that answers it, no amount of prompt work will recover the answer. It is also expensive to change later, because every stored vector has to be regenerated with the new model.</p>
+<p>Public leaderboards are a reasonable place to find candidates, but they measure performance on general test sets. Your users' wording, your domain's vocabulary and your mix of languages may look nothing like those sets. This guide sets out a selection process: what to rule out first, how to build a comparison that reflects your use, and how to make the final call.</p>
+<p>For the basics of what embeddings are, and for choosing where to store them, see <a href="/blog/embeddings-and-choosing-a-vector-database/">embeddings and choosing a vector database</a>.</p>
+
+<h2>Pass one: rule out on hard constraints</h2>
+<p>Some requirements are not trade-offs. A model that fails one is out, however well it scores. Write these down before looking at any results:</p>
+<ul>
+<li><strong>Languages.</strong> List every language your documents and users use. If someone may ask in one language about a document in another, the model must handle cross-language matching, not just each language separately.</li>
+<li><strong>Data handling.</strong> Decide whether your text may be sent to a third-party API at all, and if so, under what terms and in which regions. If it may not, only models you can run yourself remain.</li>
+<li><strong>Licence.</strong> For self-hosted models, read the licence. Some restrict commercial use or impose conditions.</li>
+<li><strong>Input length.</strong> The maximum input must cover your largest chunk plus any heading text you prepend. Check whether longer input is cut off silently or rejected.</li>
+<li><strong>Infrastructure.</strong> If you will run the model yourself, confirm it fits the hardware you have and can embed your full collection in an acceptable time.</li>
+<li><strong>Retirement policy.</strong> For hosted models, find out how much notice the provider gives before retiring a model, since retirement forces a full re-embed.</li>
+</ul>
+<p>Aim to finish this pass with three or four candidates. Comparing more than that takes time without adding much.</p>
+
+<h2>Pass two: build a test set that reflects your use</h2>
+<p>The comparison is only as good as its questions. Gather them from where real questions already appear: support emails, search logs, chat transcripts or the questions staff answer most often. Keep the original wording, including vague and misspelt questions, because those are where models differ.</p>
+<p>For each question, record which chunks genuinely help answer it. Then tag every question with a group that describes its type. The groups are what make this method more useful than a single score. Useful groups often include:</p>
+<ul>
+<li><strong>Paraphrase.</strong> The user's words differ from the document's, such as "cancel" against "terminate".</li>
+<li><strong>Exact terms.</strong> Product codes, error messages, names and acronyms.</li>
+<li><strong>Cross-language.</strong> A question in one language whose answer is in another.</li>
+<li><strong>Negation and conditions.</strong> Questions that hinge on "not", "except" or "only if".</li>
+<li><strong>Unanswerable.</strong> Questions your content does not answer, to see what each model returns instead.</li>
+</ul>
+<p>Also add hard negatives to the collection: passages that look relevant but are wrong, such as last year's policy or a similar product's manual. A model that ranks these above the right passage will cause confidently wrong answers in production.</p>
+
+<h2>Running the comparison</h2>
+<p>Use the same chunks for every model, and change nothing else. The function below scores one model, reporting recall and mean reciprocal rank separately for each group of questions:</p>
+<pre><code>from collections import defaultdict
+
+def evaluate(model_name, embed_query, embed_doc, chunks, questions, k=5):
+    doc_vecs = {cid: embed_doc(text) for cid, text in chunks.items()}
+    by_group = defaultdict(lambda: {"hits": 0, "rr": 0.0, "n": 0})
+    for q in questions:
+        qv = embed_query(q["text"])
+        ranked = sorted(
+            doc_vecs,
+            key=lambda cid: sum(a * b for a, b in zip(qv, doc_vecs[cid])),
+            reverse=True,
+        )[:k]
+        g = by_group[q["group"]]
+        g["n"] += 1
+        for rank, cid in enumerate(ranked, start=1):
+            if cid in q["relevant"]:
+                g["hits"] += 1
+                g["rr"] += 1 / rank
+                break
+    return {
+        group: {"recall": v["hits"] / v["n"], "mrr": v["rr"] / v["n"]}
+        for group, v in by_group.items()
+    }</code></pre>
+<p>Illustrative sketch. <code>embed_query</code> and <code>embed_doc</code> are placeholders returning normalised vectors, and exact search is used because the test set is small.</p>
+<p>Recall shows how often a helpful chunk appears in the top results. Mean reciprocal rank shows how high it appears, which matters when only the first few results reach the model. Set <code>k</code> to the number of results your pipeline actually passes on.</p>
+<p>The function takes separate query and document embedding functions on purpose. Some models are trained to treat questions and passages differently, through a prefix, an instruction or a setting, and their documentation says which to use. Applying the wrong one, or none, can quietly lower quality, so set this up correctly for each candidate before comparing.</p>
+
+<h2>Checks beyond the main score</h2>
+<h3>Reduced dimensions</h3>
+<p>Some models can produce shorter vectors, either through a setting or by truncating the output, when they were trained to support it. Shorter vectors use less storage and memory and can speed up search. If a candidate offers this, run the test again at the reduced size and see whether any group drops noticeably. Only truncate a model whose documentation says it supports truncation.</p>
+<h3>Score distributions</h3>
+<p>If you plan to use a similarity threshold, for example to decide when nothing relevant was found, look at the scores each model gives to the right passages and to unanswerable questions. With some models the two ranges overlap so much that no threshold separates them. Thresholds do not transfer between models, so a value tuned for one is meaningless for another.</p>
+<h3>Speed and throughput</h3>
+<p>Measure how long query embedding takes from your own servers, since it adds to every request. Measure separately how long it takes to embed the whole collection, which matters for the first build and for every future re-embed.</p>
+
+<h2>Making the decision</h2>
+<p>Put the results in one table: a row per model, with recall and rank for each group, plus dimensions, query latency, full-collection embedding time and running cost. Then work through it in order:</p>
+<ol>
+<li>Remove any model that does badly on a group that matters to you, even if its average is high.</li>
+<li>Among the rest, look at the size of the differences. If two models differ by a question or two on a small set, treat them as equal.</li>
+<li>Choose the simplest and cheapest of the models that remain, weighing hosting, operations and retirement risk.</li>
+</ol>
+<p>Read the failures before you finish. If every model fails on exact codes, the fix is probably <a href="/blog/hybrid-search-and-reranking-for-rag/">hybrid search and reranking</a>, not a different embedding model. If they all fail on questions whose answers are split across chunks, revisit chunk size first; <a href="/blog/rag-chunk-size-and-overlap/">RAG chunk size and overlap</a> explains how to test it.</p>
+
+<h2>Planning for the next change</h2>
+<p>The model you choose today will probably not be the one you use in a few years. Make the next change routine rather than an emergency. Keep the test set and the scoring script in your repository. Store the model name and version with every vector. Build ingestion so that a second index can be filled with a new model, scored with the same test and switched over only when it wins.</p>
+<p>Once retrieval is settled, check the final answers too, using the approach in <a href="/blog/how-to-evaluate-a-rag-system/">how to evaluate a RAG system</a>. If you would like help choosing and testing a model on your own content, see <a href="/services/rag-development/">RAG development</a>.</p>
+<aside class="post-cta" aria-label="Work with Shivani">
+<h2>Need a RAG system built?</h2>
+<p>I design and build RAG systems end to end, from the AI workflow to the backend and UI. Tell me what you want to build and I will reply with next steps.</p>
+<p class="post-cta-btns"><a class="btn" href="https://wa.me/919720466504?text=Hi%20Shivani%2C%20I%20read%20your%20guide%20%22How%20to%20choose%20an%20embedding%20model%22%20and%20would%20like%20to%20discuss%20a%20RAG%20system." target="_blank" rel="noopener">Chat on WhatsApp</a> <a class="btn btn-line" href="/#contact">Send project details</a> <a class="post-cta-link" href="/services/rag-development/">See the service</a></p>
+</aside>
+      <h2>Frequently asked questions</h2>
+      <h3>Can I rely on public embedding leaderboards?</h3>
+      <p>Use them to find candidates, not to choose. They measure general test sets, and your documents, vocabulary and users' wording may behave differently. A small test on your own questions is more reliable.</p>
+      <h3>How many questions do I need to compare embedding models?</h3>
+      <p>Enough to cover each question type that matters to you with several examples. With a small set, treat differences of one or two questions as noise and read the individual failures.</p>
+      <h3>Can I mix vectors from two embedding models in one index?</h3>
+      <p>No. Vectors from different models are not comparable, so queries and documents must be embedded with the same model or a pair designed to work together. Changing model means re-embedding the collection.</p>
+      <h3>Is a larger embedding model always better?</h3>
+      <p>No. A larger model may score higher on general tests but not on your content, and it can cost more and respond more slowly. Choose the cheapest model that is not meaningfully worse on your own test.</p>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="foot-cta">
+      <div>
+        <h2>Have an AI or full stack project in mind?</h2>
+        <p>Tell me what you want to build.</p>
+      </div>
+      <div class="foot-cta-btns">
+        <a class="btn" href="/#contact">Start a conversation</a>
+        <a class="btn btn-line" href="mailto:shivanigupta4876@gmail.com">Send an email</a>
+      </div>
+    </div>
+    <div class="foot-grid">
+      <div>
+        <a href="/" aria-label="Shivani, home"><img src="/assets/logo.svg" alt="Shivani" width="144" height="40"></a>
+        <p>AI/ML engineer working across generative AI, LLMs, RAG, agentic AI and NLP, plus full stack development.</p>
+        <span class="avail">Taking new projects</span>
+      </div>
+      <div>
+        <h3>Explore</h3>
+        <ul>
+          <li><a href="/services/">Services</a></li>
+          <li><a href="/#work">Projects</a></li>
+          <li><a href="/#process">Process</a></li>
+          <li><a href="/#faq">FAQ</a></li>
+          <li><a href="/blog/">Blog</a></li>
+          <li><a href="/#contact">Contact</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Services</h3>
+        <ul>
+          <li><a href="/services/generative-ai-llm-development/">Generative AI and LLMs</a></li>
+          <li><a href="/services/rag-development/">RAG development</a></li>
+          <li><a href="/services/multi-agent-systems/">Multi-agent systems</a></li>
+          <li><a href="/services/ai-orchestration-langgraph/">Orchestration with LangGraph</a></li>
+          <li><a href="/services/nlp-development/">NLP development</a></li>
+          <li><a href="/services/full-stack-development/">Full stack development</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Contact</h3>
+        <ul>
+          <li><a href="mailto:shivanigupta4876@gmail.com">shivanigupta4876@gmail.com</a></li>
+          <li><a href="tel:+919720466504">+91 97204 66504</a></li>
+          <li><a href="https://github.com/shivani1031" rel="me noopener" target="_blank">GitHub</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="foot-bottom">&copy; <span id="year">2026</span> Shivani Gupta. All rights reserved.</div>
+  </div>
+</footer>
+<a class="wa-float" href="https://wa.me/919720466504?text=Hi%20Shivani%2C%20I%20saw%20your%20website%20and%20would%20like%20to%20talk%20about%20a%20project." target="_blank" rel="noopener" aria-label="Chat on WhatsApp"><svg viewBox="0 0 24 24" width="28" height="28" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15L2 22l5.1-1.3A10 10 0 1 0 12 2zm0 18.2a8.2 8.2 0 0 1-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1a6.700 6.700 0 0 1-3.300-2.900c-.2-.3 0-.4.1-.6l.4-.4.2-.4v-.5l-.8-1.800c-.2-.5-.4-.4-.6-.4h-.5c-.2 0-.4.1-.6.3-.2.2-.8.8-.8 2s.9 2.300 1 2.500c.1.2 1.700 2.600 4.100 3.600 1.500.7 2.100.7 2.900.6.500-.1 1.500-.6 1.700-1.200.2-.6.2-1.100.1-1.200l-.2-.2z"/></svg></a>
+<script src="/assets/js/site.js" defer></script>
+</body>
+</html>

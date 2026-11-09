@@ -1,0 +1,360 @@
+<!doctype html>
+<html lang="en">
+<head>
+<script async src="https://www.googletagmanager.com/gtm.js?id=GTM-THN7RV8R"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+</script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="canonical" href="https://shivanigupta.store/blog/langgraph-examples/">
+<title>LangGraph Examples: Five Small Runnable Patterns | Shivani</title>
+<meta name="description" content="Five small, runnable LangGraph examples: a linear chain, a branch, a bounded loop, human approval and a subgraph, each with notes on when to use it.">
+<meta name="robots" content="index,follow">
+<meta name="author" content="Shivani Gupta">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<link rel="manifest" href="/site.webmanifest">
+<meta name="theme-color" content="#080b0f">
+<meta property="og:type" content="article">
+<meta property="og:title" content="LangGraph Examples: Five Small Runnable Patterns | Shivani">
+<meta property="og:description" content="Five small, runnable LangGraph examples: a linear chain, a branch, a bounded loop, human approval and a subgraph, each with notes on when to use it.">
+<meta property="og:url" content="https://shivanigupta.store/blog/langgraph-examples/">
+<meta property="og:image" content="https://shivanigupta.store/assets/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"LangGraph examples: five small patterns you can run","description":"Five small, runnable LangGraph examples: a linear chain, a branch, a bounded loop, human approval and a subgraph, each with notes on when to use it.","mainEntityOfPage":"https://shivanigupta.store/blog/langgraph-examples/","datePublished":"2026-11-10","dateModified":"2026-11-10","author":{"@type":"Person","name":"Shivani Gupta"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://shivanigupta.store/"},{"@type":"ListItem","position":2,"name":"Blog","item":"https://shivanigupta.store/blog/"},{"@type":"ListItem","position":3,"name":"LangGraph examples: five small patterns you can run","item":"https://shivanigupta.store/blog/langgraph-examples/"}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Do these LangGraph examples need an API key?","acceptedAnswer":{"@type":"Answer","text":"No. Every place where a model would normally be called uses an ordinary Python function, so the examples run locally after installing LangGraph. You add a model later by replacing those functions."}},{"@type":"Question","name":"What is the difference between a loop limit and the recursion limit?","acceptedAnswer":{"@type":"Answer","text":"A loop limit is a counter you keep in the state and check in a routing function, so the graph exits through a path you designed. The recursion limit is a framework safeguard that raises an error when a run takes too many steps."}},{"@type":"Question","name":"Why does my node run twice after an interrupt?","acceptedAnswer":{"@type":"Answer","text":"When a run resumes, LangGraph restarts the interrupted node from its beginning, so code before the interrupt call runs again. Keep side effects after the approval, ideally in a separate node."}},{"@type":"Question","name":"When should I use a subgraph instead of more nodes?","acceptedAnswer":{"@type":"Answer","text":"Use a subgraph when a group of steps forms its own unit, is reused in several places or is tested separately. For a small graph, extra nodes in one graph are usually easier to follow."}}]}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&family=Poppins:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+<a class="skip-link" href="#top">Skip to content</a>
+<header class="nav">
+  <div class="wrap nav-in">
+    <a class="logo" href="/" aria-label="Shivani, home"><img src="/assets/logo.svg" alt="Shivani" width="144" height="40"></a>
+    <nav id="nav-links" aria-label="Main">
+      <a href="/#services">Services</a>
+      <a href="/#skills">Skills</a>
+      <a href="/#work">Work</a>
+      <a href="/#process">Process</a>
+      <a href="/#faq">FAQ</a>
+      <a href="/blog/">Blog</a>
+      <a class="btn btn-sm" href="/#contact">Hire Me</a>
+    </nav>
+    <button id="menu-toggle" class="menu-toggle" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="nav-links"><span></span><span></span><span></span></button>
+  </div>
+</header>
+
+<main id="top">
+  <section class="page-head">
+    <div class="wrap">
+      <nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a><span aria-hidden="true">/</span><a href="/blog/">Blog</a><span aria-hidden="true">/</span><span aria-current="page">LangGraph examples: five small patterns you can run</span></nav>
+      <p class="eyebrow">Guide</p>
+      <h1>LangGraph examples: five small patterns you can run</h1>
+      <p class="lead">These five LangGraph examples cover the patterns most workflows are built from: a straight sequence, a branch, a loop with a limit, a pause for human approval and a subgraph. Each runs locally with plain functions standing in for model calls, and each comes with a note on when the pattern earns its place.</p>
+    </div>
+  </section>
+  <section class="article">
+    <div class="wrap prose">
+<h2>How to use these examples</h2>
+<p>Each example is complete: copy it into a file, install LangGraph with <code>pip install -U langgraph</code> and run it. No API key is needed, because every place where a model would normally be called uses an ordinary Python function instead. That keeps the focus on the graph itself, which is where these patterns differ.</p>
+<p>All the samples were run against LangGraph 1.2.20. The core calls they use, <code>StateGraph</code>, <code>add_node</code>, <code>add_edge</code>, <code>add_conditional_edges</code> and <code>compile</code>, have been stable for some time, but check the documentation for the version you install.</p>
+<p>This page is a set of patterns rather than a course. If you have never built a graph, start with the <a href="/blog/langgraph-tutorial-for-beginners/">LangGraph tutorial for beginners</a>, which explains state, nodes and edges step by step. For design advice on a larger workflow, read <a href="/blog/building-an-orchestrator-with-langgraph/">building an orchestrator with LangGraph</a>.</p>
+
+<h2>1. A linear chain</h2>
+<p>The simplest graph runs a fixed sequence of steps. Here one node tidies some text and the next summarises it.</p>
+<pre><code>from typing import TypedDict
+from langgraph.graph import StateGraph, START, END
+
+class State(TypedDict):
+    text: str
+    cleaned: str
+    summary: str
+
+def clean(state):
+    return {"cleaned": " ".join(state["text"].split())}
+
+def summarise(state):
+    # Stand-in for a model call.
+    return {"summary": state["cleaned"][:40]}
+
+builder = StateGraph(State)
+builder.add_node("clean", clean)
+builder.add_node("summarise", summarise)
+builder.add_edge(START, "clean")
+builder.add_edge("clean", "summarise")
+builder.add_edge("summarise", END)
+graph = builder.compile()
+
+print(graph.invoke({"text": "  Refunds are   accepted within 30 days.  "}))</code></pre>
+<p>Illustrative example. The summarise node stands in for a model call.</p>
+<p><strong>When to use it.</strong> Honestly, not often on its own. Two or three steps in a fixed order are usually clearer as plain function calls. A linear graph becomes worthwhile when you expect to add branches later, or when you want LangGraph's checkpointing, streaming or tracing for each step. It is also a useful skeleton: most of the other patterns start from it.</p>
+
+<h2>2. A branch on a classification</h2>
+<p>A conditional edge calls a routing function after a node finishes and sends the run to whichever node it names. Here a message is labelled and then handled by one of two nodes.</p>
+<pre><code>from typing import TypedDict
+from langgraph.graph import StateGraph, START, END
+
+class State(TypedDict):
+    message: str
+    label: str
+    reply: str
+
+def classify(state):
+    # Stand-in for a model; anything unexpected falls back to "other".
+    text = state["message"].lower()
+    label = "billing" if "invoice" in text else "other"
+    return {"label": label}
+
+def billing(state):
+    return {"reply": "Routing to the billing answer."}
+
+def other(state):
+    return {"reply": "Routing to the general answer."}
+
+def route(state):
+    return state["label"]
+
+builder = StateGraph(State)
+builder.add_node("classify", classify)
+builder.add_node("billing", billing)
+builder.add_node("other", other)
+builder.add_edge(START, "classify")
+builder.add_conditional_edges("classify", route, {"billing": "billing", "other": "other"})
+builder.add_edge("billing", END)
+builder.add_edge("other", END)
+graph = builder.compile()
+
+print(graph.invoke({"message": "Where is my invoice?"})["reply"])
+print(graph.invoke({"message": "Do you ship abroad?"})["reply"])</code></pre>
+<p>Illustrative example. The keyword check stands in for a model that classifies the message.</p>
+<p>The third argument to <code>add_conditional_edges</code> maps each value the router can return to a node. Passing it is optional, but it documents the possible paths and lets LangGraph draw the graph correctly.</p>
+<p><strong>When to use it.</strong> Use a branch when different kinds of input need different handling, for example billing questions going to an account lookup while general questions go to document search. Keep the judgement in a node, write a validated label into the state, and keep the router a plain lookup. A model that returns an unexpected label should land on a safe default rather than an error.</p>
+
+<h2>3. A loop with a limit</h2>
+<p>Graphs can contain cycles, which is one of the main reasons to use LangGraph. This example retries a search with a broader query until it finds something or runs out of attempts.</p>
+<pre><code>from typing import TypedDict
+from langgraph.graph import StateGraph, START, END
+
+MAX_TRIES = 3
+
+class State(TypedDict):
+    query: str
+    results: list[str]
+    tries: int
+
+def search(state):
+    # Stand-in search that finds nothing until the query is broadened.
+    found = ["doc-7"] if state["query"].endswith("*") else []
+    return {"results": found, "tries": state["tries"] + 1}
+
+def broaden(state):
+    return {"query": state["query"] + "*"}
+
+def route(state):
+    if state["results"]:
+        return "done"
+    if state["tries"] &gt;= MAX_TRIES:
+        return "give_up"
+    return "retry"
+
+builder = StateGraph(State)
+builder.add_node("search", search)
+builder.add_node("broaden", broaden)
+builder.add_edge(START, "search")
+builder.add_conditional_edges(
+    "search", route, {"done": END, "give_up": END, "retry": "broaden"}
+)
+builder.add_edge("broaden", "search")
+graph = builder.compile()
+
+print(graph.invoke({"query": "warranty", "results": [], "tries": 0}))</code></pre>
+<p>Illustrative example. The search function is a stub that succeeds only after the query is broadened.</p>
+<p>Notice that the limit is part of the state and the routing function, not left to the framework. LangGraph also has a recursion limit that raises <code>GraphRecursionError</code> when a run takes too many steps, but that is a backstop. Your own counter lets the graph finish cleanly, and it gives you a field to test and log.</p>
+<p><strong>When to use it.</strong> Loops suit work that can be checked and retried: a search that returned nothing, a draft that failed validation, or structured output that did not parse. They are a poor fit when there is no reliable check, because the loop will simply repeat the same mistake at extra cost. Decide in advance what happens when the limit is reached, whether that is a fallback answer, a message to the user or a handover to a person.</p>
+
+<h2>4. A pause for human approval</h2>
+<p>Some steps should not happen without a person agreeing, such as sending an email or issuing a refund. LangGraph's <code>interrupt</code> function pauses a run inside a node and returns a value to the caller. The run continues when you invoke the graph again with <code>Command(resume=...)</code> and the same thread ID.</p>
+<pre><code>from typing import TypedDict
+from langgraph.graph import StateGraph, START, END
+from langgraph.checkpoint.memory import InMemorySaver
+from langgraph.types import interrupt, Command
+
+class State(TypedDict):
+    draft: str
+    approved: bool
+    sent: bool
+
+def write_draft(state):
+    return {"draft": "Your refund has been approved."}
+
+def review(state):
+    decision = interrupt({"draft": state["draft"], "question": "Send this reply?"})
+    return {"approved": decision == "yes"}
+
+def send(state):
+    # A real send should be idempotent, because a resumed node can run again.
+    return {"sent": state["approved"]}
+
+builder = StateGraph(State)
+builder.add_node("write_draft", write_draft)
+builder.add_node("review", review)
+builder.add_node("send", send)
+builder.add_edge(START, "write_draft")
+builder.add_edge("write_draft", "review")
+builder.add_edge("review", "send")
+builder.add_edge("send", END)
+graph = builder.compile(checkpointer=InMemorySaver())
+
+config = {"configurable": {"thread_id": "ticket-42"}}
+first = graph.invoke({"draft": "", "approved": False, "sent": False}, config)
+print(first["__interrupt__"][0].value)
+
+final = graph.invoke(Command(resume="yes"), config)
+print(final)</code></pre>
+<p>Illustrative example. Nothing is actually sent; the send node only records the decision.</p>
+<p>Three details from the LangGraph reference are worth knowing. An interrupt needs a checkpointer, because the paused state must be saved somewhere. When the run resumes, the interrupted node starts again from its beginning, so any code before the <code>interrupt</code> call runs twice. And the in-memory checkpointer used here is lost when the process stops, so production systems need a durable one.</p>
+<p><strong>When to use it.</strong> Use it for actions that are costly, irreversible or visible to customers, and for decisions where policy requires a named person. Do not gate everything, or reviewers will start approving without reading. The guide to <a href="/blog/human-in-the-loop-approval-for-ai-agents/">human-in-the-loop approval for AI agents</a> covers what to gate and how to design the review step.</p>
+
+<h2>5. A subgraph</h2>
+<p>A compiled graph can be added to another graph as a node. Here a small draft-and-check flow is built once and used as a single step in a parent workflow.</p>
+<pre><code>from typing import TypedDict
+from langgraph.graph import StateGraph, START, END
+
+class State(TypedDict):
+    question: str
+    answer: str
+    checked: bool
+
+def draft(state):
+    return {"answer": f"Draft answer to: {state['question']}"}
+
+def check(state):
+    return {"checked": len(state["answer"]) &gt; 0}
+
+sub = StateGraph(State)
+sub.add_node("draft", draft)
+sub.add_node("check", check)
+sub.add_edge(START, "draft")
+sub.add_edge("draft", "check")
+sub.add_edge("check", END)
+answer_flow = sub.compile()
+
+def log_request(state):
+    return {}
+
+parent = StateGraph(State)
+parent.add_node("log_request", log_request)
+parent.add_node("answer_flow", answer_flow)
+parent.add_edge(START, "log_request")
+parent.add_edge("log_request", "answer_flow")
+parent.add_edge("answer_flow", END)
+graph = parent.compile()
+
+print(graph.invoke({"question": "Can I change my plan?", "answer": "", "checked": False}))</code></pre>
+<p>Illustrative example. Both graphs share one state type, which is the simplest arrangement.</p>
+<p>Because parent and subgraph share the same state keys, the subgraph reads and writes the parent's fields directly. When the two need different state, you call the subgraph from inside an ordinary node and translate the fields in and out yourself.</p>
+<p><strong>When to use it.</strong> Subgraphs help when a group of steps forms its own unit, is reused in more than one place, or is owned and tested by a different person. They add a boundary to reason about, so a graph with a handful of nodes rarely needs one. Routing into a subgraph by tool name, and handing control back to the parent, are covered in <a href="/blog/named-tool-routing-in-langgraph/">named tool routing in LangGraph</a>.</p>
+
+<h2>Choosing between the patterns</h2>
+<p>Real workflows combine these patterns. A support assistant might branch on the type of question, loop on a draft-and-check step and pause for approval before sending. A useful way to decide is to ask a question of each step:</p>
+<ul>
+<li><strong>Does it always lead to the same next step?</strong> Use a normal edge.</li>
+<li><strong>Does the next step depend on the result?</strong> Use a conditional edge with a validated field in the state.</li>
+<li><strong>Can the result be checked and improved?</strong> Use a loop, with a counter and a planned exit.</li>
+<li><strong>Should a person decide before it happens?</strong> Use an interrupt with a durable checkpointer.</li>
+<li><strong>Is it a self-contained group of steps?</strong> Consider a subgraph.</li>
+</ul>
+<p>If a model needs to decide which of several workers runs next, again and again, you have a supervisor or orchestrator pattern. That is a combination of a branch and a loop, and it is covered with a full example in <a href="/blog/building-an-orchestrator-with-langgraph/">building an orchestrator with LangGraph</a>.</p>
+
+<h2>Testing patterns without a model</h2>
+<p>Each example above already runs without a model, and that is a habit worth keeping in real projects. Replace model calls with stubs that return fixed values, then run the graph once for every path: each branch, the loop that succeeds, the loop that hits its limit, and the approval that is refused as well as the one that is granted. Routing functions are ordinary Python, so they can be unit tested on their own by building a state and checking the name they return.</p>
+<p>Once the paths behave as designed, swap the stubs for real model calls and evaluate complete runs against realistic inputs, looking at the path each run took as well as its final output.</p>
+
+<h2>Common mistakes with these patterns</h2>
+<ul>
+<li><strong>Missing initial values.</strong> A node that reads <code>state["tries"]</code> fails if the run started without that key. Set every field a node reads in the initial input.</li>
+<li><strong>Lists that overwrite each other.</strong> By default a node's update replaces a field. If several nodes add to a list, give the field a reducer such as <code>operator.add</code>.</li>
+<li><strong>Side effects before an interrupt.</strong> Because the node restarts on resume, an email sent before the interrupt call would be sent again. Put side effects after approval, ideally in a separate node.</li>
+<li><strong>Routers that do too much.</strong> A routing function that calls a model is hard to test and hard to trace. Make the decision in a node and route on the stored result.</li>
+</ul>
+<p>If you are planning a workflow built from these pieces, the <a href="/services/ai-orchestration-langgraph/">AI orchestration with LangGraph</a> page describes how I can help.</p>
+<aside class="post-cta" aria-label="Work with Shivani">
+<h2>Need a LangGraph workflow built?</h2>
+<p>I design and build LangGraph workflows end to end, from the AI workflow to the backend and UI. Tell me what you want to build and I will reply with next steps.</p>
+<p class="post-cta-btns"><a class="btn" href="https://wa.me/919720466504?text=Hi%20Shivani%2C%20I%20read%20your%20guide%20%22LangGraph%20examples%3A%20five%20small%20patterns%20you%20can%20run%22%20and%20would%20like%20to%20discuss%20a%20LangGraph%20workflow." target="_blank" rel="noopener">Chat on WhatsApp</a> <a class="btn btn-line" href="/#contact">Send project details</a> <a class="post-cta-link" href="/services/ai-orchestration-langgraph/">See the service</a></p>
+</aside>
+      <h2>Frequently asked questions</h2>
+      <h3>Do these LangGraph examples need an API key?</h3>
+      <p>No. Every place where a model would normally be called uses an ordinary Python function, so the examples run locally after installing LangGraph. You add a model later by replacing those functions.</p>
+      <h3>What is the difference between a loop limit and the recursion limit?</h3>
+      <p>A loop limit is a counter you keep in the state and check in a routing function, so the graph exits through a path you designed. The recursion limit is a framework safeguard that raises an error when a run takes too many steps.</p>
+      <h3>Why does my node run twice after an interrupt?</h3>
+      <p>When a run resumes, LangGraph restarts the interrupted node from its beginning, so code before the interrupt call runs again. Keep side effects after the approval, ideally in a separate node.</p>
+      <h3>When should I use a subgraph instead of more nodes?</h3>
+      <p>Use a subgraph when a group of steps forms its own unit, is reused in several places or is tested separately. For a small graph, extra nodes in one graph are usually easier to follow.</p>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="foot-cta">
+      <div>
+        <h2>Have an AI or full stack project in mind?</h2>
+        <p>Tell me what you want to build.</p>
+      </div>
+      <div class="foot-cta-btns">
+        <a class="btn" href="/#contact">Start a conversation</a>
+        <a class="btn btn-line" href="mailto:shivanigupta4876@gmail.com">Send an email</a>
+      </div>
+    </div>
+    <div class="foot-grid">
+      <div>
+        <a href="/" aria-label="Shivani, home"><img src="/assets/logo.svg" alt="Shivani" width="144" height="40"></a>
+        <p>AI/ML engineer working across generative AI, LLMs, RAG, agentic AI and NLP, plus full stack development.</p>
+        <span class="avail">Taking new projects</span>
+      </div>
+      <div>
+        <h3>Explore</h3>
+        <ul>
+          <li><a href="/services/">Services</a></li>
+          <li><a href="/#work">Projects</a></li>
+          <li><a href="/#process">Process</a></li>
+          <li><a href="/#faq">FAQ</a></li>
+          <li><a href="/blog/">Blog</a></li>
+          <li><a href="/#contact">Contact</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Services</h3>
+        <ul>
+          <li><a href="/services/generative-ai-llm-development/">Generative AI and LLMs</a></li>
+          <li><a href="/services/rag-development/">RAG development</a></li>
+          <li><a href="/services/multi-agent-systems/">Multi-agent systems</a></li>
+          <li><a href="/services/ai-orchestration-langgraph/">Orchestration with LangGraph</a></li>
+          <li><a href="/services/nlp-development/">NLP development</a></li>
+          <li><a href="/services/full-stack-development/">Full stack development</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Contact</h3>
+        <ul>
+          <li><a href="mailto:shivanigupta4876@gmail.com">shivanigupta4876@gmail.com</a></li>
+          <li><a href="tel:+919720466504">+91 97204 66504</a></li>
+          <li><a href="https://github.com/shivani1031" rel="me noopener" target="_blank">GitHub</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="foot-bottom">&copy; <span id="year">2026</span> Shivani Gupta. All rights reserved.</div>
+  </div>
+</footer>
+<a class="wa-float" href="https://wa.me/919720466504?text=Hi%20Shivani%2C%20I%20saw%20your%20website%20and%20would%20like%20to%20talk%20about%20a%20project." target="_blank" rel="noopener" aria-label="Chat on WhatsApp"><svg viewBox="0 0 24 24" width="28" height="28" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15L2 22l5.1-1.3A10 10 0 1 0 12 2zm0 18.2a8.2 8.2 0 0 1-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1a6.700 6.700 0 0 1-3.300-2.900c-.2-.3 0-.4.1-.6l.4-.4.2-.4v-.5l-.8-1.800c-.2-.5-.4-.4-.6-.4h-.5c-.2 0-.4.1-.6.3-.2.2-.8.8-.8 2s.9 2.300 1 2.500c.1.2 1.700 2.600 4.100 3.600 1.500.7 2.100.7 2.900.6.500-.1 1.500-.6 1.700-1.200.2-.6.2-1.100.1-1.200l-.2-.2z"/></svg></a>
+<script src="/assets/js/site.js" defer></script>
+</body>
+</html>

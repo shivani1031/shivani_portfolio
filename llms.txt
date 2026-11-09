@@ -81,6 +81,10 @@ The site describes the services on offer and publishes general technical guides.
 - [LLM function calling vs MCP: how they relate and when each applies](/blog/llm-function-calling-vs-mcp/): Why function calling and MCP are different layers, the three ways to connect them and how to choose between them.
 - [Next.js and FastAPI for AI apps: structure, auth and streaming](/blog/nextjs-and-fastapi-for-ai-apps/): Where to draw the boundary between Next.js and FastAPI, how identity crosses it and two ways to stream model output through it.
 - [Keyword extraction with Python: statistical, embedding and LLM approaches](/blog/keyword-extraction-with-python/): TF-IDF, YAKE, KeyBERT and LLM extraction compared in Python, with trade-offs and a simple way to test them on your own data.
+- [LangGraph examples: five small patterns you can run](/blog/langgraph-examples/): Five runnable patterns (linear chain, branch, loop with limit, human approval with interrupt, subgraph), each with when to use it.
+- [RAG chunk size and overlap: how to choose](/blog/rag-chunk-size-and-overlap/): The limits that set the chunk size range, what overlap costs, and a sweep that tests whether a retrieved chunk holds the whole answer.
+- [How to choose an embedding model](/blog/choosing-an-embedding-model/): Rule models out on hard constraints, then compare a shortlist on your own questions, scored by question type, with no vendor rankings.
+- [Adding an AI chatbot to your website: a buyer's guide](/blog/add-an-ai-chatbot-to-your-website/): The options, what to prepare, the risks, ten questions to ask a developer or vendor, and a narrow way to start.
 
 ## Projects
 
