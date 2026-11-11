@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 450" role="img" aria-labelledby="t">
+<title id="t">Freelancer or agency for an AI build</title>
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#b3ff3a"/></marker></defs>
+<rect width="800" height="450" fill="#080b0f"/>
+<g font-family="Arial, Helvetica, sans-serif" fill="#ffffff">
+<text x="400" y="50" font-size="28" text-anchor="middle" fill="#ffffff" font-weight="bold">Freelancer or agency for an AI build?</text>
+<rect x="30" y="85" width="350" height="60" rx="10" fill="#b3ff3a" stroke="#b3ff3a" stroke-width="2"/>
+<text x="205.0" y="123.4" font-size="24" text-anchor="middle" fill="#080b0f">Freelancer</text>
+<rect x="420" y="85" width="350" height="60" rx="10" fill="#b3ff3a" stroke="#b3ff3a" stroke-width="2"/>
+<text x="595.0" y="123.4" font-size="24" text-anchor="middle" fill="#080b0f">Agency</text>
+<rect x="30" y="165" width="350" height="50" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="205.0" y="197.0" font-size="20" text-anchor="middle" fill="#ffffff">Direct contact with the builder</text>
+<rect x="420" y="165" width="350" height="50" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="595.0" y="197.0" font-size="20" text-anchor="middle" fill="#ffffff">Several specialists at once</text>
+<rect x="30" y="227" width="350" height="50" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="205.0" y="259.0" font-size="20" text-anchor="middle" fill="#ffffff">Narrow, bounded scope</text>
+<rect x="420" y="227" width="350" height="50" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="595.0" y="259.0" font-size="20" text-anchor="middle" fill="#ffffff">Large or long-running scope</text>
+<rect x="30" y="289" width="350" height="50" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="205.0" y="321.0" font-size="20" text-anchor="middle" fill="#ffffff">Fewer layers to manage</text>
+<rect x="420" y="289" width="350" height="50" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="595.0" y="321.0" font-size="20" text-anchor="middle" fill="#ffffff">Cover for absence</text>
+<rect x="30" y="351" width="350" height="50" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="205.0" y="383.0" font-size="20" text-anchor="middle" fill="#ffffff">Cover depends on one person</text>
+<rect x="420" y="351" width="350" height="50" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="595.0" y="383.0" font-size="20" text-anchor="middle" fill="#ffffff">More coordination and handoffs</text>
+<text x="400" y="438" font-size="20" text-anchor="middle" fill="#b3ff3a" font-weight="normal">Either way: you own the code, accounts and test set</text>
+
+</g>
+</svg>

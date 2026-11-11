@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 450" role="img" aria-labelledby="t">
+<title id="t">When a LangGraph specialist is needed</title>
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#b3ff3a"/></marker></defs>
+<rect width="800" height="450" fill="#080b0f"/>
+<g font-family="Arial, Helvetica, sans-serif" fill="#ffffff">
+<text x="400" y="50" font-size="28" text-anchor="middle" fill="#ffffff" font-weight="bold">Do you need a LangGraph specialist?</text>
+<rect x="250" y="85" width="300" height="70" rx="10" fill="#b3ff3a" stroke="#b3ff3a" stroke-width="2"/>
+<text x="400.0" y="127.7" font-size="22" text-anchor="middle" fill="#080b0f">Your AI workflow</text>
+<line x1="330" y1="157" x2="190" y2="205" stroke="#b3ff3a" stroke-width="3" marker-end="url(#a)"/>
+<line x1="470" y1="157" x2="610" y2="205" stroke="#b3ff3a" stroke-width="3" marker-end="url(#a)"/>
+<text x="150" y="228" font-size="20" text-anchor="middle" fill="#b3ff3a" font-weight="normal">Fixed steps, one pass</text>
+<text x="650" y="228" font-size="20" text-anchor="middle" fill="#b3ff3a" font-weight="normal">Loops, branches, pauses</text>
+<rect x="30" y="250" width="340" height="150" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="200.0" y="306.0" font-size="20" text-anchor="middle" fill="#ffffff">A simple chain, script</text>
+<text x="200.0" y="332.0" font-size="20" text-anchor="middle" fill="#ffffff">or single model call</text>
+<text x="200.0" y="358.0" font-size="20" text-anchor="middle" fill="#ffffff">may be enough</text>
+<rect x="430" y="250" width="340" height="150" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="600.0" y="293.0" font-size="20" text-anchor="middle" fill="#ffffff">Retries and routing</text>
+<text x="600.0" y="319.0" font-size="20" text-anchor="middle" fill="#ffffff">Approval before actions</text>
+<text x="600.0" y="345.0" font-size="20" text-anchor="middle" fill="#ffffff">State that must survive</text>
+<text x="600.0" y="371.0" font-size="20" text-anchor="middle" fill="#ffffff">Several agents or tools</text>
+<text x="600" y="435" font-size="20" text-anchor="middle" fill="#ffffff" font-weight="normal">LangGraph experience pays off here</text>
+<text x="200" y="435" font-size="20" text-anchor="middle" fill="#ffffff" font-weight="normal">Any capable AI developer</text>
+
+</g>
+</svg>

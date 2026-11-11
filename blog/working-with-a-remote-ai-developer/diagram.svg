@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 450" role="img" aria-labelledby="t">
+<title id="t">Working hours overlap between India and clients abroad</title>
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#b3ff3a"/></marker></defs>
+<rect width="800" height="450" fill="#080b0f"/>
+<g font-family="Arial, Helvetica, sans-serif" fill="#ffffff">
+<text x="400" y="50" font-size="26" text-anchor="middle" fill="#ffffff" font-weight="bold">Working hours overlap: India and clients abroad</text>
+<rect x="30" y="100" width="220" height="90" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="140.0" y="152.0" font-size="20" text-anchor="middle" fill="#ffffff">UK morning</text>
+<rect x="550" y="100" width="220" height="90" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="660.0" y="152.0" font-size="20" text-anchor="middle" fill="#ffffff">India afternoon</text>
+<line x1="252" y1="145" x2="548" y2="145" stroke="#b3ff3a" stroke-width="3" marker-end="url(#a)"/>
+<line x1="548" y1="145" x2="252" y2="145" stroke="#b3ff3a" stroke-width="3" marker-end="url(#a)"/>
+<text x="400" y="132" font-size="20" text-anchor="middle" fill="#b3ff3a" font-weight="normal">Shared working hours</text>
+<rect x="30" y="230" width="220" height="90" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="140.0" y="269.0" font-size="20" text-anchor="middle" fill="#ffffff">US East</text>
+<text x="140.0" y="295.0" font-size="20" text-anchor="middle" fill="#ffffff">early morning</text>
+<rect x="550" y="230" width="220" height="90" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="660.0" y="282.0" font-size="20" text-anchor="middle" fill="#ffffff">India evening</text>
+<line x1="252" y1="275" x2="548" y2="275" stroke="#b3ff3a" stroke-width="3" marker-end="url(#a)"/>
+<line x1="548" y1="275" x2="252" y2="275" stroke="#b3ff3a" stroke-width="3" marker-end="url(#a)"/>
+<text x="400" y="262" font-size="20" text-anchor="middle" fill="#b3ff3a" font-weight="normal">Short overlap window</text>
+<text x="400" y="375" font-size="20" text-anchor="middle" fill="#ffffff" font-weight="normal">US West: little overlap, so plan around</text>
+<text x="400" y="405" font-size="20" text-anchor="middle" fill="#ffffff" font-weight="normal">written updates and agreed call times</text>
+<text x="400" y="440" font-size="20" text-anchor="middle" fill="#b3ff3a" font-weight="normal">Daylight saving shifts every window</text>
+
+</g>
+</svg>

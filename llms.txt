@@ -89,6 +89,10 @@ The site describes the services on offer and publishes general technical guides.
 - [LangChain RAG with PDFs: load, split and query](/blog/langchain-rag-with-pdfs/): Load PDFs page by page, flag pages that need OCR, strip repeated headers, keep page numbers on every chunk, and cite file and page.
 - [Build an MCP server in Python: a minimal guide](/blog/build-an-mcp-server-in-python/): One read-only tool on the official Python SDK, its generated schema, error handling, an in-process test, the Inspector and choosing a transport.
 - [RAG chatbot with conversation memory in Python](/blog/rag-chatbot-with-conversation-memory/): A history window within a token budget, query rewriting with safe fallbacks, logging each rewrite, and conversation test cases.
+- [How to hire a RAG developer](/blog/hire-a-rag-developer/): What a RAG project involves, what to prepare, how to judge a developer, questions to ask and how a remote engagement usually runs.
+- [How to hire a LangGraph developer](/blog/hire-a-langgraph-developer/): When the work needs a LangGraph specialist, what to prepare, questions to ask and a small paid first milestone.
+- [Freelance AI developer vs agency: which should you hire?](/blog/freelance-ai-developer-vs-agency/): Where a freelancer fits, where an agency is the better choice, questions for both and how to compare proposals.
+- [Working with a remote AI developer](/blog/working-with-a-remote-ai-developer/): Time zone overlap for the UK, US and India, communication, milestones, code ownership, data access and handover.
 
 ## Projects
 

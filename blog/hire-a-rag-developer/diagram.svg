@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 450" role="img" aria-labelledby="t">
+<title id="t">How a RAG engagement usually runs</title>
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#b3ff3a"/></marker></defs>
+<rect width="800" height="450" fill="#080b0f"/>
+<g font-family="Arial, Helvetica, sans-serif" fill="#ffffff">
+<text x="400" y="50" font-size="28" text-anchor="middle" fill="#ffffff" font-weight="bold">How a RAG engagement usually runs</text>
+<rect x="20" y="130" width="140" height="150" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="90.0" y="186.0" font-size="20" text-anchor="middle" fill="#ffffff">Brief and</text>
+<text x="90.0" y="212.0" font-size="20" text-anchor="middle" fill="#ffffff">sample</text>
+<text x="90.0" y="238.0" font-size="20" text-anchor="middle" fill="#ffffff">documents</text>
+<line x1="162" y1="205" x2="173" y2="205" stroke="#b3ff3a" stroke-width="3" marker-end="url(#a)"/>
+<rect x="175" y="130" width="140" height="150" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="245.0" y="199.0" font-size="20" text-anchor="middle" fill="#ffffff">Paid</text>
+<text x="245.0" y="225.0" font-size="20" text-anchor="middle" fill="#ffffff">discovery</text>
+<line x1="317" y1="205" x2="328" y2="205" stroke="#b3ff3a" stroke-width="3" marker-end="url(#a)"/>
+<rect x="330" y="130" width="140" height="150" rx="10" fill="#b3ff3a" stroke="#b3ff3a" stroke-width="2"/>
+<text x="400.0" y="186.0" font-size="20" text-anchor="middle" fill="#080b0f">Agreed</text>
+<text x="400.0" y="212.0" font-size="20" text-anchor="middle" fill="#080b0f">test</text>
+<text x="400.0" y="238.0" font-size="20" text-anchor="middle" fill="#080b0f">questions</text>
+<line x1="472" y1="205" x2="483" y2="205" stroke="#b3ff3a" stroke-width="3" marker-end="url(#a)"/>
+<rect x="485" y="130" width="140" height="150" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="555.0" y="186.0" font-size="20" text-anchor="middle" fill="#ffffff">Build and</text>
+<text x="555.0" y="212.0" font-size="20" text-anchor="middle" fill="#ffffff">review</text>
+<text x="555.0" y="238.0" font-size="20" text-anchor="middle" fill="#ffffff">milestones</text>
+<line x1="627" y1="205" x2="638" y2="205" stroke="#b3ff3a" stroke-width="3" marker-end="url(#a)"/>
+<rect x="640" y="130" width="140" height="150" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="710.0" y="186.0" font-size="20" text-anchor="middle" fill="#ffffff">Handover</text>
+<text x="710.0" y="212.0" font-size="20" text-anchor="middle" fill="#ffffff">and</text>
+<text x="710.0" y="238.0" font-size="20" text-anchor="middle" fill="#ffffff">support</text>
+<text x="90" y="330" font-size="20" text-anchor="middle" fill="#b3ff3a" font-weight="normal">You prepare</text>
+<text x="400" y="330" font-size="20" text-anchor="middle" fill="#b3ff3a" font-weight="normal">You both agree what</text>
+<text x="400" y="358" font-size="20" text-anchor="middle" fill="#b3ff3a" font-weight="normal">“working” means</text>
+<text x="710" y="330" font-size="20" text-anchor="middle" fill="#b3ff3a" font-weight="normal">You own</text>
+<text x="400" y="420" font-size="20" text-anchor="middle" fill="#ffffff" font-weight="normal">Each stage is a point where you can stop or change course</text>
+
+</g>
+</svg>

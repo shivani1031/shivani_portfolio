@@ -77,3 +77,7 @@
 /blog/langchain-rag-with-pdfs/
 /blog/build-an-mcp-server-in-python/
 /blog/rag-chatbot-with-conversation-memory/
+/blog/hire-a-rag-developer/
+/blog/hire-a-langgraph-developer/
+/blog/freelance-ai-developer-vs-agency/
+/blog/working-with-a-remote-ai-developer/
