@@ -1,0 +1,261 @@
+<!doctype html>
+<html lang="en">
+<head>
+<script async src="https://www.googletagmanager.com/gtm.js?id=GTM-THN7RV8R"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+</script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="canonical" href="https://shivanigupta.store/blog/rag-chatbot-with-conversation-memory/">
+<title>RAG Chatbot with Conversation Memory in Python | Shivani</title>
+<meta name="description" content="Handle follow-up questions in a Python RAG chatbot: rewrite queries safely, keep history within a token budget, remember sources and test the rewrite step.">
+<meta name="robots" content="index,follow">
+<meta name="author" content="Shivani Gupta">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<link rel="manifest" href="/site.webmanifest">
+<meta name="theme-color" content="#080b0f">
+<meta property="og:type" content="article">
+<meta property="og:title" content="RAG Chatbot with Conversation Memory in Python | Shivani">
+<meta property="og:description" content="Handle follow-up questions in a Python RAG chatbot: rewrite queries safely, keep history within a token budget, remember sources and test the rewrite step.">
+<meta property="og:url" content="https://shivanigupta.store/blog/rag-chatbot-with-conversation-memory/">
+<meta property="og:image" content="https://shivanigupta.store/assets/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"RAG chatbot with conversation memory in Python","description":"Handle follow-up questions in a Python RAG chatbot: rewrite queries safely, keep history within a token budget, remember sources and test the rewrite step.","mainEntityOfPage":"https://shivanigupta.store/blog/rag-chatbot-with-conversation-memory/","datePublished":"2026-11-12","dateModified":"2026-11-12","image":"https://shivanigupta.store/blog/rag-chatbot-with-conversation-memory/diagram.svg","author":{"@type":"Person","name":"Shivani Gupta"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://shivanigupta.store/"},{"@type":"ListItem","position":2,"name":"Blog","item":"https://shivanigupta.store/blog/"},{"@type":"ListItem","position":3,"name":"RAG chatbot with conversation memory in Python","item":"https://shivanigupta.store/blog/rag-chatbot-with-conversation-memory/"}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"How do I handle follow-up questions in a RAG chatbot?","acceptedAnswer":{"@type":"Answer","text":"Rewrite each follow-up into a standalone search query using the last few turns, retrieve with that query, then answer the user's original message with the conversation and retrieved passages. Fall back to the original message if the rewrite fails."}},{"@type":"Question","name":"How much conversation history should a RAG chatbot keep?","acceptedAnswer":{"@type":"Answer","text":"Keep whole turns, newest first, within a token budget and a maximum number of turns. The rewrite step usually needs only the last two or three turns, while the answer step may use a larger window."}},{"@type":"Question","name":"Should the chatbot search with the whole conversation?","acceptedAnswer":{"@type":"Answer","text":"Usually not. Searching with the full history pulls old topics into every query. A rewritten standalone query keeps retrieval focused on what the user is asking now."}},{"@type":"Question","name":"How do I test conversation memory in a chatbot?","acceptedAnswer":{"@type":"Answer","text":"Add conversation cases with a short history, a follow-up and the terms a correct rewritten query must contain. Include pronouns, references to listed items, corrections and topic changes, and log every rewrite in production."}}]}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&family=Poppins:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+<a class="skip-link" href="#top">Skip to content</a>
+<header class="nav">
+  <div class="wrap nav-in">
+    <a class="logo" href="/" aria-label="Shivani, home"><img src="/assets/logo.svg" alt="Shivani" width="144" height="40"></a>
+    <nav id="nav-links" aria-label="Main">
+      <a href="/#services">Services</a>
+      <a href="/#skills">Skills</a>
+      <a href="/#work">Work</a>
+      <a href="/#process">Process</a>
+      <a href="/#faq">FAQ</a>
+      <a href="/blog/">Blog</a>
+      <a class="btn btn-sm" href="/#contact">Hire Me</a>
+    </nav>
+    <button id="menu-toggle" class="menu-toggle" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="nav-links"><span></span><span></span><span></span></button>
+  </div>
+</header>
+
+<main id="top">
+  <section class="page-head">
+    <div class="wrap">
+      <nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a><span aria-hidden="true">/</span><a href="/blog/">Blog</a><span aria-hidden="true">/</span><span aria-current="page">RAG chatbot with conversation memory in Python</span></nav>
+      <p class="eyebrow">Guide</p>
+      <h1>RAG chatbot with conversation memory in Python</h1>
+      <p class="lead">A Python RAG chatbot handles follow-up questions by rewriting each new message into a standalone search query using recent turns, then retrieving with that query while answering the original message. To make it reliable, keep history to whole turns within a token budget, record which sources each answer used so that "the second one" can be resolved, fall back to the original message when a rewrite fails or looks wrong, and test the rewrite step with its own conversation cases.</p>
+    </div>
+  </section>
+  <section class="article">
+    <div class="wrap prose">
+<h2>Where this fits</h2>
+<p><a href="/blog/build-a-rag-chatbot-in-python/">How to build a RAG chatbot in Python</a> ends with a simple follow-up step: a chat loop that keeps the last few turns and rewrites each message as a standalone question before retrieving. That is the right starting point. This guide takes that step further, covering the decisions it leaves open: how much history to keep and how to measure it, what to show the rewrite prompt, what to do when the rewrite goes wrong and how to test it.</p>
+<p>It deals only with memory inside one conversation. Memory that persists across sessions, such as user preferences, is a different problem with its own risks, covered in <a href="/blog/agent-memory-short-term-and-long-term-state/">agent memory: short-term and long-term state</a>. That guide's advice on trimming and summarising context applies here too; what follows is specific to retrieval.</p>
+
+<h2>Why follow-ups break retrieval</h2>
+<p>Retrieval compares the query with your chunks. A first question such as "What is the refund window for annual plans?" contains the words that matter. A follow-up such as "And for monthly ones?" does not: it has no mention of refunds, so the search finds whatever happens to be closest to "monthly". The model then answers from the wrong passages, often confidently.</p>
+<p>There are two common responses. One is to search with the whole conversation, which drags old topics into every query. The other, used here, is to turn the follow-up into a standalone query first. The key separation is that the rewritten query is used for search only. The answer step still receives the user's original message and the conversation, so the reply sounds like a continuation rather than an answer to a question the user never typed.</p>
+<figure class="post-figure"><img src="/blog/rag-chatbot-with-conversation-memory/diagram.svg" alt="Flow diagram of one chatbot turn. The new message and a history window, trimmed to a token budget, go to a rewrite step that produces a standalone search query or falls back to the original message. The query is used for retrieval. Generation receives the original message, the history window and the retrieved passages. The turn is then saved with its sources, and the message, query and status are logged." width="800" height="450" loading="lazy"><figcaption>Search with the rewritten query; answer the original message.</figcaption></figure>
+
+<h2>Step 1: keep a history window, measured in tokens</h2>
+<p>History has to be limited, because every turn you keep is sent with every request. Counting turns is a crude limit, since one long answer can outweigh ten short exchanges. A better rule is to keep whole turns, newest first, until a token budget is used up:</p>
+<pre><code># Illustrative: keeps whole turns, newest first, within a token budget.
+def history_window(turns, budget, count_tokens, max_turns=8):
+    kept, used = [], 0
+    for turn in reversed(turns[-max_turns:]):
+        size = count_tokens(turn["user"]) + count_tokens(turn["assistant"])
+        if used + size &gt; budget:
+            break
+        kept.append(turn)
+        used += size
+    return list(reversed(kept))</code></pre>
+<p>Illustrative sketch. <code>count_tokens</code> stands for the tokeniser of the model you use.</p>
+<p>Two details matter. Turns are kept whole, so the model never sees an answer without the question that prompted it. And there is a maximum number of turns as well as a budget, so that a run of very short messages cannot fill the window with stale context. The right budget depends on your model and costs; <a href="/blog/controlling-llm-cost-and-latency/">controlling LLM cost and latency</a> covers how to set it.</p>
+<p>The rewrite step needs even less history than the answer step. Resolving "it" or "that one" rarely needs more than the last two or three turns, and a shorter input makes the rewrite cheaper and less likely to pull in an old topic.</p>
+
+<h2>Step 2: rewrite with clear rules and a fallback</h2>
+<p>The rewrite prompt should be explicit about what not to change. Models tend to paraphrase, and a paraphrase that drops an order number or a product code makes the search worse, not better:</p>
+<pre><code># Illustrative: rewrite a follow-up, with checks and a safe fallback.
+REWRITE_PROMPT = """You rewrite the user's latest message as one standalone
+search query for a document index. Resolve words such as "it", "that"
+and "the second one" using the conversation. Keep names, numbers and
+codes exactly as written. If the message is already standalone or
+changes topic, return it unchanged. Return only the query."""
+
+
+def format_turns(turns):
+    lines = []
+    for turn in turns:
+        lines.append(f"user: {turn['user']}")
+        lines.append(f"assistant: {turn['assistant']}")
+        if turn.get("sources"):
+            lines.append(f"(sources shown: {', '.join(turn['sources'])})")
+    return "\n".join(lines)
+
+
+def rewrite_query(message, turns, call_llm, max_chars=300):
+    if not turns:
+        return message, "no_history"
+    try:
+        query = call_llm(REWRITE_PROMPT, f"{format_turns(turns)}\nuser: {message}").strip()
+    except Exception:
+        return message, "rewrite_failed"
+    if not query or len(query) &gt; max_chars or "\n" in query:
+        return message, "rewrite_rejected"
+    return query, "rewritten"</code></pre>
+<p>Illustrative sketch. <code>call_llm</code> is a placeholder for your model call, taking a system prompt and a user message and returning text.</p>
+<p>This version does three things that the simple loop in the earlier guide does not:</p>
+<ul>
+<li><strong>It shows the sources from earlier turns.</strong> When a user says "what about the second one?", the referent is often a document or option the bot listed, not something the user typed. Including the source names gives the rewrite something to resolve against.</li>
+<li><strong>It handles topic changes.</strong> The prompt tells the model to return a standalone message unchanged, so a new question is not merged with the previous topic.</li>
+<li><strong>It falls back safely.</strong> If the call fails, returns nothing, returns several lines or produces something much longer than a query, the original message is used. A poor search is better than an error page.</li>
+</ul>
+<p>The function also returns a status, which tells you how often each path is taken. A rising share of rejected rewrites usually means the prompt or model needs attention.</p>
+<p>You can skip the rewrite for the first message, as the code does, since there is nothing to resolve. Skipping it for later messages that look standalone is tempting to save a call, but heuristics for that are unreliable: "Is it free?" is short and obviously dependent, while "What about the API?" may or may not be. Unless cost forces it, rewrite every follow-up and let the prompt decide.</p>
+
+<h2>Step 3: put the turn together</h2>
+<p>One chat turn now has a clear order: trim the history, rewrite, retrieve with the rewritten query, generate from the original message, then save and log:</p>
+<pre><code># Illustrative: one turn of the chatbot, logging what was searched.
+def chat_turn(message, turns, retrieve, generate, call_llm, count_tokens, log):
+    window = history_window(turns, budget=1500, count_tokens=count_tokens)
+    query, status = rewrite_query(message, window[-3:], call_llm)
+    passages = retrieve(query)
+    reply = generate(message, window, passages)
+    sources = [p["source"] for p in passages]
+    log({"message": message, "query": query, "status": status, "sources": sources})
+    turns.append({"user": message, "assistant": reply, "sources": sources})
+    return reply</code></pre>
+<p>Illustrative sketch. <code>retrieve</code>, <code>generate</code> and <code>log</code> are placeholders for your own pipeline. Run with stub functions, the second message in a test conversation was rewritten and logged as expected.</p>
+<p>Each saved turn keeps its sources. That is what the rewrite prompt reads in later turns, and it also lets you show users what an earlier answer was based on.</p>
+<p>The log line is the most useful debugging tool in a conversational RAG system. When a follow-up gets a poor answer, compare the message with the query. If the query is wrong, the problem is in the rewrite. If the query is right but the sources are wrong, it is in retrieval. Without the log, both look the same.</p>
+
+<h2>Step 4: test the rewrite on its own</h2>
+<p>Single-question test sets do not exercise memory at all. Add conversation cases: a short history, a follow-up and the terms that a correct standalone query must contain. Checking for required terms rather than an exact string keeps the test stable when the model phrases the query differently:</p>
+<pre><code># Illustrative: conversation test cases check the rewrite, not the answer.
+CASES = [
+    {
+        "turns": [{"user": "What is the refund window for annual plans?",
+                   "assistant": "Annual plans can be refunded within 30 days [1].",
+                   "sources": ["billing.md"]}],
+        "message": "And for monthly ones?",
+        "must_contain": ["refund", "monthly"],
+    },
+    {
+        "turns": [{"user": "How do I reset my password?",
+                   "assistant": "Use the link on the sign-in page [1].",
+                   "sources": ["account.md"]}],
+        "message": "What payment methods do you accept?",
+        "must_contain": ["payment methods"],
+    },
+]
+
+
+def rewrite_failures(call_llm):
+    failures = []
+    for case in CASES:
+        query, _ = rewrite_query(case["message"], case["turns"], call_llm)
+        if not all(term in query.lower() for term in case["must_contain"]):
+            failures.append((case["message"], query))
+    return failures</code></pre>
+<p>Illustrative sketch, run with a stub in place of the model.</p>
+<p>Cover the patterns your users produce. Useful cases include pronouns ("does it work offline?"), ellipsis ("and in Germany?"), references to listed items ("tell me more about the second one"), corrections ("no, I meant the business plan") and outright topic changes, where the right rewrite is the message unchanged. Run these whenever you change the rewrite prompt or the model behind it, then run your end-to-end checks from <a href="/blog/how-to-evaluate-a-rag-system/">how to evaluate a RAG system</a>.</p>
+
+<h2>Storing conversations</h2>
+<p>In a web service, the history lives in a database or cache keyed by conversation, not in a Python list. Decide early how long conversations are kept and who can read them, because users often paste personal details into chat. Keep only what the bot needs, delete it on a schedule and never let one user's history reach another user's prompt. If you summarise long conversations to save tokens, keep the original turns available for debugging, since a summary can drop the detail a follow-up depends on.</p>
+
+<h2>Common mistakes</h2>
+<ul>
+<li><strong>Answering the rewritten query instead of the user's message.</strong> The reply loses its conversational tone and can answer the wrong question if the rewrite drifted.</li>
+<li><strong>Sending the whole history to search.</strong> Old topics leak into every query.</li>
+<li><strong>Trimming mid-turn.</strong> A reply without its question confuses both the rewrite and the answer.</li>
+<li><strong>Not logging the rewrite.</strong> Retrieval failures and rewrite failures become impossible to tell apart.</li>
+<li><strong>Testing only first questions.</strong> Most memory bugs appear on the second or third turn.</li>
+</ul>
+<p>For help building a chatbot that handles real conversations over your documents, see <a href="/services/rag-development/">RAG development</a>.</p>
+<aside class="post-cta" aria-label="Work with Shivani">
+<h2>Need a RAG system built?</h2>
+<p>I design and build RAG systems end to end, from the AI workflow to the backend and UI. Tell me what you want to build and I will reply with next steps.</p>
+<p class="post-cta-btns"><a class="btn" href="https://wa.me/919720466504?text=Hi%20Shivani%2C%20I%20read%20your%20guide%20%22RAG%20chatbot%20with%20conversation%20memory%20in%20Python%22%20and%20would%20like%20to%20discuss%20a%20RAG%20system." target="_blank" rel="noopener">Chat on WhatsApp</a> <a class="btn btn-line" href="/#contact">Send project details</a> <a class="post-cta-link" href="/services/rag-development/">See the service</a></p>
+</aside>
+      <h2>Frequently asked questions</h2>
+      <h3>How do I handle follow-up questions in a RAG chatbot?</h3>
+      <p>Rewrite each follow-up into a standalone search query using the last few turns, retrieve with that query, then answer the user's original message with the conversation and retrieved passages. Fall back to the original message if the rewrite fails.</p>
+      <h3>How much conversation history should a RAG chatbot keep?</h3>
+      <p>Keep whole turns, newest first, within a token budget and a maximum number of turns. The rewrite step usually needs only the last two or three turns, while the answer step may use a larger window.</p>
+      <h3>Should the chatbot search with the whole conversation?</h3>
+      <p>Usually not. Searching with the full history pulls old topics into every query. A rewritten standalone query keeps retrieval focused on what the user is asking now.</p>
+      <h3>How do I test conversation memory in a chatbot?</h3>
+      <p>Add conversation cases with a short history, a follow-up and the terms a correct rewritten query must contain. Include pronouns, references to listed items, corrections and topic changes, and log every rewrite in production.</p>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="foot-cta">
+      <div>
+        <h2>Have an AI or full stack project in mind?</h2>
+        <p>Tell me what you want to build.</p>
+      </div>
+      <div class="foot-cta-btns">
+        <a class="btn" href="/#contact">Start a conversation</a>
+        <a class="btn btn-line" href="mailto:shivanigupta4876@gmail.com">Send an email</a>
+      </div>
+    </div>
+    <div class="foot-grid">
+      <div>
+        <a href="/" aria-label="Shivani, home"><img src="/assets/logo.svg" alt="Shivani" width="144" height="40"></a>
+        <p>AI/ML engineer working across generative AI, LLMs, RAG, agentic AI and NLP, plus full stack development.</p>
+        <span class="avail">Taking new projects</span>
+      </div>
+      <div>
+        <h3>Explore</h3>
+        <ul>
+          <li><a href="/services/">Services</a></li>
+          <li><a href="/#work">Projects</a></li>
+          <li><a href="/#process">Process</a></li>
+          <li><a href="/#faq">FAQ</a></li>
+          <li><a href="/blog/">Blog</a></li>
+          <li><a href="/#contact">Contact</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Services</h3>
+        <ul>
+          <li><a href="/services/generative-ai-llm-development/">Generative AI and LLMs</a></li>
+          <li><a href="/services/rag-development/">RAG development</a></li>
+          <li><a href="/services/multi-agent-systems/">Multi-agent systems</a></li>
+          <li><a href="/services/ai-orchestration-langgraph/">Orchestration with LangGraph</a></li>
+          <li><a href="/services/nlp-development/">NLP development</a></li>
+          <li><a href="/services/full-stack-development/">Full stack development</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Contact</h3>
+        <ul>
+          <li><a href="mailto:shivanigupta4876@gmail.com">shivanigupta4876@gmail.com</a></li>
+          <li><a href="tel:+919720466504">+91 97204 66504</a></li>
+          <li><a href="https://github.com/shivani1031" rel="me noopener" target="_blank">GitHub</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="foot-bottom">&copy; <span id="year">2026</span> Shivani Gupta. All rights reserved.</div>
+  </div>
+</footer>
+<a class="wa-float" href="https://wa.me/919720466504?text=Hi%20Shivani%2C%20I%20saw%20your%20website%20and%20would%20like%20to%20talk%20about%20a%20project." target="_blank" rel="noopener" aria-label="Chat on WhatsApp"><svg viewBox="0 0 24 24" width="28" height="28" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15L2 22l5.1-1.3A10 10 0 1 0 12 2zm0 18.2a8.2 8.2 0 0 1-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1a6.700 6.700 0 0 1-3.300-2.900c-.2-.3 0-.4.1-.6l.4-.4.2-.4v-.5l-.8-1.800c-.2-.5-.4-.4-.6-.4h-.5c-.2 0-.4.1-.6.3-.2.2-.8.8-.8 2s.9 2.300 1 2.500c.1.2 1.700 2.600 4.100 3.600 1.500.7 2.100.7 2.900.6.500-.1 1.500-.6 1.700-1.200.2-.6.2-1.100.1-1.200l-.2-.2z"/></svg></a>
+<script src="/assets/js/site.js" defer></script>
+</body>
+</html>

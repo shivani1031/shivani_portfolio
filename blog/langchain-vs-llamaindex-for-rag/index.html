@@ -1,0 +1,207 @@
+<!doctype html>
+<html lang="en">
+<head>
+<script async src="https://www.googletagmanager.com/gtm.js?id=GTM-THN7RV8R"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+</script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="canonical" href="https://shivanigupta.store/blog/langchain-vs-llamaindex-for-rag/">
+<title>LangChain vs LlamaIndex for RAG: How to Choose | Shivani</title>
+<meta name="description" content="LangChain vs LlamaIndex for RAG: what each framework is built around, how their retrieval pieces compare, and a practical way to choose for your own project.">
+<meta name="robots" content="index,follow">
+<meta name="author" content="Shivani Gupta">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<link rel="manifest" href="/site.webmanifest">
+<meta name="theme-color" content="#080b0f">
+<meta property="og:type" content="article">
+<meta property="og:title" content="LangChain vs LlamaIndex for RAG: How to Choose | Shivani">
+<meta property="og:description" content="LangChain vs LlamaIndex for RAG: what each framework is built around, how their retrieval pieces compare, and a practical way to choose for your own project.">
+<meta property="og:url" content="https://shivanigupta.store/blog/langchain-vs-llamaindex-for-rag/">
+<meta property="og:image" content="https://shivanigupta.store/assets/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"LangChain vs LlamaIndex for RAG: how to choose","description":"LangChain vs LlamaIndex for RAG: what each framework is built around, how their retrieval pieces compare, and a practical way to choose for your own project.","mainEntityOfPage":"https://shivanigupta.store/blog/langchain-vs-llamaindex-for-rag/","datePublished":"2026-11-12","dateModified":"2026-11-12","image":"https://shivanigupta.store/blog/langchain-vs-llamaindex-for-rag/diagram.svg","author":{"@type":"Person","name":"Shivani Gupta"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://shivanigupta.store/"},{"@type":"ListItem","position":2,"name":"Blog","item":"https://shivanigupta.store/blog/"},{"@type":"ListItem","position":3,"name":"LangChain vs LlamaIndex for RAG: how to choose","item":"https://shivanigupta.store/blog/langchain-vs-llamaindex-for-rag/"}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Is LlamaIndex better than LangChain for RAG?","acceptedAnswer":{"@type":"Answer","text":"Neither is better in general. LlamaIndex bundles indexing, querying and chat modes around your data, while LangChain gives you separate components to assemble. Test both on your own questions with the same models and settings."}},{"@type":"Question","name":"Can I use LangChain and LlamaIndex together?","acceptedAnswer":{"@type":"Answer","text":"Yes. A LlamaIndex query engine can be wrapped as a tool that a LangChain or LangGraph agent calls. Combine them only when each does a job the other does not, because two frameworks mean more dependencies to upgrade."}},{"@type":"Question","name":"Which is easier for beginners?","acceptedAnswer":{"@type":"Answer","text":"LlamaIndex usually reaches a first answer in fewer lines because its defaults handle splitting, embedding and prompting. LangChain asks you to write those steps, which takes longer but makes each one easier to see and test."}},{"@type":"Question","name":"Do I need either framework to build RAG?","acceptedAnswer":{"@type":"Answer","text":"No. A basic pipeline is a loader, a splitter, an embedding call, a search and a prompt, all of which can be written in plain Python. Frameworks help most when you need their integrations or a shared structure for a team."}}]}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&family=Poppins:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+<a class="skip-link" href="#top">Skip to content</a>
+<header class="nav">
+  <div class="wrap nav-in">
+    <a class="logo" href="/" aria-label="Shivani, home"><img src="/assets/logo.svg" alt="Shivani" width="144" height="40"></a>
+    <nav id="nav-links" aria-label="Main">
+      <a href="/#services">Services</a>
+      <a href="/#skills">Skills</a>
+      <a href="/#work">Work</a>
+      <a href="/#process">Process</a>
+      <a href="/#faq">FAQ</a>
+      <a href="/blog/">Blog</a>
+      <a class="btn btn-sm" href="/#contact">Hire Me</a>
+    </nav>
+    <button id="menu-toggle" class="menu-toggle" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="nav-links"><span></span><span></span><span></span></button>
+  </div>
+</header>
+
+<main id="top">
+  <section class="page-head">
+    <div class="wrap">
+      <nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a><span aria-hidden="true">/</span><a href="/blog/">Blog</a><span aria-hidden="true">/</span><span aria-current="page">LangChain vs LlamaIndex for RAG: how to choose</span></nav>
+      <p class="eyebrow">Guide</p>
+      <h1>LangChain vs LlamaIndex for RAG: how to choose</h1>
+      <p class="lead">Both frameworks can build a solid RAG pipeline, so the choice rests on what surrounds retrieval. LlamaIndex is built around your data, with indexes, query engines and chat engines that give you a working question-answering system in a few lines. LangChain is built around models, tools and agents, and treats retrieval as one component you wire in yourself. Pick LlamaIndex when ingesting and querying documents is the core of the product, and LangChain when retrieval is one capability inside a larger agent or application.</p>
+    </div>
+  </section>
+  <section class="article">
+    <div class="wrap prose">
+<h2>What each framework says it is</h2>
+<p>The clearest way to compare them is to read how each describes itself. The LlamaIndex documentation calls its framework a Python toolkit for building LLM-powered agents over your data, and lists its parts as data connectors, indexes and vector stores, query and chat engines, agents and workflows. Data comes first in that list, and most of the abstractions exist to turn documents into something you can ask questions of.</p>
+<p>The LangChain documentation, by contrast, introduces <code>create_agent</code> as a minimal, configurable harness built from a model, tools, a prompt and middleware, and states that LangChain's agents are built on top of LangGraph. Retrieval appears through shared interfaces for documents, text splitters, embeddings and vector stores, which you assemble into whatever flow you need. The <a href="/blog/langchain-rag-tutorial/">LangChain RAG tutorial</a> on this site shows that assembly step by step.</p>
+<p>Neither description is a ranking. They describe different centres of gravity, and that difference shows up in how much code you write, and where.</p>
+
+<h2>The same pipeline in each</h2>
+<p>A minimal RAG pipeline has the same stages in both: load documents, split them, embed the pieces, store the vectors, retrieve for a question and generate an answer. The difference is how many of those stages you see.</p>
+<figure class="post-figure"><img src="/blog/langchain-vs-llamaindex-for-rag/diagram.svg" alt="Diagram comparing the same RAG pipeline in two frameworks. Both run load, split, embed, store, retrieve and generate. In LlamaIndex, split, embed, store and generate sit inside from_documents and as_query_engine; in LangChain, each stage is a separate call in your own code." width="800" height="450" loading="lazy"><figcaption>The same six stages: LlamaIndex bundles most of them, LangChain leaves each one in your code.</figcaption></figure>
+<p>In LlamaIndex, the starter example in the documentation reads a folder with <code>SimpleDirectoryReader</code>, builds a <code>VectorStoreIndex</code> from the documents and calls <code>as_query_engine()</code>. Splitting, embedding and the answer prompt all happen inside those calls, using defaults you can override. Here is the same shape with stand-in models so that it runs without an API key:</p>
+<pre><code># Illustrative: the LlamaIndex starter shape, with stand-in models.
+from llama_index.core import Document, Settings, VectorStoreIndex
+from llama_index.core.embeddings import MockEmbedding
+from llama_index.core.llms import MockLLM
+
+Settings.llm = MockLLM()                          # replace with a real LLM
+Settings.embed_model = MockEmbedding(embed_dim=8)  # and a real embedding model
+
+docs = [Document(text="Refunds are processed within 14 days.",
+                 metadata={"source": "refunds.md"})]
+index = VectorStoreIndex.from_documents(docs)
+
+engine = index.as_query_engine(similarity_top_k=4)
+response = engine.query("How long do refunds take?")
+print(response.source_nodes[0].node.metadata["source"])
+
+chat = index.as_chat_engine(chat_mode="condense_plus_context")
+print(chat.chat("And for annual plans?"))</code></pre>
+<p>Illustrative sketch, run against llama-index-core 0.14.25 with its mock LLM and embedding classes. Replace both with real models before judging any output.</p>
+<p>Note the two settings lines. The LlamaIndex starter page says that without configuration it falls back to OpenAI models, so set the LLM and embedding model explicitly rather than relying on whichever default ships with the version you install.</p>
+<p>In LangChain, the equivalent is written out: you create a splitter, choose an embedding class, add the chunks to a vector store and call <code>similarity_search</code> before passing the results to a chat model. That is more lines, but every step is a visible function call you can log, test or replace. The tutorial linked above contains that code, so it is not repeated here.</p>
+
+<h2>Where the real differences sit</h2>
+<h3>Answer synthesis</h3>
+<p>LlamaIndex's query engines include several response modes. The documentation lists <code>compact</code> as the default, which packs retrieved chunks into as few model calls as fit, and alternatives such as <code>refine</code>, which works through chunks one call at a time, and <code>tree_summarize</code>, which summarises recursively. There is also <code>no_text</code>, which runs retrieval only and returns the nodes, useful for testing search on its own.</p>
+<p>LangChain has no single equivalent object for this. You write the prompt and decide how many calls to make. That is more work when you want one of those strategies, and less friction when you want something none of them offers.</p>
+<h3>Follow-up questions</h3>
+<p>LlamaIndex chat engines handle conversation with named modes. Its documentation describes <code>condense_question</code>, which rewrites the latest message into a standalone query using the history, <code>context</code>, which retrieves on every message, and <code>condense_plus_context</code>, which combines the two. In LangChain you build the rewrite step yourself, or let an agent decide what to search for. Either way, the technique underneath is the same one covered in <a href="/blog/rag-chatbot-with-conversation-memory/">RAG chatbot with conversation memory</a>.</p>
+<h3>Agents and control flow</h3>
+<p>Both now offer agents. LlamaIndex documents agents and event-driven workflows, and its starter example wraps a query engine as a tool for a <code>FunctionAgent</code>. LangChain's <code>create_agent</code> runs on LangGraph, and when you need explicit branches, retries or human approval, you can drop down to LangGraph itself. If your RAG system is likely to grow into a multi-step workflow, that path is worth weighing; <a href="/blog/langchain-vs-langgraph-when-to-use-each/">LangChain vs LangGraph</a> explains where the boundary between the two sits.</p>
+<h3>Document parsing</h3>
+<p>For awkward documents, LlamaIndex points to LlamaParse, a hosted parsing service from the same company that its documentation says can feed parsed output into a framework index. LangChain's document loader page points to partner packages such as Docling and Unstructured. Neither framework removes the need to check parser output on your own hardest pages, as described in <a href="/blog/rag-for-pdfs-and-tables/">RAG for PDFs and tables</a>.</p>
+<h3>Installation and packaging</h3>
+<p>Both split integrations into separate packages. LlamaIndex documents a starter bundle, <code>llama-index</code>, that includes the core package, OpenAI integrations and file readers, or a selective install of <code>llama-index-core</code> plus the integrations you choose. LangChain separates <code>langchain</code>, <code>langchain-core</code>, <code>langchain-text-splitters</code> and provider packages. In both cases, pin versions and check imports against the current documentation, because examples written for older releases are common online.</p>
+
+<h2>A summary of the trade-offs</h2>
+<ul>
+<li><strong>Time to a first working answer.</strong> LlamaIndex usually needs fewer lines, because indexing and querying are bundled.</li>
+<li><strong>Visibility of each step.</strong> LangChain shows every stage as your own code, which makes logging and testing direct, at the cost of writing more.</li>
+<li><strong>Built-in synthesis and chat modes.</strong> LlamaIndex has named options for both. In LangChain you write the equivalent.</li>
+<li><strong>Path to complex workflows.</strong> LangChain connects to LangGraph for explicit graphs. LlamaIndex has its own workflows and agents.</li>
+<li><strong>Debugging defaults.</strong> Bundled defaults are convenient until a result is wrong and you need to find which hidden step caused it. Learn where each default is set before you rely on it.</li>
+</ul>
+
+<h2>How to choose for your project</h2>
+<p>Ask what the system mostly does. If the product is question answering over a document collection, with retrieval quality as the main concern, LlamaIndex's data-centred abstractions match that job closely. If retrieval is one tool among several, alongside API calls, database queries or actions that need approval, LangChain and LangGraph match that shape better.</p>
+<p>Then consider the team. A framework that someone already knows well is often a better choice than a slightly better fit that nobody has used. And check the parts you cannot change: if a vector database or model provider is already decided, confirm that each framework has a maintained integration for it.</p>
+<p>Finally, run a small comparison rather than reading more opinions. Take twenty or thirty real questions, build the smallest pipeline in each framework with the same embedding model, chunk size and number of results, and compare retrieval before answers. If the results are similar, choose on code clarity and team familiarity. <a href="/blog/how-to-evaluate-a-rag-system/">How to evaluate a RAG system</a> explains how to set up that test.</p>
+
+<h2>You can use both, or neither</h2>
+<p>The two are not mutually exclusive. A LlamaIndex query engine can be wrapped as a tool and called from a LangChain or LangGraph agent, keeping indexing in one place and orchestration in another. Each extra framework adds dependencies and upgrade work, though, so only combine them when one clearly does a job the other does not.</p>
+<p>It is also reasonable to use neither. A basic RAG pipeline is a few functions, as <a href="/blog/build-a-rag-chatbot-in-python/">how to build a RAG chatbot in Python</a> shows. Frameworks earn their place when you want their integrations, their tested defaults or a shared vocabulary across a team. If none of that applies yet, plain Python keeps the system easy to read, and you can adopt a framework later.</p>
+
+<h2>Mistakes to avoid when comparing</h2>
+<ul>
+<li><strong>Comparing different defaults.</strong> If one pipeline uses a different embedding model or chunk size, you are comparing settings, not frameworks.</li>
+<li><strong>Trusting old examples.</strong> Both projects have changed their APIs, so blog posts from earlier releases may not run.</li>
+<li><strong>Judging on demo questions.</strong> Easy questions pass in both. Use the hard ones your users actually ask.</li>
+<li><strong>Ignoring maintenance.</strong> Check release notes and how each project handles deprecations, since you will be upgrading for as long as the system runs.</li>
+</ul>
+<p>For help choosing and building the retrieval layer for your own documents, see <a href="/services/rag-development/">RAG development</a>.</p>
+<aside class="post-cta" aria-label="Work with Shivani">
+<h2>Need a RAG system built?</h2>
+<p>I design and build RAG systems end to end, from the AI workflow to the backend and UI. Tell me what you want to build and I will reply with next steps.</p>
+<p class="post-cta-btns"><a class="btn" href="https://wa.me/919720466504?text=Hi%20Shivani%2C%20I%20read%20your%20guide%20%22LangChain%20vs%20LlamaIndex%20for%20RAG%3A%20how%20to%20choose%22%20and%20would%20like%20to%20discuss%20a%20RAG%20system." target="_blank" rel="noopener">Chat on WhatsApp</a> <a class="btn btn-line" href="/#contact">Send project details</a> <a class="post-cta-link" href="/services/rag-development/">See the service</a></p>
+</aside>
+      <h2>Frequently asked questions</h2>
+      <h3>Is LlamaIndex better than LangChain for RAG?</h3>
+      <p>Neither is better in general. LlamaIndex bundles indexing, querying and chat modes around your data, while LangChain gives you separate components to assemble. Test both on your own questions with the same models and settings.</p>
+      <h3>Can I use LangChain and LlamaIndex together?</h3>
+      <p>Yes. A LlamaIndex query engine can be wrapped as a tool that a LangChain or LangGraph agent calls. Combine them only when each does a job the other does not, because two frameworks mean more dependencies to upgrade.</p>
+      <h3>Which is easier for beginners?</h3>
+      <p>LlamaIndex usually reaches a first answer in fewer lines because its defaults handle splitting, embedding and prompting. LangChain asks you to write those steps, which takes longer but makes each one easier to see and test.</p>
+      <h3>Do I need either framework to build RAG?</h3>
+      <p>No. A basic pipeline is a loader, a splitter, an embedding call, a search and a prompt, all of which can be written in plain Python. Frameworks help most when you need their integrations or a shared structure for a team.</p>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="foot-cta">
+      <div>
+        <h2>Have an AI or full stack project in mind?</h2>
+        <p>Tell me what you want to build.</p>
+      </div>
+      <div class="foot-cta-btns">
+        <a class="btn" href="/#contact">Start a conversation</a>
+        <a class="btn btn-line" href="mailto:shivanigupta4876@gmail.com">Send an email</a>
+      </div>
+    </div>
+    <div class="foot-grid">
+      <div>
+        <a href="/" aria-label="Shivani, home"><img src="/assets/logo.svg" alt="Shivani" width="144" height="40"></a>
+        <p>AI/ML engineer working across generative AI, LLMs, RAG, agentic AI and NLP, plus full stack development.</p>
+        <span class="avail">Taking new projects</span>
+      </div>
+      <div>
+        <h3>Explore</h3>
+        <ul>
+          <li><a href="/services/">Services</a></li>
+          <li><a href="/#work">Projects</a></li>
+          <li><a href="/#process">Process</a></li>
+          <li><a href="/#faq">FAQ</a></li>
+          <li><a href="/blog/">Blog</a></li>
+          <li><a href="/#contact">Contact</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Services</h3>
+        <ul>
+          <li><a href="/services/generative-ai-llm-development/">Generative AI and LLMs</a></li>
+          <li><a href="/services/rag-development/">RAG development</a></li>
+          <li><a href="/services/multi-agent-systems/">Multi-agent systems</a></li>
+          <li><a href="/services/ai-orchestration-langgraph/">Orchestration with LangGraph</a></li>
+          <li><a href="/services/nlp-development/">NLP development</a></li>
+          <li><a href="/services/full-stack-development/">Full stack development</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Contact</h3>
+        <ul>
+          <li><a href="mailto:shivanigupta4876@gmail.com">shivanigupta4876@gmail.com</a></li>
+          <li><a href="tel:+919720466504">+91 97204 66504</a></li>
+          <li><a href="https://github.com/shivani1031" rel="me noopener" target="_blank">GitHub</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="foot-bottom">&copy; <span id="year">2026</span> Shivani Gupta. All rights reserved.</div>
+  </div>
+</footer>
+<a class="wa-float" href="https://wa.me/919720466504?text=Hi%20Shivani%2C%20I%20saw%20your%20website%20and%20would%20like%20to%20talk%20about%20a%20project." target="_blank" rel="noopener" aria-label="Chat on WhatsApp"><svg viewBox="0 0 24 24" width="28" height="28" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15L2 22l5.1-1.3A10 10 0 1 0 12 2zm0 18.2a8.2 8.2 0 0 1-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1a6.700 6.700 0 0 1-3.300-2.900c-.2-.3 0-.4.1-.6l.4-.4.2-.4v-.5l-.8-1.800c-.2-.5-.4-.4-.6-.4h-.5c-.2 0-.4.1-.6.3-.2.2-.8.8-.8 2s.9 2.300 1 2.500c.1.2 1.700 2.600 4.100 3.600 1.500.7 2.100.7 2.900.6.500-.1 1.500-.6 1.700-1.200.2-.6.2-1.100.1-1.200l-.2-.2z"/></svg></a>
+<script src="/assets/js/site.js" defer></script>
+</body>
+</html>

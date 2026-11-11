@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 450" role="img" aria-labelledby="t">
+<title id="t">One RAG chatbot turn with query rewriting</title>
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#b3ff3a"/></marker></defs>
+<rect width="800" height="450" fill="#080b0f"/>
+<g font-family="Poppins, sans-serif" fill="#ffffff" text-anchor="middle">
+<text x="400" y="40" font-size="26" font-weight="600">Search with the rewrite, answer the original</text>
+<g fill="none" stroke="#ffffff" stroke-width="2">
+<rect x="20" y="70" width="200" height="80" rx="10"/>
+<rect x="20" y="190" width="200" height="80" rx="10"/>
+<rect x="300" y="130" width="200" height="80" rx="10" stroke="#b3ff3a"/>
+<rect x="580" y="130" width="200" height="80" rx="10"/>
+<rect x="580" y="300" width="200" height="80" rx="10" stroke="#b3ff3a"/>
+<rect x="300" y="300" width="200" height="80" rx="10"/>
+</g>
+<g font-size="21">
+<text x="120" y="105">New message</text><text x="120" y="133">"And monthly?"</text>
+<text x="120" y="225">History window</text><text x="120" y="253">token budget</text>
+<text x="400" y="165">Rewrite</text><text x="400" y="193">or fall back</text>
+<text x="680" y="165">Retrieve</text><text x="680" y="193">with the query</text>
+<text x="680" y="335">Generate</text><text x="680" y="363">answer</text>
+<text x="400" y="335">Save turn</text><text x="400" y="363">+ sources, log</text>
+</g>
+<g stroke="#b3ff3a" stroke-width="3" fill="none" marker-end="url(#a)">
+<path d="M220 110L296 150"/><path d="M220 230L296 190"/><path d="M500 170H576"/>
+<path d="M680 210V296"/><path d="M580 340H504"/>
+</g>
+<g stroke="#ffffff" stroke-width="2" fill="none" stroke-dasharray="6 5" marker-end="url(#a)">
+<path d="M120 270V410H600L640 384"/>
+</g>
+<text x="330" y="434" font-size="20">original message and history also go to Generate</text>
+</g>
+</svg>

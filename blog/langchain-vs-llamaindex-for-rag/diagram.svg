@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 450" role="img" aria-labelledby="t">
+<title id="t">The same RAG pipeline in LlamaIndex and LangChain</title>
+<rect width="800" height="450" fill="#080b0f"/>
+<g font-family="Poppins, sans-serif" fill="#ffffff">
+<text x="400" y="44" font-size="26" font-weight="600" text-anchor="middle">Same six stages, different visibility</text>
+<g font-size="20" text-anchor="middle">
+<text x="80" y="100">Load</text><text x="208" y="100">Split</text><text x="336" y="100">Embed</text>
+<text x="464" y="100">Store</text><text x="592" y="100">Retrieve</text><text x="720" y="100">Generate</text>
+</g>
+<text x="24" y="160" font-size="22" font-weight="600" fill="#b3ff3a">LlamaIndex</text>
+<rect x="24" y="174" width="112" height="70" rx="10" fill="none" stroke="#ffffff" stroke-width="2"/>
+<text x="80" y="216" font-size="20" text-anchor="middle">reader</text>
+<rect x="152" y="174" width="624" height="70" rx="10" fill="#b3ff3a" fill-opacity="0.15" stroke="#b3ff3a" stroke-width="2"/>
+<text x="464" y="207" font-size="20" text-anchor="middle">from_documents + as_query_engine</text>
+<text x="464" y="233" font-size="20" text-anchor="middle">defaults run these stages</text>
+<text x="24" y="300" font-size="22" font-weight="600" fill="#b3ff3a">LangChain</text>
+<g fill="none" stroke="#ffffff" stroke-width="2">
+<rect x="24" y="314" width="112" height="70" rx="10"/><rect x="152" y="314" width="112" height="70" rx="10"/>
+<rect x="280" y="314" width="112" height="70" rx="10"/><rect x="408" y="314" width="112" height="70" rx="10"/>
+<rect x="536" y="314" width="112" height="70" rx="10"/><rect x="664" y="314" width="112" height="70" rx="10"/>
+</g>
+<g font-size="20" text-anchor="middle">
+<text x="80" y="355">loader</text><text x="208" y="355">splitter</text><text x="336" y="355">embedder</text>
+<text x="464" y="355">store</text><text x="592" y="355">search</text><text x="720" y="355">LLM</text>
+</g>
+<text x="400" y="424" font-size="20" text-anchor="middle">Each LangChain box is a call in your own code</text>
+</g>
+</svg>

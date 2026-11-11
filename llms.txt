@@ -85,6 +85,10 @@ The site describes the services on offer and publishes general technical guides.
 - [RAG chunk size and overlap: how to choose](/blog/rag-chunk-size-and-overlap/): The limits that set the chunk size range, what overlap costs, and a sweep that tests whether a retrieved chunk holds the whole answer.
 - [How to choose an embedding model](/blog/choosing-an-embedding-model/): Rule models out on hard constraints, then compare a shortlist on your own questions, scored by question type, with no vendor rankings.
 - [Adding an AI chatbot to your website: a buyer's guide](/blog/add-an-ai-chatbot-to-your-website/): The options, what to prepare, the risks, ten questions to ask a developer or vendor, and a narrow way to start.
+- [LangChain vs LlamaIndex for RAG: how to choose](/blog/langchain-vs-llamaindex-for-rag/): LlamaIndex bundles indexing, querying and chat around your data; LangChain leaves each stage in your code. Choose by what surrounds retrieval, then test both.
+- [LangChain RAG with PDFs: load, split and query](/blog/langchain-rag-with-pdfs/): Load PDFs page by page, flag pages that need OCR, strip repeated headers, keep page numbers on every chunk, and cite file and page.
+- [Build an MCP server in Python: a minimal guide](/blog/build-an-mcp-server-in-python/): One read-only tool on the official Python SDK, its generated schema, error handling, an in-process test, the Inspector and choosing a transport.
+- [RAG chatbot with conversation memory in Python](/blog/rag-chatbot-with-conversation-memory/): A history window within a token budget, query rewriting with safe fallbacks, logging each rewrite, and conversation test cases.
 
 ## Projects
 

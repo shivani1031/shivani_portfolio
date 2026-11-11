@@ -1,0 +1,235 @@
+<!doctype html>
+<html lang="en">
+<head>
+<script async src="https://www.googletagmanager.com/gtm.js?id=GTM-THN7RV8R"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+</script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="canonical" href="https://shivanigupta.store/blog/build-an-mcp-server-in-python/">
+<title>Build an MCP Server in Python: A Minimal Guide | Shivani</title>
+<meta name="description" content="Build a minimal MCP server in Python with the official SDK: one tool, the schema it generates, clear errors, and tests that run in-process without a model.">
+<meta name="robots" content="index,follow">
+<meta name="author" content="Shivani Gupta">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<link rel="manifest" href="/site.webmanifest">
+<meta name="theme-color" content="#080b0f">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Build an MCP Server in Python: A Minimal Guide | Shivani">
+<meta property="og:description" content="Build a minimal MCP server in Python with the official SDK: one tool, the schema it generates, clear errors, and tests that run in-process without a model.">
+<meta property="og:url" content="https://shivanigupta.store/blog/build-an-mcp-server-in-python/">
+<meta property="og:image" content="https://shivanigupta.store/assets/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Build an MCP server in Python: a minimal guide","description":"Build a minimal MCP server in Python with the official SDK: one tool, the schema it generates, clear errors, and tests that run in-process without a model.","mainEntityOfPage":"https://shivanigupta.store/blog/build-an-mcp-server-in-python/","datePublished":"2026-11-12","dateModified":"2026-11-12","image":"https://shivanigupta.store/blog/build-an-mcp-server-in-python/diagram.svg","author":{"@type":"Person","name":"Shivani Gupta"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://shivanigupta.store/"},{"@type":"ListItem","position":2,"name":"Blog","item":"https://shivanigupta.store/blog/"},{"@type":"ListItem","position":3,"name":"Build an MCP server in Python: a minimal guide","item":"https://shivanigupta.store/blog/build-an-mcp-server-in-python/"}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"What is the difference between MCP and tool calling?","acceptedAnswer":{"@type":"Answer","text":"Tool calling is how a model asks the application to run a function. MCP is a protocol between the application and a server that supplies tools, so they can be discovered at runtime and reused by any compatible host. The two work together."}},{"@type":"Question","name":"Should I use FastMCP or MCPServer?","acceptedAnswer":{"@type":"Answer","text":"In version 2 of the official Python SDK, the migration guide says FastMCP was renamed MCPServer. Use whichever matches the SDK version you have installed, and check imports against that version's documentation."}},{"@type":"Question","name":"How do I test an MCP server without a model?","acceptedAnswer":{"@type":"Answer","text":"Pass the server object to the SDK's Client class, which connects in-process. You can then list tools and call them with valid and invalid arguments in an ordinary automated test."}},{"@type":"Question","name":"Do I need the mcp[cli] extra?","acceptedAnswer":{"@type":"Answer","text":"Only for the mcp command-line tool, which runs the Inspector and other development commands. The server itself runs with the plain mcp package."}}]}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&family=Poppins:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+<a class="skip-link" href="#top">Skip to content</a>
+<header class="nav">
+  <div class="wrap nav-in">
+    <a class="logo" href="/" aria-label="Shivani, home"><img src="/assets/logo.svg" alt="Shivani" width="144" height="40"></a>
+    <nav id="nav-links" aria-label="Main">
+      <a href="/#services">Services</a>
+      <a href="/#skills">Skills</a>
+      <a href="/#work">Work</a>
+      <a href="/#process">Process</a>
+      <a href="/#faq">FAQ</a>
+      <a href="/blog/">Blog</a>
+      <a class="btn btn-sm" href="/#contact">Hire Me</a>
+    </nav>
+    <button id="menu-toggle" class="menu-toggle" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="nav-links"><span></span><span></span><span></span></button>
+  </div>
+</header>
+
+<main id="top">
+  <section class="page-head">
+    <div class="wrap">
+      <nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a><span aria-hidden="true">/</span><a href="/blog/">Blog</a><span aria-hidden="true">/</span><span aria-current="page">Build an MCP server in Python: a minimal guide</span></nav>
+      <p class="eyebrow">Guide</p>
+      <h1>Build an MCP server in Python: a minimal guide</h1>
+      <p class="lead">To build an MCP server in Python, install the official SDK with pip install "mcp[cli]", create an MCPServer, decorate a typed function with @mcp.tool() and call mcp.run(). The SDK turns the function's type hints and docstring into the tool's schema and description, and any MCP client can list and call it. You can test it in-process by passing the server object to the SDK's Client, with no model and no subprocess involved.</p>
+    </div>
+  </section>
+  <section class="article">
+    <div class="wrap prose">
+<h2>Before you start</h2>
+<p>This guide is the hands-on companion to two conceptual ones. <a href="/blog/model-context-protocol-for-ai-agents/">Model Context Protocol for AI agents</a> explains hosts, clients and servers and the security decisions that come with them. <a href="/blog/llm-function-calling-vs-mcp/">MCP vs function calling</a> explains how the two layers relate. Here the focus is the server side only: writing one, seeing what it advertises and testing it.</p>
+<p>The samples use version 2 of the official Python SDK, run against <code>mcp</code> 2.3.0. Version 2 renamed the main server class: the SDK's migration guide says <code>FastMCP</code> has become <code>MCPServer</code>, so tutorials that import <code>FastMCP</code> from <code>mcp.server.fastmcp</code> were written for version 1. Check which version you have installed before copying any example, including these.</p>
+<p>Install the SDK with <code>pip install "mcp[cli]"</code> or <code>uv add "mcp[cli]"</code>. The README notes that the <code>cli</code> extra adds the <code>mcp</code> command-line tool used later for the Inspector. Without it, the server still runs, but the command does not.</p>
+
+<h2>Step 1: write a server with one tool</h2>
+<p>The example exposes a single read-only tool that looks up a definition in a small glossary. It is deliberately trivial, so that everything on the page is about MCP rather than the lookup:</p>
+<pre><code># Illustrative: a minimal MCP server exposing one read-only tool.
+from mcp.server import MCPServer
+from mcp.server.mcpserver.exceptions import ToolError
+
+GLOSSARY = {
+    "rag": "Retrieval-augmented generation: answering from retrieved text.",
+    "mcp": "Model Context Protocol: a standard for connecting tools to AI apps.",
+}
+
+mcp = MCPServer("glossary")
+
+
+@mcp.tool()
+def define_term(term: str) -&gt; str:
+    """Look up a short definition of an AI term. Read-only."""
+    key = term.strip().lower()
+    if key not in GLOSSARY:
+        raise ToolError(f"No definition for {term!r}. Known terms: {', '.join(sorted(GLOSSARY))}")
+    return GLOSSARY[key]
+
+
+if __name__ == "__main__":
+    mcp.run()</code></pre>
+<p>Illustrative sketch, run against mcp 2.3.0. Replace the dictionary with your own data source.</p>
+<p>Three things happen here. <code>MCPServer("glossary")</code> names the server, and clients see that name when they connect. The decorator registers <code>define_term</code> as a tool, using the function name as the tool name and the docstring as its description. And <code>mcp.run()</code> starts the server on the stdio transport, which is the default, so a client can launch it as a subprocess and talk to it over standard input and output.</p>
+<p>Write the docstring for the model, not for a colleague. It is the text a model reads when deciding whether to call the tool, so say what the tool does, what it does not do, and that it is read-only.</p>
+
+<h2>Step 2: see what the server advertises</h2>
+<p>This is where an MCP server differs from a function you pass to a model API. With plain function calling, your application sends a fixed list of tool definitions with each request. With MCP, a client connects, initialises a session and asks the server what it offers with a <code>tools/list</code> request. The tool list is discovered at runtime, and the same server can be used by any client that speaks the protocol.</p>
+<figure class="post-figure"><img src="/blog/build-an-mcp-server-in-python/diagram.svg" alt="Sequence diagram of an MCP client and a Python MCP server. The client sends initialize, then tools/list, and the server replies with the define_term tool and an input schema generated from its type hints. The client then sends tools/call with arguments, and the server returns either content or a result marked is_error. Below, three ways to reach the server for testing: in-process with Client(mcp), as a stdio subprocess, and through the MCP Inspector." width="800" height="450" loading="lazy"><figcaption>Tools are discovered at runtime with tools/list, then called with tools/call.</figcaption></figure>
+<p>For the server above, the input schema the SDK generates from the type hint looks like this:</p>
+<p><code>{'type': 'object', 'properties': {'term': {'title': 'Term', 'type': 'string'}}, 'required': ['term'], 'title': 'define_termArguments'}</code></p>
+<p>That schema came entirely from <code>term: str</code>. Add a parameter with a default value and it appears as optional. Use a more specific type and the schema becomes more specific. The SDK validates incoming arguments against these hints before your function runs, so a call with a missing or wrongly typed argument fails without reaching your code.</p>
+
+<h2>Step 3: return errors the model can act on</h2>
+<p>When a tool fails, the result goes back to the model, which decides what to do next. A useful error says what went wrong and what would work instead. The SDK treats two kinds of exception differently:</p>
+<ul>
+<li><strong><code>ToolError</code></strong>, imported from <code>mcp.server.mcpserver.exceptions</code>, is for failures you expect. Its message is passed to the client in a result marked as an error, so the model can read it and try again.</li>
+<li><strong>Any other exception</strong> is treated as a crash. In the installed version, the client receives a generic "Error executing tool" message, and the exception's own text stays on the server.</li>
+</ul>
+<p>That is why the sample raises <code>ToolError</code> with the list of known terms. In testing, raising a plain <code>ValueError</code> instead meant the client saw only the generic message, which gives a model nothing to work with. The split also protects you: unexpected errors can contain file paths, queries or other internal detail that should not reach a model or a user.</p>
+
+<h2>Step 4: test it in-process</h2>
+<p>The SDK's <code>Client</code> class accepts a URL, stdio launch parameters or, in tests, an <code>MCPServer</code> instance, which it connects to in-process. That makes a fast test possible with no model, no network and no subprocess:</p>
+<pre><code># Illustrative: tests the server in-process, with no model and no subprocess.
+import asyncio
+
+from mcp import Client
+
+from server import mcp
+
+
+async def main():
+    async with Client(mcp) as client:
+        tools = await client.list_tools()
+        assert [t.name for t in tools.tools] == ["define_term"]
+        print(tools.tools[0].input_schema)
+
+        ok = await client.call_tool("define_term", {"term": "RAG"})
+        assert not ok.is_error
+        print(ok.content[0].text)
+
+        bad = await client.call_tool("define_term", {"term": "blockchain"})
+        assert bad.is_error
+        print(bad.content[0].text)
+
+
+asyncio.run(main())</code></pre>
+<p>Illustrative sketch, run against mcp 2.3.0, where all three assertions passed.</p>
+<p>The test checks the three things that break most often: the tool is listed under the expected name, a valid call succeeds and an invalid one returns an error result rather than raising. Add a check on the schema too, if clients depend on its exact shape. Once this passes, the same test can run in continuous integration with a normal test runner.</p>
+
+<h2>Step 5: try it with the Inspector</h2>
+<p>For manual exploration, the SDK README documents running <code>uv run mcp dev server.py</code>, which starts the server with the MCP Inspector, a browser-based tool for listing and calling tools by hand. It is a quick way to see what a client sees, including the descriptions and schema. It does not replace the automated test, because it checks one session by hand rather than every change.</p>
+<p>After that, connect the server to a real MCP host. The configuration format differs from host to host, so follow that host's documentation. The final check is with a model in the loop: give it requests that should and should not trigger the tool, and confirm that it chooses correctly and passes sensible arguments.</p>
+
+<h2>Step 6: decide on the transport</h2>
+<p>The sample uses stdio, where the client launches the server as a local subprocess. That suits tools that run on the same machine as the host, such as a developer's desktop assistant. To serve the tool over the network, the README shows running the server with the <code>streamable-http</code> transport instead, and <code>mcp.run</code> accepts it as an option. A network transport changes the security picture: anyone who can reach the URL can try to call your tools, so authentication and authorisation move from optional to essential. The SDK includes options for both, and the MCP overview guide covers what to decide before exposing a server.</p>
+
+<h2>Is MCP just tool calling, then?</h2>
+<p>Looking at the server makes the difference concrete. The function you wrote is ordinary Python, and on the model side it ends up as a tool call, just as it would with function calling. What MCP adds is the layer in between: a standard way for a client to discover the tool at runtime, a schema generated from your code and a server that any compatible host can launch or connect to. The model never sees MCP itself. It sees tool definitions supplied by its host, and the host gets those definitions from your server.</p>
+<p>So if one application owns the tool and only one model calls it, function calling alone is simpler. Build an MCP server when the same tools should be usable from several hosts, or by other teams, without each of them rewriting the integration.</p>
+
+<h2>Common mistakes</h2>
+<ul>
+<li><strong>Copying version 1 imports.</strong> <code>FastMCP</code> examples need adapting for version 2.</li>
+<li><strong>Printing to standard output.</strong> On the stdio transport, standard output carries protocol messages, so stray prints can corrupt them. Log to standard error instead.</li>
+<li><strong>Vague docstrings.</strong> The model chooses tools from their descriptions.</li>
+<li><strong>Raising generic exceptions for expected failures.</strong> Use <code>ToolError</code> so that the model sees a useful message.</li>
+<li><strong>Giving a tool more access than it needs.</strong> Start read-only and add write tools deliberately.</li>
+</ul>
+<p>For help designing tools and agents that work together, see <a href="/services/multi-agent-systems/">multi-agent systems</a>.</p>
+<aside class="post-cta" aria-label="Work with Shivani">
+<h2>Need a multi-agent system built?</h2>
+<p>I design and build multi-agent systems end to end, from the AI workflow to the backend and UI. Tell me what you want to build and I will reply with next steps.</p>
+<p class="post-cta-btns"><a class="btn" href="https://wa.me/919720466504?text=Hi%20Shivani%2C%20I%20read%20your%20guide%20%22Build%20an%20MCP%20server%20in%20Python%3A%20a%20minimal%20guide%22%20and%20would%20like%20to%20discuss%20a%20multi-agent%20system." target="_blank" rel="noopener">Chat on WhatsApp</a> <a class="btn btn-line" href="/#contact">Send project details</a> <a class="post-cta-link" href="/services/multi-agent-systems/">See the service</a></p>
+</aside>
+      <h2>Frequently asked questions</h2>
+      <h3>What is the difference between MCP and tool calling?</h3>
+      <p>Tool calling is how a model asks the application to run a function. MCP is a protocol between the application and a server that supplies tools, so they can be discovered at runtime and reused by any compatible host. The two work together.</p>
+      <h3>Should I use FastMCP or MCPServer?</h3>
+      <p>In version 2 of the official Python SDK, the migration guide says FastMCP was renamed MCPServer. Use whichever matches the SDK version you have installed, and check imports against that version's documentation.</p>
+      <h3>How do I test an MCP server without a model?</h3>
+      <p>Pass the server object to the SDK's Client class, which connects in-process. You can then list tools and call them with valid and invalid arguments in an ordinary automated test.</p>
+      <h3>Do I need the mcp[cli] extra?</h3>
+      <p>Only for the mcp command-line tool, which runs the Inspector and other development commands. The server itself runs with the plain mcp package.</p>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="foot-cta">
+      <div>
+        <h2>Have an AI or full stack project in mind?</h2>
+        <p>Tell me what you want to build.</p>
+      </div>
+      <div class="foot-cta-btns">
+        <a class="btn" href="/#contact">Start a conversation</a>
+        <a class="btn btn-line" href="mailto:shivanigupta4876@gmail.com">Send an email</a>
+      </div>
+    </div>
+    <div class="foot-grid">
+      <div>
+        <a href="/" aria-label="Shivani, home"><img src="/assets/logo.svg" alt="Shivani" width="144" height="40"></a>
+        <p>AI/ML engineer working across generative AI, LLMs, RAG, agentic AI and NLP, plus full stack development.</p>
+        <span class="avail">Taking new projects</span>
+      </div>
+      <div>
+        <h3>Explore</h3>
+        <ul>
+          <li><a href="/services/">Services</a></li>
+          <li><a href="/#work">Projects</a></li>
+          <li><a href="/#process">Process</a></li>
+          <li><a href="/#faq">FAQ</a></li>
+          <li><a href="/blog/">Blog</a></li>
+          <li><a href="/#contact">Contact</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Services</h3>
+        <ul>
+          <li><a href="/services/generative-ai-llm-development/">Generative AI and LLMs</a></li>
+          <li><a href="/services/rag-development/">RAG development</a></li>
+          <li><a href="/services/multi-agent-systems/">Multi-agent systems</a></li>
+          <li><a href="/services/ai-orchestration-langgraph/">Orchestration with LangGraph</a></li>
+          <li><a href="/services/nlp-development/">NLP development</a></li>
+          <li><a href="/services/full-stack-development/">Full stack development</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Contact</h3>
+        <ul>
+          <li><a href="mailto:shivanigupta4876@gmail.com">shivanigupta4876@gmail.com</a></li>
+          <li><a href="tel:+919720466504">+91 97204 66504</a></li>
+          <li><a href="https://github.com/shivani1031" rel="me noopener" target="_blank">GitHub</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="foot-bottom">&copy; <span id="year">2026</span> Shivani Gupta. All rights reserved.</div>
+  </div>
+</footer>
+<a class="wa-float" href="https://wa.me/919720466504?text=Hi%20Shivani%2C%20I%20saw%20your%20website%20and%20would%20like%20to%20talk%20about%20a%20project." target="_blank" rel="noopener" aria-label="Chat on WhatsApp"><svg viewBox="0 0 24 24" width="28" height="28" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15L2 22l5.1-1.3A10 10 0 1 0 12 2zm0 18.2a8.2 8.2 0 0 1-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1a6.700 6.700 0 0 1-3.300-2.900c-.2-.3 0-.4.1-.6l.4-.4.2-.4v-.5l-.8-1.800c-.2-.5-.4-.4-.6-.4h-.5c-.2 0-.4.1-.6.3-.2.2-.8.8-.8 2s.9 2.300 1 2.500c.1.2 1.700 2.600 4.100 3.600 1.500.7 2.100.7 2.900.6.500-.1 1.500-.6 1.700-1.200.2-.6.2-1.100.1-1.200l-.2-.2z"/></svg></a>
+<script src="/assets/js/site.js" defer></script>
+</body>
+</html>

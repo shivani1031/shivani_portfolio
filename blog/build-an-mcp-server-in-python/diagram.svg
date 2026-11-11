@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 450" role="img" aria-labelledby="t">
+<title id="t">How an MCP client discovers and calls a tool on a Python server</title>
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#b3ff3a"/></marker></defs>
+<rect width="800" height="450" fill="#080b0f"/>
+<g font-family="Poppins, sans-serif" fill="#ffffff" text-anchor="middle">
+<text x="400" y="40" font-size="26" font-weight="600">Discover at runtime, then call</text>
+<rect x="20" y="64" width="170" height="56" rx="10" fill="none" stroke="#ffffff" stroke-width="2"/>
+<rect x="610" y="64" width="170" height="56" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="105" y="100" font-size="22">MCP client</text>
+<text x="695" y="100" font-size="22">MCPServer</text>
+<g stroke="#ffffff" stroke-width="2" stroke-dasharray="5 6"><path d="M105 120V330"/><path d="M695 120V330"/></g>
+<g stroke="#b3ff3a" stroke-width="3" fill="none" marker-end="url(#a)">
+<path d="M110 160H688"/><path d="M690 205H112"/><path d="M110 260H688"/><path d="M690 305H112"/>
+</g>
+<g font-size="20">
+<text x="400" y="152">initialize, then tools/list</text>
+<text x="400" y="197">define_term + schema from type hints</text>
+<text x="400" y="252">tools/call {"term": "RAG"}</text>
+<text x="400" y="297">content, or a result with is_error</text>
+</g>
+<text x="400" y="372" font-size="21" font-weight="600" fill="#b3ff3a">Three ways to reach it in testing</text>
+<g fill="none" stroke="#ffffff" stroke-width="2">
+<rect x="20" y="388" width="240" height="50" rx="10"/><rect x="280" y="388" width="240" height="50" rx="10"/><rect x="540" y="388" width="240" height="50" rx="10"/>
+</g>
+<g font-size="20"><text x="140" y="420">Client(mcp)</text><text x="400" y="420">stdio subprocess</text><text x="660" y="420">MCP Inspector</text></g>
+</g>
+</svg>
