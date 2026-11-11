@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 450" width="800" height="450" role="img" aria-labelledby="t">
+<title id="t">Message status lifecycle: pending moves to streaming when text arrives, then to complete, stopped on cancel, or failed on error; pending can also fail before any text</title>
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#b3ff3a"/></marker></defs>
+<style>text{font-family:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;fill:#fff}.s{fill:#c9d1d9}.l{fill:#b3ff3a}</style>
+<rect width="800" height="450" fill="#080b0f"/>
+<text x="400" y="40" font-size="26" text-anchor="middle" class="l" font-weight="700">Chat message status in React</text>
+<rect x="30" y="175" width="170" height="80" rx="10" fill="#11161c" stroke="#3a4450" stroke-width="1.5"/>
+<text x="115.0" y="223.4" font-size="24" text-anchor="middle" font-weight="700">pending</text>
+<rect x="290" y="175" width="190" height="80" rx="10" fill="#11161c" stroke="#b3ff3a" stroke-width="2.5"/>
+<text x="385.0" y="223.4" font-size="24" text-anchor="middle" font-weight="700">streaming</text>
+<rect x="590" y="70" width="180" height="80" rx="10" fill="#11161c" stroke="#3a4450" stroke-width="1.5"/>
+<text x="680.0" y="118.4" font-size="24" text-anchor="middle" font-weight="700">complete</text>
+<rect x="590" y="185" width="180" height="80" rx="10" fill="#11161c" stroke="#3a4450" stroke-width="1.5"/>
+<text x="680.0" y="233.4" font-size="24" text-anchor="middle" font-weight="700">stopped</text>
+<rect x="590" y="300" width="180" height="80" rx="10" fill="#11161c" stroke="#3a4450" stroke-width="1.5"/>
+<text x="680.0" y="348.4" font-size="24" text-anchor="middle" font-weight="700">failed</text>
+<path d="M200 215H288" fill="none" stroke="#b3ff3a" stroke-width="2.5" marker-end="url(#a)"/>
+<text x="244" y="200" font-size="18" text-anchor="middle" class="s">text</text>
+<path d="M480 200L588 115" fill="none" stroke="#b3ff3a" stroke-width="2.5" marker-end="url(#a)"/>
+<text x="520" y="140" font-size="18" text-anchor="end" class="s">finished</text>
+<path d="M480 222H588" fill="none" stroke="#b3ff3a" stroke-width="2.5" marker-end="url(#a)"/>
+<text x="535" y="212" font-size="18" text-anchor="middle" class="s">cancel</text>
+<path d="M480 240L588 330" fill="none" stroke="#b3ff3a" stroke-width="2.5" marker-end="url(#a)"/>
+<text x="520" y="300" font-size="18" text-anchor="end" class="s">error</text>
+<path d="M115 255V355H588" fill="none" stroke="#b3ff3a" stroke-width="2.5" marker-end="url(#a)"/>
+<text x="330" y="345" font-size="18" text-anchor="middle" class="s">error before any text</text>
+<text x="400" y="425" font-size="20" text-anchor="middle" class="s">Stopped and failed keep any partial text on screen</text>
+</svg>

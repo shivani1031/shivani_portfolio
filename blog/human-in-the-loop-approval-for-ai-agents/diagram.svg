@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 450" width="800" height="450" role="img" aria-labelledby="t">
+<title id="t">Human-in-the-loop approval: the agent proposes an action, code checks policy, risky actions save state and wait for a reviewer, then approve or edit runs the action and reject returns to the agent</title>
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#b3ff3a"/></marker></defs>
+<style>text{font-family:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;fill:#fff}.s{fill:#c9d1d9}.l{fill:#b3ff3a}</style>
+<rect width="800" height="450" fill="#080b0f"/>
+<text x="400" y="40" font-size="26" text-anchor="middle" class="l" font-weight="700">Propose, pause, decide, resume</text>
+<rect x="40" y="70" width="210" height="85" rx="10" fill="#11161c" stroke="#3a4450" stroke-width="1.5"/>
+<text x="145.0" y="106.7" font-size="21" text-anchor="middle" font-weight="700">Agent proposes</text>
+<text x="145.0" y="133.0" font-size="21" text-anchor="middle">action as data</text>
+<rect x="295" y="70" width="210" height="85" rx="10" fill="#11161c" stroke="#3a4450" stroke-width="1.5"/>
+<text x="400.0" y="106.7" font-size="21" text-anchor="middle" font-weight="700">Code checks</text>
+<text x="400.0" y="133.0" font-size="21" text-anchor="middle">policy and args</text>
+<rect x="550" y="70" width="210" height="85" rx="10" fill="#11161c" stroke="#b3ff3a" stroke-width="2.5"/>
+<text x="655.0" y="120.2" font-size="22" text-anchor="middle" font-weight="700">Action runs</text>
+<path d="M250 112H293" fill="none" stroke="#b3ff3a" stroke-width="2.5" marker-end="url(#a)"/>
+<path d="M505 112H548" fill="none" stroke="#b3ff3a" stroke-width="2.5" marker-end="url(#a)"/>
+<text x="527" y="60" font-size="18" text-anchor="middle" class="s">allowed</text>
+<rect x="40" y="240" width="210" height="100" rx="10" fill="#11161c" stroke="#3a4450" stroke-width="1.5"/>
+<text x="145.0" y="271.1" font-size="21" text-anchor="middle" font-weight="700">Save state,</text>
+<text x="145.0" y="297.4" font-size="21" text-anchor="middle">create pending</text>
+<text x="145.0" y="323.6" font-size="21" text-anchor="middle">request</text>
+<rect x="295" y="240" width="210" height="100" rx="10" fill="#11161c" stroke="#3a4450" stroke-width="1.5"/>
+<text x="400.0" y="284.2" font-size="21" text-anchor="middle" font-weight="700">Run stops,</text>
+<text x="400.0" y="310.5" font-size="21" text-anchor="middle">reviewer notified</text>
+<rect x="550" y="240" width="210" height="100" rx="10" fill="#11161c" stroke="#3a4450" stroke-width="1.5"/>
+<text x="655.0" y="271.1" font-size="21" text-anchor="middle" font-weight="700">Decision:</text>
+<text x="655.0" y="297.4" font-size="21" text-anchor="middle">reload state,</text>
+<text x="655.0" y="323.6" font-size="21" text-anchor="middle">continue</text>
+<path d="M400 155L150 238" fill="none" stroke="#b3ff3a" stroke-width="2.5" marker-end="url(#a)"/>
+<text x="300" y="210" font-size="18" text-anchor="start" class="s">needs approval</text>
+<path d="M250 290H293" fill="none" stroke="#b3ff3a" stroke-width="2.5" marker-end="url(#a)"/>
+<path d="M505 290H548" fill="none" stroke="#b3ff3a" stroke-width="2.5" marker-end="url(#a)"/>
+<path d="M655 238V157" fill="none" stroke="#b3ff3a" stroke-width="2.5" marker-end="url(#a)"/>
+<text x="665" y="205" font-size="18" text-anchor="start" class="s">approve / edit</text>
+<path d="M655 340V395H18V112H38" fill="none" stroke="#b3ff3a" stroke-width="2.5" marker-end="url(#a)"/>
+<text x="400" y="425" font-size="20" text-anchor="middle" class="s">reject with a reason: it goes back to the agent</text>
+</svg>

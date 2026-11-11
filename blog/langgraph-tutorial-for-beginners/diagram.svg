@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 450" width="800" height="450" role="img" aria-labelledby="t">
+<title id="t">LangGraph beginner graph: START to write to check, ending when passed or out of attempts and looping back to write otherwise, with shared state fields topic, headline, attempts and passed</title>
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#b3ff3a"/></marker></defs>
+<style>text{font-family:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;fill:#fff}.s{fill:#c9d1d9}.l{fill:#b3ff3a}</style>
+<rect width="800" height="450" fill="#080b0f"/>
+<text x="400" y="40" font-size="26" text-anchor="middle" class="l" font-weight="700">Write, check, retry: the first graph</text>
+<circle cx="80" cy="150" r="48" fill="#11161c" stroke="#3a4450" stroke-width="1.5"/><text x="80" y="158" font-size="20" text-anchor="middle" class="" font-weight="700">START</text>
+<rect x="180" y="110" width="170" height="80" rx="10" fill="#11161c" stroke="#b3ff3a" stroke-width="2.5"/>
+<text x="265.0" y="158.4" font-size="24" text-anchor="middle" font-weight="700">write</text>
+<rect x="430" y="110" width="170" height="80" rx="10" fill="#11161c" stroke="#b3ff3a" stroke-width="2.5"/>
+<text x="515.0" y="158.4" font-size="24" text-anchor="middle" font-weight="700">check</text>
+<circle cx="715" cy="150" r="48" fill="#11161c" stroke="#3a4450" stroke-width="1.5"/><text x="715" y="158" font-size="20" text-anchor="middle" class="" font-weight="700">END</text>
+<path d="M128 150H178" fill="none" stroke="#b3ff3a" stroke-width="2.5" marker-end="url(#a)"/>
+<path d="M350 150H428" fill="none" stroke="#b3ff3a" stroke-width="2.5" marker-end="url(#a)"/>
+<path d="M600 150H665" fill="none" stroke="#b3ff3a" stroke-width="2.5" marker-end="url(#a)"/>
+<text x="633" y="135" font-size="18" text-anchor="middle" class="s">passed</text>
+<path d="M515 190V235H265V192" fill="none" stroke="#b3ff3a" stroke-width="2.5" marker-end="url(#a)"/>
+<text x="390" y="228" font-size="20" text-anchor="middle" class="s">retry</text>
+<path d="M600 175L680 190" fill="none" stroke="#b3ff3a" stroke-width="2.5" marker-end="url(#a)"/>
+<text x="715" y="228" font-size="18" text-anchor="middle" class="s">no attempts left</text>
+<text x="400" y="290" font-size="22" text-anchor="middle" class="s" font-weight="700">Shared state passed between nodes</text>
+<rect x="30" y="310" width="170" height="60" rx="10" fill="#11161c" stroke="#3a4450" stroke-width="1.5"/>
+<text x="115.0" y="347.7" font-size="22" text-anchor="middle" font-weight="700" class="l">topic</text>
+<rect x="220" y="310" width="170" height="60" rx="10" fill="#11161c" stroke="#3a4450" stroke-width="1.5"/>
+<text x="305.0" y="347.7" font-size="22" text-anchor="middle" font-weight="700" class="l">headline</text>
+<rect x="410" y="310" width="170" height="60" rx="10" fill="#11161c" stroke="#3a4450" stroke-width="1.5"/>
+<text x="495.0" y="347.7" font-size="22" text-anchor="middle" font-weight="700" class="l">attempts</text>
+<rect x="600" y="310" width="170" height="60" rx="10" fill="#11161c" stroke="#3a4450" stroke-width="1.5"/>
+<text x="685.0" y="347.7" font-size="22" text-anchor="middle" font-weight="700" class="l">passed</text>
+<text x="400" y="410" font-size="20" text-anchor="middle" class="s">Nodes return only the fields they change</text>
+</svg>
