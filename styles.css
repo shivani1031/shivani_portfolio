@@ -202,3 +202,8 @@ nav a:not(.btn):hover { color: var(--accent); }
 .prose .post-cta h2 { margin-top: 0; }
 .post-cta-btns { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin-bottom: 0; }
 .post-cta-link { color: var(--accent); font-weight: 600; }
+
+/* Diagrams inside guides */
+.post-figure { margin: 32px 0; }
+.post-figure img { display: block; width: 100%; height: auto; border: 1px solid var(--line); border-radius: 12px; }
+.post-figure figcaption { margin-top: 10px; font-size: 14px; color: var(--muted, rgba(255,255,255,.7)); }
