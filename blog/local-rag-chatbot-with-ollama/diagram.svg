@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 450" role="img" aria-labelledby="t">
+<title id="t">A local RAG chatbot with Ollama</title>
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#b3ff3a"/></marker></defs>
+<rect width="800" height="450" fill="#080b0f"/>
+<g font-family="Arial, Helvetica, sans-serif" fill="#ffffff">
+<text x="400" y="50" font-size="28" text-anchor="middle" fill="#ffffff" font-weight="bold">A local RAG chatbot with Ollama</text>
+<text x="30" y="100" font-size="20" text-anchor="start" fill="#b3ff3a">Indexing (ahead of time)</text>
+<rect x="20" y="115" width="178" height="90" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="109.0" y="154.0" font-size="20" text-anchor="middle" fill="#ffffff">Your</text>
+<text x="109.0" y="180.0" font-size="20" text-anchor="middle" fill="#ffffff">documents</text>
+<line x1="200" y1="160" x2="212" y2="160" stroke="#b3ff3a" stroke-width="3" marker-end="url(#a)"/>
+<rect x="214" y="115" width="178" height="90" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="303.0" y="154.0" font-size="20" text-anchor="middle" fill="#ffffff">Overlapping</text>
+<text x="303.0" y="180.0" font-size="20" text-anchor="middle" fill="#ffffff">chunks</text>
+<line x1="394" y1="160" x2="406" y2="160" stroke="#b3ff3a" stroke-width="3" marker-end="url(#a)"/>
+<rect x="408" y="115" width="178" height="90" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="497.0" y="154.0" font-size="20" text-anchor="middle" fill="#ffffff">Embed via</text>
+<text x="497.0" y="180.0" font-size="20" text-anchor="middle" fill="#ffffff">Ollama</text>
+<line x1="588" y1="160" x2="600" y2="160" stroke="#b3ff3a" stroke-width="3" marker-end="url(#a)"/>
+<rect x="602" y="115" width="178" height="90" rx="10" fill="#b3ff3a" stroke="#b3ff3a" stroke-width="2"/>
+<text x="691.0" y="154.0" font-size="20" text-anchor="middle" fill="#080b0f">Local</text>
+<text x="691.0" y="180.0" font-size="20" text-anchor="middle" fill="#080b0f">index</text>
+<text x="30" y="255" font-size="20" text-anchor="start" fill="#b3ff3a">Answering (every question)</text>
+<rect x="20" y="270" width="141" height="90" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="90.5" y="322.0" font-size="20" text-anchor="middle" fill="#ffffff">Question</text>
+<line x1="163" y1="315" x2="173" y2="315" stroke="#b3ff3a" stroke-width="3" marker-end="url(#a)"/>
+<rect x="175" y="270" width="141" height="90" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="245.5" y="309.0" font-size="20" text-anchor="middle" fill="#ffffff">Embed via</text>
+<text x="245.5" y="335.0" font-size="20" text-anchor="middle" fill="#ffffff">Ollama</text>
+<line x1="318" y1="315" x2="328" y2="315" stroke="#b3ff3a" stroke-width="3" marker-end="url(#a)"/>
+<rect x="330" y="270" width="141" height="90" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="400.5" y="309.0" font-size="20" text-anchor="middle" fill="#ffffff">Closest</text>
+<text x="400.5" y="335.0" font-size="20" text-anchor="middle" fill="#ffffff">chunks</text>
+<line x1="472" y1="315" x2="482" y2="315" stroke="#b3ff3a" stroke-width="3" marker-end="url(#a)"/>
+<rect x="484" y="270" width="141" height="90" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="554.5" y="309.0" font-size="20" text-anchor="middle" fill="#ffffff">Chat model</text>
+<text x="554.5" y="335.0" font-size="20" text-anchor="middle" fill="#ffffff">via Ollama</text>
+<line x1="627" y1="315" x2="637" y2="315" stroke="#b3ff3a" stroke-width="3" marker-end="url(#a)"/>
+<rect x="639" y="270" width="141" height="90" rx="10" fill="#b3ff3a" stroke="#b3ff3a" stroke-width="2"/>
+<text x="709.5" y="309.0" font-size="20" text-anchor="middle" fill="#080b0f">Cited</text>
+<text x="709.5" y="335.0" font-size="20" text-anchor="middle" fill="#080b0f">answer</text>
+<text x="400" y="410" font-size="20" text-anchor="middle" fill="#ffffff">Everything runs on your own machine</text>
+</g>
+</svg>

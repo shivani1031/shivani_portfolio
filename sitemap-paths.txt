@@ -81,3 +81,7 @@
 /blog/hire-a-langgraph-developer/
 /blog/freelance-ai-developer-vs-agency/
 /blog/working-with-a-remote-ai-developer/
+/blog/local-rag-chatbot-with-ollama/
+/blog/chromadb-rag-tutorial/
+/blog/no-code-chatbot-builder-vs-custom-chatbot/
+/blog/ai-chatbot-for-lead-capture/

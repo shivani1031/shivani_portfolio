@@ -1,0 +1,244 @@
+<!doctype html>
+<html lang="en">
+<head>
+<script async src="https://www.googletagmanager.com/gtm.js?id=GTM-THN7RV8R"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+</script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="canonical" href="https://shivanigupta.store/blog/chromadb-rag-tutorial/">
+<title>ChromaDB RAG Tutorial in Python | Shivani</title>
+<meta name="description" content="Index and query documents with ChromaDB in Python for RAG: persistent storage, upserts, metadata filters, deletes, and when to move to another vector database.">
+<meta name="robots" content="index,follow">
+<meta name="author" content="Shivani Gupta">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<link rel="manifest" href="/site.webmanifest">
+<meta name="theme-color" content="#080b0f">
+<meta property="og:type" content="article">
+<meta property="og:title" content="ChromaDB RAG Tutorial in Python | Shivani">
+<meta property="og:description" content="Index and query documents with ChromaDB in Python for RAG: persistent storage, upserts, metadata filters, deletes, and when to move to another vector database.">
+<meta property="og:url" content="https://shivanigupta.store/blog/chromadb-rag-tutorial/">
+<meta property="og:image" content="https://shivanigupta.store/assets/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"ChromaDB RAG tutorial: indexing, persistence and filters","description":"Index and query documents with ChromaDB in Python for RAG: persistent storage, upserts, metadata filters, deletes, and when to move to another vector database.","mainEntityOfPage":"https://shivanigupta.store/blog/chromadb-rag-tutorial/","datePublished":"2026-11-13","dateModified":"2026-11-13","image":"https://shivanigupta.store/blog/chromadb-rag-tutorial/diagram.svg","author":{"@type":"Person","name":"Shivani Gupta"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://shivanigupta.store/"},{"@type":"ListItem","position":2,"name":"Blog","item":"https://shivanigupta.store/blog/"},{"@type":"ListItem","position":3,"name":"ChromaDB RAG tutorial: indexing, persistence and filters","item":"https://shivanigupta.store/blog/chromadb-rag-tutorial/"}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Is ChromaDB good for RAG?","acceptedAnswer":{"@type":"Answer","text":"Yes, for many projects. It is quick to start with, can run inside a Python process, saves to disk with a persistent client and supports metadata filters. Larger or more operationally demanding systems may suit another vector database."}},{"@type":"Question","name":"How do I make ChromaDB persist data?","acceptedAnswer":{"@type":"Answer","text":"Use chromadb.PersistentClient with a path to a folder. Collections and records are saved there and are available again the next time you open a client with the same path."}},{"@type":"Question","name":"What is the difference between add and upsert in ChromaDB?","acceptedAnswer":{"@type":"Answer","text":"Add inserts new records and ignores a record whose id already exists. Upsert inserts new records and updates existing ones, which makes re-indexing changed documents safe when ids are deterministic."}},{"@type":"Question","name":"How do I filter ChromaDB results by metadata?","acceptedAnswer":{"@type":"Answer","text":"Pass a where argument to query or get, for example a source equal to one file name, or an $and of conditions using operators such as $in and $gte. Use where_document to filter on the text itself."}},{"@type":"Question","name":"Can I use my own embeddings with ChromaDB?","acceptedAnswer":{"@type":"Answer","text":"Yes. Pass embeddings when you add or upsert records and query with query_embeddings. The vectors must come from the same model and have the same length as the rest of the collection."}}]}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&family=Poppins:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+<a class="skip-link" href="#top">Skip to content</a>
+<header class="nav">
+  <div class="wrap nav-in">
+    <a class="logo" href="/" aria-label="Shivani, home"><img src="/assets/logo.svg" alt="Shivani" width="144" height="40"></a>
+    <nav id="nav-links" aria-label="Main">
+      <a href="/#services">Services</a>
+      <a href="/#skills">Skills</a>
+      <a href="/#work">Work</a>
+      <a href="/#process">Process</a>
+      <a href="/#faq">FAQ</a>
+      <a href="/blog/">Blog</a>
+      <a class="btn btn-sm" href="/#contact">Hire Me</a>
+    </nav>
+    <button id="menu-toggle" class="menu-toggle" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="nav-links"><span></span><span></span><span></span></button>
+  </div>
+</header>
+
+<main id="top">
+  <section class="page-head">
+    <div class="wrap">
+      <nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a><span aria-hidden="true">/</span><a href="/blog/">Blog</a><span aria-hidden="true">/</span><span aria-current="page">ChromaDB RAG tutorial: indexing, persistence and filters</span></nav>
+      <p class="eyebrow">Guide</p>
+      <h1>ChromaDB RAG tutorial: indexing, persistence and filters</h1>
+      <p class="lead">To use ChromaDB for RAG in Python, create a <code>PersistentClient</code> pointing at a folder, get or create a collection, and upsert each chunk with an id, its text, its embedding and metadata such as source and date. At question time, call <code>query</code> with the question's embedding, the number of results and an optional <code>where</code> filter on metadata, then pass the returned passages to your language model.</p>
+    </div>
+  </section>
+  <section class="article">
+    <div class="wrap prose">
+<h2>Where ChromaDB fits in a RAG system</h2>
+<p>Retrieval-augmented generation has two phases. Indexing splits your documents into chunks, embeds them and stores them. Answering embeds each question, finds the closest chunks and asks a model to answer from them. ChromaDB is an open-source vector database that handles the storage and search part of both phases.</p>
+<p>It is popular for prototypes and small to medium projects because it can run inside your Python process with no separate server, and save its data to a local folder. It can also run as a client and server when several processes need the same data. If you are still deciding whether you need a dedicated vector database at all, read <a href="/blog/embeddings-and-choosing-a-vector-database/">embeddings and choosing a vector database</a> first.</p>
+<p>This tutorial was checked against the ChromaDB documentation and run with the 1.x Python package. The API has changed between major versions, so if your code or an older tutorial disagrees with what follows, check the version you have installed against the current documentation.</p>
+
+<h2>Installing and creating a persistent client</h2>
+<p>Install the package with <code>pip install chromadb</code>. ChromaDB offers an in-memory client, which is handy for tests but forgets everything when the program stops, and a persistent client, which saves to a directory. For RAG you almost always want the persistent one:</p>
+<ul>
+<li><code>chromadb.PersistentClient(path="./chroma_store")</code> opens or creates the store in that folder. Always pass the path explicitly, so that you know where the data lives.</li>
+<li><code>client.get_or_create_collection(name=...)</code> returns a collection, which is roughly a table of records. Collection names have rules: they must be at least three characters, using letters, numbers, dots, underscores and hyphens.</li>
+<li>The distance function is set when the collection is created, through its <code>configuration</code>. Cosine distance is a common choice for text embeddings. Decide it up front, because changing it later means recreating the collection.</li>
+</ul>
+
+<figure class="post-figure"><img src="/blog/chromadb-rag-tutorial/diagram.svg" alt="Diagram of ChromaDB in a RAG pipeline. Chunks with ids, text, embeddings and metadata are upserted into a collection saved in a folder on disk. A question embedding is sent to query together with a metadata filter, and ChromaDB returns the closest matching chunks with their sources and distances to the language model." width="800" height="450" loading="lazy"><figcaption>ChromaDB stores each chunk's id, text, vector and metadata on disk, and a query combines vector similarity with a metadata filter.</figcaption></figure>
+
+<h2>Indexing and querying: a complete example</h2>
+<p>The sample below is illustrative and runs as written. To keep it self-contained, a toy <code>embed</code> function stands in for a real embedding model. Replace it with your provider's embedding call or a local model; nothing else needs to change.</p>
+<pre><code># Illustrative only. A toy embedder stands in for a real embedding model.
+import hashlib
+import chromadb
+
+def embed(texts):
+    &quot;&quot;&quot;Placeholder: replace with a real embedding model.&quot;&quot;&quot;
+    vectors = []
+    for text in texts:
+        v = [0.0] * 64
+        for word in text.lower().split():
+            v[int(hashlib.md5(word.encode()).hexdigest(), 16) % 64] += 1.0
+        vectors.append(v)
+    return vectors
+
+client = chromadb.PersistentClient(path=&quot;./chroma_store&quot;)
+collection = client.get_or_create_collection(
+    name=&quot;handbook&quot;,
+    configuration={&quot;hnsw&quot;: {&quot;space&quot;: &quot;cosine&quot;}},
+)
+
+chunks = [
+    {&quot;id&quot;: &quot;leave-1&quot;, &quot;text&quot;: &quot;Staff receive annual leave each year, booked through the HR portal.&quot;,
+     &quot;source&quot;: &quot;leave-policy.md&quot;, &quot;team&quot;: &quot;all&quot;, &quot;year&quot;: 2026},
+    {&quot;id&quot;: &quot;leave-2&quot;, &quot;text&quot;: &quot;Unused annual leave can be carried over only with manager approval.&quot;,
+     &quot;source&quot;: &quot;leave-policy.md&quot;, &quot;team&quot;: &quot;all&quot;, &quot;year&quot;: 2026},
+    {&quot;id&quot;: &quot;exp-1&quot;, &quot;text&quot;: &quot;Travel expenses must be submitted with receipts within the month.&quot;,
+     &quot;source&quot;: &quot;expenses.md&quot;, &quot;team&quot;: &quot;finance&quot;, &quot;year&quot;: 2025},
+]
+
+collection.upsert(
+    ids=[c[&quot;id&quot;] for c in chunks],
+    documents=[c[&quot;text&quot;] for c in chunks],
+    embeddings=embed([c[&quot;text&quot;] for c in chunks]),
+    metadatas=[{&quot;source&quot;: c[&quot;source&quot;], &quot;team&quot;: c[&quot;team&quot;], &quot;year&quot;: c[&quot;year&quot;]} for c in chunks],
+)
+print(&quot;stored:&quot;, collection.count())
+
+def search(question, where=None, k=3):
+    result = collection.query(
+        query_embeddings=embed([question]),
+        n_results=k,
+        where=where,
+        include=[&quot;documents&quot;, &quot;metadatas&quot;, &quot;distances&quot;],
+    )
+    # Results are nested per query, so take the first list.
+    return list(zip(result[&quot;documents&quot;][0], result[&quot;metadatas&quot;][0], result[&quot;distances&quot;][0]))
+
+for doc, meta, dist in search(&quot;can I carry over annual leave&quot;):
+    print(round(dist, 3), meta[&quot;source&quot;], &quot;|&quot;, doc)
+
+for doc, meta, dist in search(
+    &quot;annual leave&quot;,
+    where={&quot;$and&quot;: [{&quot;team&quot;: {&quot;$in&quot;: [&quot;all&quot;, &quot;hr&quot;]}}, {&quot;year&quot;: {&quot;$gte&quot;: 2026}}]},
+):
+    print(&quot;filtered:&quot;, meta[&quot;source&quot;], meta[&quot;year&quot;])
+
+collection.delete(where={&quot;source&quot;: &quot;expenses.md&quot;})
+print(&quot;after delete:&quot;, collection.count())</code></pre>
+<p>Run it twice and the count stays the same. That is the point of <code>upsert</code>: records with an existing id are updated rather than duplicated, and new ids are inserted. Plain <code>add</code> ignores a record whose id already exists, which can leave stale text in place when a document changes. Deterministic ids, built from the file name and chunk position, make re-indexing safe.</p>
+
+<h2>Bring your own embeddings or let ChromaDB embed</h2>
+<p>If you pass only <code>documents</code>, ChromaDB embeds them with the collection's embedding function, and you can query with <code>query_texts</code>. If you pass your own <code>embeddings</code>, it stores them as given and you query with <code>query_embeddings</code>.</p>
+<p>Supplying your own embeddings is usually clearer in a RAG system. You choose the model deliberately, you can reuse the same vectors elsewhere, and you avoid a hidden default that may download a model on first use. Whichever you choose, the rule is the same as in any vector store: questions and chunks must be embedded by the same model, and the vectors must have the same length as everything already in the collection. If you change embedding models, build a new collection rather than mixing vectors. <a href="/blog/choosing-an-embedding-model/">Choosing an embedding model</a> covers how to compare candidates.</p>
+
+<h2>Reading query results</h2>
+<p>Results come back column by column and nested per query. <code>result["documents"][0]</code> is the list of texts for the first question, <code>result["metadatas"][0]</code> the matching metadata and <code>result["distances"][0]</code> their distances, where smaller means closer. The <code>include</code> argument controls which fields are returned; ids are always included.</p>
+<p>By default a query returns up to ten results. Set <code>n_results</code> explicitly and tune it against your test questions: too few and you miss the passage that holds the answer, too many and the model has more irrelevant text to wade through. Consider also dropping results above a distance threshold, so that an off-topic question can return nothing and the chatbot can say it does not know.</p>
+
+<h2>Metadata filters</h2>
+<p>Metadata turns a similarity search into a targeted one. The <code>where</code> argument filters on metadata before results are returned, using operators such as <code>$eq</code>, <code>$ne</code>, <code>$gt</code>, <code>$gte</code>, <code>$lt</code>, <code>$lte</code>, <code>$in</code> and <code>$nin</code>, combined with <code>$and</code> and <code>$or</code>. A plain <code>{"source": "leave-policy.md"}</code> is shorthand for an equality match. There is also <code>where_document</code>, which filters on the text itself.</p>
+<p>Useful metadata for RAG includes:</p>
+<ul>
+<li><strong>Source and section.</strong> For citations, and for deleting or replacing one document's chunks.</li>
+<li><strong>Dates or versions.</strong> So that superseded policies can be excluded rather than retrieved alongside the current one.</li>
+<li><strong>Product, region or language.</strong> To narrow a search when the user has already told you the context.</li>
+<li><strong>Access groups.</strong> To restrict which chunks a given user can retrieve.</li>
+</ul>
+<p>On that last point, a filter only protects data if your application always applies it and builds it from the signed-in user, never from anything the user or the model can change. <a href="/blog/rag-access-control-and-permissions/">RAG access control and permissions</a> explains the wider design.</p>
+<p>Keep metadata values simple: strings, numbers and booleans. Decide the fields before you index a large collection, because adding a field later means re-indexing the documents that need it.</p>
+
+<h2>Keeping the index current</h2>
+<p>Documents change. A simple, reliable pattern is to treat each source file as the unit of update: when a file changes, delete its chunks with <code>collection.delete(where={"source": name})</code> and upsert the new ones. This avoids orphaned chunks when a document gets shorter. Record a content hash or modified date for each file, so that a scheduled job can skip anything unchanged.</p>
+<p>Back up the persistence folder like any other database, and avoid several processes writing to the same local folder at once. If you need concurrent writers or several application servers, run ChromaDB in client and server mode instead.</p>
+
+<h2>When to move beyond ChromaDB</h2>
+<p>ChromaDB is a good fit when you want a quick start, a single application and data that fits comfortably on one machine. You might look elsewhere when your data already lives in PostgreSQL and you want vectors next to it, when you need hybrid keyword and vector search tuned to your domain, or when operational needs such as replication dominate. <a href="/blog/pgvector-vs-dedicated-vector-databases/">pgvector vs dedicated vector databases</a> compares those routes.</p>
+<p>Because the retrieval step sits behind one small function in the example above, switching later is mostly a matter of reimplementing that function and re-indexing. Keeping that boundary clean is worth more than picking the perfect database on day one.</p>
+<p>To have a RAG system designed and built around your own documents, see <a href="/services/rag-development/">RAG development</a>.</p>
+<aside class="post-cta" aria-label="Work with Shivani">
+<h2>Need a RAG system built?</h2>
+<p>I design and build RAG systems end to end, from the AI workflow to the backend and UI. Tell me what you want to build and I will reply with next steps.</p>
+<p class="post-cta-btns"><a class="btn" href="https://wa.me/919720466504?text=Hi%20Shivani%2C%20I%20read%20your%20guide%20%22ChromaDB%20RAG%20tutorial%3A%20indexing%2C%20persistence%20and%20filters%22%20and%20would%20like%20to%20discuss%20a%20RAG%20system." target="_blank" rel="noopener">Chat on WhatsApp</a> <a class="btn btn-line" href="/#contact">Send project details</a> <a class="post-cta-link" href="/services/rag-development/">See the service</a></p>
+</aside>
+      <h2>Frequently asked questions</h2>
+      <h3>Is ChromaDB good for RAG?</h3>
+      <p>Yes, for many projects. It is quick to start with, can run inside a Python process, saves to disk with a persistent client and supports metadata filters. Larger or more operationally demanding systems may suit another vector database.</p>
+      <h3>How do I make ChromaDB persist data?</h3>
+      <p>Use chromadb.PersistentClient with a path to a folder. Collections and records are saved there and are available again the next time you open a client with the same path.</p>
+      <h3>What is the difference between add and upsert in ChromaDB?</h3>
+      <p>Add inserts new records and ignores a record whose id already exists. Upsert inserts new records and updates existing ones, which makes re-indexing changed documents safe when ids are deterministic.</p>
+      <h3>How do I filter ChromaDB results by metadata?</h3>
+      <p>Pass a where argument to query or get, for example a source equal to one file name, or an $and of conditions using operators such as $in and $gte. Use where_document to filter on the text itself.</p>
+      <h3>Can I use my own embeddings with ChromaDB?</h3>
+      <p>Yes. Pass embeddings when you add or upsert records and query with query_embeddings. The vectors must come from the same model and have the same length as the rest of the collection.</p>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="foot-cta">
+      <div>
+        <h2>Have an AI or full stack project in mind?</h2>
+        <p>Tell me what you want to build.</p>
+      </div>
+      <div class="foot-cta-btns">
+        <a class="btn" href="/#contact">Start a conversation</a>
+        <a class="btn btn-line" href="mailto:shivanigupta4876@gmail.com">Send an email</a>
+      </div>
+    </div>
+    <div class="foot-grid">
+      <div>
+        <a href="/" aria-label="Shivani, home"><img src="/assets/logo.svg" alt="Shivani" width="144" height="40"></a>
+        <p>AI/ML engineer working across generative AI, LLMs, RAG, agentic AI and NLP, plus full stack development.</p>
+        <span class="avail">Taking new projects</span>
+      </div>
+      <div>
+        <h3>Explore</h3>
+        <ul>
+          <li><a href="/services/">Services</a></li>
+          <li><a href="/#work">Projects</a></li>
+          <li><a href="/#process">Process</a></li>
+          <li><a href="/#faq">FAQ</a></li>
+          <li><a href="/blog/">Blog</a></li>
+          <li><a href="/#contact">Contact</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Services</h3>
+        <ul>
+          <li><a href="/services/generative-ai-llm-development/">Generative AI and LLMs</a></li>
+          <li><a href="/services/rag-development/">RAG development</a></li>
+          <li><a href="/services/multi-agent-systems/">Multi-agent systems</a></li>
+          <li><a href="/services/ai-orchestration-langgraph/">Orchestration with LangGraph</a></li>
+          <li><a href="/services/nlp-development/">NLP development</a></li>
+          <li><a href="/services/full-stack-development/">Full stack development</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Contact</h3>
+        <ul>
+          <li><a href="mailto:shivanigupta4876@gmail.com">shivanigupta4876@gmail.com</a></li>
+          <li><a href="tel:+919720466504">+91 97204 66504</a></li>
+          <li><a href="https://github.com/shivani1031" rel="me noopener" target="_blank">GitHub</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="foot-bottom">&copy; <span id="year">2026</span> Shivani Gupta. All rights reserved.</div>
+  </div>
+</footer>
+<a class="wa-float" href="https://wa.me/919720466504?text=Hi%20Shivani%2C%20I%20saw%20your%20website%20and%20would%20like%20to%20talk%20about%20a%20project." target="_blank" rel="noopener" aria-label="Chat on WhatsApp"><svg viewBox="0 0 24 24" width="28" height="28" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15L2 22l5.1-1.3A10 10 0 1 0 12 2zm0 18.2a8.2 8.2 0 0 1-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1a6.700 6.700 0 0 1-3.300-2.900c-.2-.3 0-.4.1-.6l.4-.4.2-.4v-.5l-.8-1.800c-.2-.5-.4-.4-.6-.4h-.5c-.2 0-.4.1-.6.3-.2.2-.8.8-.8 2s.9 2.300 1 2.500c.1.2 1.700 2.600 4.100 3.600 1.500.7 2.100.7 2.900.6.500-.1 1.500-.6 1.700-1.200.2-.6.2-1.100.1-1.200l-.2-.2z"/></svg></a>
+<script src="/assets/js/site.js" defer></script>
+</body>
+</html>

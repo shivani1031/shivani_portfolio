@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 450" role="img" aria-labelledby="t">
+<title id="t">No-code builder or custom chatbot?</title>
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#b3ff3a"/></marker></defs>
+<rect width="800" height="450" fill="#080b0f"/>
+<g font-family="Arial, Helvetica, sans-serif" fill="#ffffff">
+<text x="400" y="50" font-size="28" text-anchor="middle" fill="#ffffff" font-weight="bold">No-code builder or custom chatbot?</text>
+<text x="400" y="100" font-size="20" text-anchor="middle" fill="#b3ff3a">Ask four questions</text>
+<rect x="20" y="120" width="178" height="140" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="109.0" y="171.0" font-size="20" text-anchor="middle" fill="#ffffff">Private or</text>
+<text x="109.0" y="197.0" font-size="20" text-anchor="middle" fill="#ffffff">regulated</text>
+<text x="109.0" y="223.0" font-size="20" text-anchor="middle" fill="#ffffff">data?</text>
+<line x1="200" y1="190" x2="212" y2="190" stroke="#b3ff3a" stroke-width="3" marker-end="url(#a)"/>
+<rect x="214" y="120" width="178" height="140" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="303.0" y="171.0" font-size="20" text-anchor="middle" fill="#ffffff">Must act in</text>
+<text x="303.0" y="197.0" font-size="20" text-anchor="middle" fill="#ffffff">your own</text>
+<text x="303.0" y="223.0" font-size="20" text-anchor="middle" fill="#ffffff">systems?</text>
+<line x1="394" y1="190" x2="406" y2="190" stroke="#b3ff3a" stroke-width="3" marker-end="url(#a)"/>
+<rect x="408" y="120" width="178" height="140" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="497.0" y="171.0" font-size="20" text-anchor="middle" fill="#ffffff">Users see</text>
+<text x="497.0" y="197.0" font-size="20" text-anchor="middle" fill="#ffffff">different</text>
+<text x="497.0" y="223.0" font-size="20" text-anchor="middle" fill="#ffffff">data?</text>
+<line x1="588" y1="190" x2="600" y2="190" stroke="#b3ff3a" stroke-width="3" marker-end="url(#a)"/>
+<rect x="602" y="120" width="178" height="140" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="691.0" y="171.0" font-size="20" text-anchor="middle" fill="#ffffff">Need full</text>
+<text x="691.0" y="197.0" font-size="20" text-anchor="middle" fill="#ffffff">control and</text>
+<text x="691.0" y="223.0" font-size="20" text-anchor="middle" fill="#ffffff">ownership?</text>
+<rect x="20" y="300" width="360" height="80" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="200.0" y="334.0" font-size="20" text-anchor="middle" fill="#ffffff">Mostly no: try a</text>
+<text x="200.0" y="360.0" font-size="20" text-anchor="middle" fill="#ffffff">no-code builder first</text>
+<rect x="420" y="300" width="360" height="80" rx="10" fill="#b3ff3a" stroke="#b3ff3a" stroke-width="2"/>
+<text x="600.0" y="334.0" font-size="20" text-anchor="middle" fill="#080b0f">Any yes: consider a</text>
+<text x="600.0" y="360.0" font-size="20" text-anchor="middle" fill="#080b0f">custom chatbot</text>
+<text x="400" y="425" font-size="20" text-anchor="middle" fill="#ffffff">Test either option on your real questions</text>
+</g>
+</svg>

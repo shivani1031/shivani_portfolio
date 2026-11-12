@@ -1,0 +1,253 @@
+<!doctype html>
+<html lang="en">
+<head>
+<script async src="https://www.googletagmanager.com/gtm.js?id=GTM-THN7RV8R"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+</script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="canonical" href="https://shivanigupta.store/blog/local-rag-chatbot-with-ollama/">
+<title>Local RAG Chatbot in Python with Ollama | Shivani</title>
+<meta name="description" content="Build a private RAG chatbot in Python with a local model through Ollama: indexing, overlapping chunks, retrieval, grounded answers and the LangChain option.">
+<meta name="robots" content="index,follow">
+<meta name="author" content="Shivani Gupta">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<link rel="manifest" href="/site.webmanifest">
+<meta name="theme-color" content="#080b0f">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Local RAG Chatbot in Python with Ollama | Shivani">
+<meta property="og:description" content="Build a private RAG chatbot in Python with a local model through Ollama: indexing, overlapping chunks, retrieval, grounded answers and the LangChain option.">
+<meta property="og:url" content="https://shivanigupta.store/blog/local-rag-chatbot-with-ollama/">
+<meta property="og:image" content="https://shivanigupta.store/assets/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Building a local RAG chatbot in Python with Ollama","description":"Build a private RAG chatbot in Python with a local model through Ollama: indexing, overlapping chunks, retrieval, grounded answers and the LangChain option.","mainEntityOfPage":"https://shivanigupta.store/blog/local-rag-chatbot-with-ollama/","datePublished":"2026-11-13","dateModified":"2026-11-13","image":"https://shivanigupta.store/blog/local-rag-chatbot-with-ollama/diagram.svg","author":{"@type":"Person","name":"Shivani Gupta"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://shivanigupta.store/"},{"@type":"ListItem","position":2,"name":"Blog","item":"https://shivanigupta.store/blog/"},{"@type":"ListItem","position":3,"name":"Building a local RAG chatbot in Python with Ollama","item":"https://shivanigupta.store/blog/local-rag-chatbot-with-ollama/"}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Can I build a RAG chatbot that runs completely offline?","acceptedAnswer":{"@type":"Answer","text":"Yes. Once Ollama and the models are downloaded, indexing and answering can run without an internet connection, because the embedding model, the chat model and the index all live on your own machine."}},{"@type":"Question","name":"What is the Ollama Python package called?","acceptedAnswer":{"@type":"Answer","text":"The official package is named ollama and is installed with pip install ollama. It provides functions such as chat and embed that call a locally running Ollama service."}},{"@type":"Question","name":"Do I need LangChain to use Ollama for RAG?","acceptedAnswer":{"@type":"Answer","text":"No. The ollama package alone is enough for a working prototype. LangChain's langchain-ollama package, with ChatOllama and OllamaEmbeddings, is useful if your project already uses LangChain loaders, splitters or vector stores."}},{"@type":"Question","name":"Which local model should I use for RAG?","acceptedAnswer":{"@type":"Answer","text":"There is no single answer. Pull two or three chat models that fit your hardware, run the same set of real questions through each, and keep the one that answers accurately from the passages and declines when they do not contain the answer."}},{"@type":"Question","name":"Is a local RAG chatbot more private than a hosted one?","acceptedAnswer":{"@type":"Answer","text":"It keeps your documents and questions away from external model providers, which removes one major risk. You still need to protect the index, logs and backups, and control who can use the chatbot."}}]}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&family=Poppins:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+<a class="skip-link" href="#top">Skip to content</a>
+<header class="nav">
+  <div class="wrap nav-in">
+    <a class="logo" href="/" aria-label="Shivani, home"><img src="/assets/logo.svg" alt="Shivani" width="144" height="40"></a>
+    <nav id="nav-links" aria-label="Main">
+      <a href="/#services">Services</a>
+      <a href="/#skills">Skills</a>
+      <a href="/#work">Work</a>
+      <a href="/#process">Process</a>
+      <a href="/#faq">FAQ</a>
+      <a href="/blog/">Blog</a>
+      <a class="btn btn-sm" href="/#contact">Hire Me</a>
+    </nav>
+    <button id="menu-toggle" class="menu-toggle" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="nav-links"><span></span><span></span><span></span></button>
+  </div>
+</header>
+
+<main id="top">
+  <section class="page-head">
+    <div class="wrap">
+      <nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a><span aria-hidden="true">/</span><a href="/blog/">Blog</a><span aria-hidden="true">/</span><span aria-current="page">Building a local RAG chatbot in Python with Ollama</span></nav>
+      <p class="eyebrow">Guide</p>
+      <h1>Building a local RAG chatbot in Python with Ollama</h1>
+      <p class="lead">A local RAG chatbot lets a language model answer from your private documents instead of only its training data, without sending anything to an external API. In Python, you run two phases. Indexing splits documents into overlapping chunks and embeds them with a local embedding model served by Ollama. Answering embeds each question, retrieves the closest chunks and asks a local chat model, also through Ollama, to answer only from them and cite its sources.</p>
+    </div>
+  </section>
+  <section class="article">
+    <div class="wrap prose">
+<h2>Why run RAG locally</h2>
+<p>Retrieval-augmented generation, or RAG, gives a model the relevant passages from your own content at the moment it answers. Most tutorials send both the passages and the question to a hosted model. That is often fine, but some documents should not leave your network: contracts, HR files, medical notes, unreleased product plans or anything covered by a client agreement. Running the models yourself removes that question, because the text never leaves the machine.</p>
+<p>Ollama is a tool for downloading and running open-weight language models on your own computer or server. It exposes a local HTTP interface, and its official Python package, <code>ollama</code>, wraps that interface in simple functions. That makes it a convenient way to prototype a private RAG chatbot in Python.</p>
+<p>Local is not automatically better. Smaller local models usually reason less reliably than the largest hosted ones, answers can be slower on ordinary hardware, and you take on updates and monitoring yourself. Treat it as a trade-off to test on your own questions, not a default. If the general pattern is new to you, <a href="/blog/build-a-rag-chatbot-in-python/">how to build a RAG chatbot in Python</a> walks through it with provider-neutral placeholders, and this guide fills those placeholders with local models.</p>
+
+<h2>What you need</h2>
+<ul>
+<li><strong>Ollama installed and running.</strong> Follow the installer for your operating system from the official Ollama site, then check that the local service is up.</li>
+<li><strong>Two models pulled.</strong> One chat model and one embedding model. The names in the code below, <code>llama3.2</code> and <code>nomic-embed-text</code>, are examples only. Check the Ollama model library for what is currently available and suits your hardware, and pull each with <code>ollama pull &lt;name&gt;</code>.</li>
+<li><strong>The Python client.</strong> Install it with <code>pip install ollama</code>. Its <code>chat</code> and <code>embed</code> functions are the only calls used here.</li>
+<li><strong>A small folder of clean text.</strong> Start with Markdown or plain text so that parsing problems do not hide retrieval problems.</li>
+</ul>
+<p>Hardware matters more locally than with an API. A machine with a supported GPU, or plenty of memory on Apple silicon, will run larger models at a usable speed. On a modest laptop, start with a small model and judge quality before scaling up.</p>
+
+<figure class="post-figure"><img src="/blog/local-rag-chatbot-with-ollama/diagram.svg" alt="Diagram of a local RAG chatbot in two phases inside a box labelled your machine. Indexing: documents are split into overlapping chunks, embedded by a local embedding model through Ollama and stored in an index. Answering: a question is embedded, the closest chunks are retrieved, and a local chat model through Ollama writes a cited answer." width="800" height="450" loading="lazy"><figcaption>Both phases run on your own machine: Ollama serves the embedding model and the chat model locally.</figcaption></figure>
+
+<h2>The two phases: indexing and answering</h2>
+<p>Every RAG system has the same two halves. <strong>Indexing</strong> runs ahead of time: load documents, split them into chunks, turn each chunk into a vector with an embedding model and store the vectors alongside the text. <strong>Answering</strong> runs for every question: embed the question with the same embedding model, find the chunks whose vectors are closest, put them into a prompt and ask the chat model to answer from them.</p>
+<p>Keeping these as separate functions pays off later. Indexing can move into a scheduled job when documents change, and the answering code does not need to know.</p>
+
+<h2>A minimal local RAG chatbot</h2>
+<p>The sample below is illustrative teaching code, not production software. It uses the official <code>ollama</code> Python package and keeps the index in a plain Python list, so that every step is visible:</p>
+<pre><code># Illustrative only. Assumes Ollama is running locally and both models are pulled.
+import math
+import ollama
+
+CHAT_MODEL = &quot;llama3.2&quot;         # any chat model you have pulled
+EMBED_MODEL = &quot;nomic-embed-text&quot;  # any embedding model you have pulled
+
+def split(text, size=800, overlap=150):
+    &quot;&quot;&quot;Split text into overlapping character chunks.&quot;&quot;&quot;
+    step = size - overlap
+    return [text[i:i + size] for i in range(0, max(len(text) - overlap, 1), step)]
+
+def embed(texts):
+    return ollama.embed(model=EMBED_MODEL, input=texts)[&quot;embeddings&quot;]
+
+def cosine(a, b):
+    dot = sum(x * y for x, y in zip(a, b))
+    return dot / (math.sqrt(sum(x * x for x in a)) * math.sqrt(sum(y * y for y in b)))
+
+# Phase 1: indexing
+def build_index(docs):
+    index = []
+    for name, text in docs.items():
+        chunks = split(text)
+        for chunk, vector in zip(chunks, embed(chunks)):
+            index.append({&quot;source&quot;: name, &quot;text&quot;: chunk, &quot;vector&quot;: vector})
+    return index
+
+# Phase 2: answering
+SYSTEM = (
+    &quot;Answer only from the numbered passages. Cite them like [1]. &quot;
+    &quot;If they do not contain the answer, say you do not know.&quot;
+)
+
+def answer(question, index, k=3, min_score=0.3):
+    q = embed([question])[0]
+    scored = sorted(((cosine(q, c[&quot;vector&quot;]), c) for c in index), key=lambda p: p[0], reverse=True)
+    hits = [c for score, c in scored[:k] if score &gt;= min_score]
+    if not hits:
+        return &quot;I could not find that in the documents.&quot;
+    context = &quot;\n\n&quot;.join(f&quot;[{i}] ({c[&#x27;source&#x27;]}) {c[&#x27;text&#x27;]}&quot; for i, c in enumerate(hits, 1))
+    response = ollama.chat(
+        model=CHAT_MODEL,
+        messages=[
+            {&quot;role&quot;: &quot;system&quot;, &quot;content&quot;: SYSTEM},
+            {&quot;role&quot;: &quot;user&quot;, &quot;content&quot;: f&quot;Passages:\n{context}\n\nQuestion: {question}&quot;},
+        ],
+        options={&quot;temperature&quot;: 0},
+    )
+    return response[&quot;message&quot;][&quot;content&quot;]
+
+if __name__ == &quot;__main__&quot;:
+    docs = {&quot;returns.md&quot;: &quot;Items can be returned within 30 days with a receipt. Refunds go to the original payment method.&quot;}
+    index = build_index(docs)
+    print(answer(&quot;How long do I have to return something?&quot;, index))</code></pre>
+<p>A few details are worth noticing.</p>
+<ul>
+<li><strong>Overlapping chunks.</strong> Each chunk shares some characters with the one before it, so that a sentence cut at a boundary still appears whole in at least one chunk. The sizes here are starting points to tune, as <a href="/blog/rag-chunk-size-and-overlap/">choosing chunk size and overlap</a> explains.</li>
+<li><strong>One embedding model for both phases.</strong> Questions and chunks must be embedded by the same model, or the similarity scores mean nothing. If you change the embedding model, rebuild the index.</li>
+<li><strong>A minimum score.</strong> If nothing is close enough, the function declines rather than letting the model guess from its training data. The right threshold depends on the embedding model, so tune it on your questions.</li>
+<li><strong>Temperature zero.</strong> The <code>options</code> argument passes generation settings to Ollama. A low temperature makes answers steadier, which helps when you are testing.</li>
+</ul>
+<p>The response from <code>ollama.chat</code> holds the reply text under <code>message</code> and then <code>content</code>, and <code>ollama.embed</code> returns one vector per input under <code>embeddings</code>. These shapes come from the client's own documentation; check them against the version you install, as client libraries do change.</p>
+
+<h2>Using LangChain instead</h2>
+<p>If the rest of your project already uses LangChain, its Ollama integration lives in the <code>langchain-ollama</code> package, which provides <code>ChatOllama</code> for chat and <code>OllamaEmbeddings</code> for embeddings. You can drop these into the pipeline from the <a href="/blog/langchain-rag-tutorial/">LangChain RAG tutorial</a> in place of a hosted model. This illustrative snippet shows the two classes on their own:</p>
+<pre><code># Illustrative only. The same two models through LangChain&#x27;s Ollama integration.
+from langchain_ollama import ChatOllama, OllamaEmbeddings
+
+llm = ChatOllama(model=&quot;llama3.2&quot;, temperature=0)
+embeddings = OllamaEmbeddings(model=&quot;nomic-embed-text&quot;)
+
+vectors = embeddings.embed_documents([&quot;Items can be returned within 30 days.&quot;])
+reply = llm.invoke([(&quot;system&quot;, &quot;Answer only from the passages.&quot;), (&quot;human&quot;, &quot;Passages: ...\n\nQuestion: ...&quot;)])
+print(reply.content)</code></pre>
+<p>LangChain adds document loaders, text splitters and vector store integrations, which saves time once the pipeline grows. It also adds a layer to debug. For a first local prototype, the plain client keeps things easier to inspect.</p>
+
+<h2>Storing the index properly</h2>
+<p>A Python list is fine for a few hundred chunks and disappears when the program stops. For anything larger, store the vectors in a vector database that persists to disk. ChromaDB is a common choice for local projects because it can run inside your Python process and save to a folder; <a href="/blog/chromadb-rag-tutorial/">the ChromaDB RAG tutorial</a> shows indexing, persistence and metadata filters. You can pass the vectors from <code>ollama.embed</code> straight into it.</p>
+<p>Store the source file name, a section heading and a date with each chunk. They make citations meaningful, and they let you filter or delete by document later.</p>
+
+<h2>Testing before you trust it</h2>
+<p>Write down a couple of dozen real questions with the answers an expert would give and where each answer lives, and include some your documents cannot answer. Run them after every change of model, chunk size or prompt. Check two things separately: whether the right passages were retrieved, and whether the answer used them faithfully. <a href="/blog/how-to-evaluate-a-rag-system/">How to evaluate a RAG system</a> covers this in more depth.</p>
+<p>Local models vary a great deal, so compare two or three on the same questions rather than choosing by reputation. A slightly larger model that follows the "answer only from the passages" instruction reliably is usually worth more than a faster one that does not.</p>
+
+<h2>Taking it further</h2>
+<ul>
+<li><strong>Conversation memory.</strong> Rewrite follow-up questions as standalone ones before retrieval, as described in <a href="/blog/rag-chatbot-with-conversation-memory/">RAG chatbots with conversation memory</a>.</li>
+<li><strong>Serving.</strong> Wrap the answering function in a small web API so that a browser front end can call it, and keep the Ollama service itself reachable only from the machines that need it.</li>
+<li><strong>Privacy beyond the model.</strong> Local models protect the prompt, but logs, backups and the index itself still contain your documents. Protect them as you would the originals.</li>
+</ul>
+<p>To discuss a private document assistant for your own content, see <a href="/services/rag-development/">RAG development</a>.</p>
+<aside class="post-cta" aria-label="Work with Shivani">
+<h2>Need a private RAG chatbot built?</h2>
+<p>I design and build RAG systems end to end, from the AI workflow to the backend and UI, including setups that keep documents on your own machines. Tell me what you want to build and I will reply with next steps.</p>
+<p class="post-cta-btns"><a class="btn" href="https://wa.me/919720466504?text=Hi%20Shivani%2C%20I%20read%20your%20guide%20%22Building%20a%20local%20RAG%20chatbot%20in%20Python%20with%20Ollama%22%20and%20would%20like%20to%20discuss%20a%20private%20RAG%20chatbot." target="_blank" rel="noopener">Chat on WhatsApp</a> <a class="btn btn-line" href="/#contact">Send project details</a> <a class="post-cta-link" href="/services/rag-development/">See the service</a></p>
+</aside>
+      <h2>Frequently asked questions</h2>
+      <h3>Can I build a RAG chatbot that runs completely offline?</h3>
+      <p>Yes. Once Ollama and the models are downloaded, indexing and answering can run without an internet connection, because the embedding model, the chat model and the index all live on your own machine.</p>
+      <h3>What is the Ollama Python package called?</h3>
+      <p>The official package is named ollama and is installed with pip install ollama. It provides functions such as chat and embed that call a locally running Ollama service.</p>
+      <h3>Do I need LangChain to use Ollama for RAG?</h3>
+      <p>No. The ollama package alone is enough for a working prototype. LangChain&#x27;s langchain-ollama package, with ChatOllama and OllamaEmbeddings, is useful if your project already uses LangChain loaders, splitters or vector stores.</p>
+      <h3>Which local model should I use for RAG?</h3>
+      <p>There is no single answer. Pull two or three chat models that fit your hardware, run the same set of real questions through each, and keep the one that answers accurately from the passages and declines when they do not contain the answer.</p>
+      <h3>Is a local RAG chatbot more private than a hosted one?</h3>
+      <p>It keeps your documents and questions away from external model providers, which removes one major risk. You still need to protect the index, logs and backups, and control who can use the chatbot.</p>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="foot-cta">
+      <div>
+        <h2>Have an AI or full stack project in mind?</h2>
+        <p>Tell me what you want to build.</p>
+      </div>
+      <div class="foot-cta-btns">
+        <a class="btn" href="/#contact">Start a conversation</a>
+        <a class="btn btn-line" href="mailto:shivanigupta4876@gmail.com">Send an email</a>
+      </div>
+    </div>
+    <div class="foot-grid">
+      <div>
+        <a href="/" aria-label="Shivani, home"><img src="/assets/logo.svg" alt="Shivani" width="144" height="40"></a>
+        <p>AI/ML engineer working across generative AI, LLMs, RAG, agentic AI and NLP, plus full stack development.</p>
+        <span class="avail">Taking new projects</span>
+      </div>
+      <div>
+        <h3>Explore</h3>
+        <ul>
+          <li><a href="/services/">Services</a></li>
+          <li><a href="/#work">Projects</a></li>
+          <li><a href="/#process">Process</a></li>
+          <li><a href="/#faq">FAQ</a></li>
+          <li><a href="/blog/">Blog</a></li>
+          <li><a href="/#contact">Contact</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Services</h3>
+        <ul>
+          <li><a href="/services/generative-ai-llm-development/">Generative AI and LLMs</a></li>
+          <li><a href="/services/rag-development/">RAG development</a></li>
+          <li><a href="/services/multi-agent-systems/">Multi-agent systems</a></li>
+          <li><a href="/services/ai-orchestration-langgraph/">Orchestration with LangGraph</a></li>
+          <li><a href="/services/nlp-development/">NLP development</a></li>
+          <li><a href="/services/full-stack-development/">Full stack development</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Contact</h3>
+        <ul>
+          <li><a href="mailto:shivanigupta4876@gmail.com">shivanigupta4876@gmail.com</a></li>
+          <li><a href="tel:+919720466504">+91 97204 66504</a></li>
+          <li><a href="https://github.com/shivani1031" rel="me noopener" target="_blank">GitHub</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="foot-bottom">&copy; <span id="year">2026</span> Shivani Gupta. All rights reserved.</div>
+  </div>
+</footer>
+<a class="wa-float" href="https://wa.me/919720466504?text=Hi%20Shivani%2C%20I%20saw%20your%20website%20and%20would%20like%20to%20talk%20about%20a%20project." target="_blank" rel="noopener" aria-label="Chat on WhatsApp"><svg viewBox="0 0 24 24" width="28" height="28" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15L2 22l5.1-1.3A10 10 0 1 0 12 2zm0 18.2a8.2 8.2 0 0 1-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1a6.700 6.700 0 0 1-3.300-2.900c-.2-.3 0-.4.1-.6l.4-.4.2-.4v-.5l-.8-1.800c-.2-.5-.4-.4-.6-.4h-.5c-.2 0-.4.1-.6.3-.2.2-.8.8-.8 2s.9 2.300 1 2.500c.1.2 1.700 2.600 4.100 3.600 1.500.7 2.100.7 2.900.6.500-.1 1.500-.6 1.700-1.200.2-.6.2-1.100.1-1.200l-.2-.2z"/></svg></a>
+<script src="/assets/js/site.js" defer></script>
+</body>
+</html>
