@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 450" role="img" aria-labelledby="t">
+<title id="t">The two pipelines in a RAG system</title>
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#b3ff3a"/></marker></defs>
+<rect width="800" height="450" fill="#080b0f"/>
+<g font-family="Arial, Helvetica, sans-serif" fill="#ffffff">
+<text x="400" y="50" font-size="28" text-anchor="middle" fill="#ffffff" font-weight="bold">The two pipelines in a RAG system</text>
+<text x="20" y="95" font-size="20" text-anchor="start" fill="#b3ff3a" font-weight="bold">Ahead of time</text>
+<text x="20" y="290" font-size="20" text-anchor="start" fill="#b3ff3a" font-weight="bold">Each question</text>
+<rect x="20" y="110" width="172" height="90" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="106.0" y="149.0" font-size="20" text-anchor="middle" fill="#ffffff">Load and</text>
+<text x="106.0" y="175.0" font-size="20" text-anchor="middle" fill="#ffffff">parse</text>
+<rect x="20" y="305" width="172" height="90" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="106.0" y="344.0" font-size="20" text-anchor="middle" fill="#ffffff">Process</text>
+<text x="106.0" y="370.0" font-size="20" text-anchor="middle" fill="#ffffff">question</text>
+<line x1="195" y1="155" x2="213" y2="155" stroke="#b3ff3a" stroke-width="3" marker-end="url(#a)"/>
+<line x1="195" y1="350" x2="213" y2="350" stroke="#b3ff3a" stroke-width="3" marker-end="url(#a)"/>
+<rect x="216" y="110" width="172" height="90" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="302.0" y="162.0" font-size="20" text-anchor="middle" fill="#ffffff">Chunk</text>
+<rect x="216" y="305" width="172" height="90" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="302.0" y="357.0" font-size="20" text-anchor="middle" fill="#ffffff">Retrieve</text>
+<line x1="391" y1="155" x2="409" y2="155" stroke="#b3ff3a" stroke-width="3" marker-end="url(#a)"/>
+<line x1="391" y1="350" x2="409" y2="350" stroke="#b3ff3a" stroke-width="3" marker-end="url(#a)"/>
+<rect x="412" y="110" width="172" height="90" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="498.0" y="162.0" font-size="20" text-anchor="middle" fill="#ffffff">Embed</text>
+<rect x="412" y="305" width="172" height="90" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="498.0" y="344.0" font-size="20" text-anchor="middle" fill="#ffffff">Filter and</text>
+<text x="498.0" y="370.0" font-size="20" text-anchor="middle" fill="#ffffff">rerank</text>
+<line x1="587" y1="155" x2="605" y2="155" stroke="#b3ff3a" stroke-width="3" marker-end="url(#a)"/>
+<line x1="587" y1="350" x2="605" y2="350" stroke="#b3ff3a" stroke-width="3" marker-end="url(#a)"/>
+<rect x="608" y="110" width="172" height="90" rx="10" fill="#b3ff3a" stroke="#b3ff3a" stroke-width="2"/>
+<text x="694.0" y="162.0" font-size="20" text-anchor="middle" fill="#080b0f">Index</text>
+<rect x="608" y="305" width="172" height="90" rx="10" fill="#b3ff3a" stroke="#b3ff3a" stroke-width="2"/>
+<text x="694.0" y="357.0" font-size="20" text-anchor="middle" fill="#080b0f">Generate</text>
+<path d="M694 204 L694 250 L302 250 L302 301" fill="none" stroke="#b3ff3a" stroke-width="3" marker-end="url(#a)"/>
+</g>
+</svg>

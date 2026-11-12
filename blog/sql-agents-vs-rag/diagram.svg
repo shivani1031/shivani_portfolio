@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 450" role="img" aria-labelledby="t">
+<title id="t">Routing each question to SQL, RAG or both</title>
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#b3ff3a"/></marker></defs>
+<rect width="800" height="450" fill="#080b0f"/>
+<g font-family="Arial, Helvetica, sans-serif" fill="#ffffff">
+<text x="400" y="50" font-size="28" text-anchor="middle" fill="#ffffff" font-weight="bold">Routing each question to SQL, RAG or both</text>
+<rect x="20" y="175" width="140" height="110" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="90.0" y="237.0" font-size="20" text-anchor="middle" fill="#ffffff">Question</text>
+<line x1="164" y1="230" x2="196" y2="230" stroke="#b3ff3a" stroke-width="3" marker-end="url(#a)"/>
+<rect x="200" y="175" width="140" height="110" rx="10" fill="#b3ff3a" stroke="#b3ff3a" stroke-width="2"/>
+<text x="270.0" y="237.0" font-size="20" text-anchor="middle" fill="#080b0f">Classify</text>
+<rect x="390" y="75" width="250" height="70" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="515.0" y="116.3" font-size="18" text-anchor="middle" fill="#ffffff">data: run a safe query</text>
+<path d="M342 230 L365 230 L365 110 L386 110" fill="none" stroke="#b3ff3a" stroke-width="3" marker-end="url(#a)"/>
+<rect x="390" y="160" width="250" height="70" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="515.0" y="201.3" font-size="18" text-anchor="middle" fill="#ffffff">documents: retrieve</text>
+<path d="M342 230 L365 230 L365 195 L386 195" fill="none" stroke="#b3ff3a" stroke-width="3" marker-end="url(#a)"/>
+<rect x="390" y="245" width="250" height="70" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="515.0" y="274.6" font-size="18" text-anchor="middle" fill="#ffffff">both: query and</text>
+<text x="515.0" y="298.0" font-size="18" text-anchor="middle" fill="#ffffff">retrieve</text>
+<path d="M342 230 L365 230 L365 280 L386 280" fill="none" stroke="#b3ff3a" stroke-width="3" marker-end="url(#a)"/>
+<rect x="390" y="330" width="250" height="70" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="515.0" y="371.3" font-size="18" text-anchor="middle" fill="#ffffff">unclear: ask the user</text>
+<path d="M342 230 L365 230 L365 365 L386 365" fill="none" stroke="#b3ff3a" stroke-width="3" marker-end="url(#a)"/>
+<rect x="670" y="140" width="110" height="130" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="725.0" y="199.0" font-size="20" text-anchor="middle" fill="#ffffff">Write</text>
+<text x="725.0" y="225.0" font-size="20" text-anchor="middle" fill="#ffffff">answer</text>
+<path d="M642 110 L655 110 L655 205 L666 205" fill="none" stroke="#b3ff3a" stroke-width="3" marker-end="url(#a)"/>
+<path d="M642 195 L655 195 L655 205 L666 205" fill="none" stroke="#b3ff3a" stroke-width="3" marker-end="url(#a)"/>
+<path d="M642 280 L655 280 L655 205 L666 205" fill="none" stroke="#b3ff3a" stroke-width="3" marker-end="url(#a)"/>
+<text x="400" y="432" font-size="20" text-anchor="middle" fill="#b3ff3a">The user goes to both paths, so permissions apply on each side</text>
+</g>
+</svg>

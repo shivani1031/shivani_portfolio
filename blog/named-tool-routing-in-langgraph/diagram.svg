@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 450" role="img" aria-labelledby="t">
+<title id="t">One shared executor versus named destinations</title>
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#b3ff3a"/></marker></defs>
+<rect width="800" height="450" fill="#080b0f"/>
+<g font-family="Arial, Helvetica, sans-serif" fill="#ffffff">
+<text x="400" y="50" font-size="28" text-anchor="middle" fill="#ffffff" font-weight="bold">One shared executor versus named destinations</text>
+<text x="200" y="100" font-size="22" text-anchor="middle" fill="#b3ff3a" font-weight="bold">Shared executor</text>
+<rect x="30" y="130" width="150" height="80" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="105.0" y="177.0" font-size="20" text-anchor="middle" fill="#ffffff">Model</text>
+<line x1="184" y1="170" x2="226" y2="170" stroke="#b3ff3a" stroke-width="3" marker-end="url(#a)"/>
+<rect x="230" y="130" width="150" height="80" rx="10" fill="#b3ff3a" stroke="#b3ff3a" stroke-width="2"/>
+<text x="305.0" y="177.0" font-size="20" text-anchor="middle" fill="#080b0f">tools node</text>
+<rect x="30" y="260" width="350" height="100" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="205.0" y="304.0" font-size="20" text-anchor="middle" fill="#ffffff">Every tool call goes to the</text>
+<text x="205.0" y="330.0" font-size="20" text-anchor="middle" fill="#ffffff">same place</text>
+<text x="600" y="100" font-size="22" text-anchor="middle" fill="#b3ff3a" font-weight="bold">Named routing</text>
+<rect x="420" y="130" width="110" height="230" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="475.0" y="252.0" font-size="20" text-anchor="middle" fill="#ffffff">Model</text>
+<rect x="570" y="130" width="210" height="90" rx="10" fill="#b3ff3a" stroke="#b3ff3a" stroke-width="2"/>
+<text x="675.0" y="169.0" font-size="20" text-anchor="middle" fill="#080b0f">Doc search: runs</text>
+<text x="675.0" y="195.0" font-size="20" text-anchor="middle" fill="#080b0f">freely</text>
+<rect x="570" y="260" width="210" height="100" rx="10" fill="#b3ff3a" stroke="#b3ff3a" stroke-width="2"/>
+<text x="675.0" y="304.0" font-size="20" text-anchor="middle" fill="#080b0f">Refund: check,</text>
+<text x="675.0" y="330.0" font-size="20" text-anchor="middle" fill="#080b0f">then review</text>
+<line x1="534" y1="175" x2="566" y2="175" stroke="#b3ff3a" stroke-width="3" marker-end="url(#a)"/>
+<line x1="534" y1="310" x2="566" y2="310" stroke="#b3ff3a" stroke-width="3" marker-end="url(#a)"/>
+<text x="400" y="415" font-size="20" text-anchor="middle" fill="#ffffff">Give tools their own destinations once they differ</text>
+</g>
+</svg>

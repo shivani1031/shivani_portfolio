@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 450" role="img" aria-labelledby="t">
+<title id="t">Four layers of agent testing</title>
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#b3ff3a"/></marker></defs>
+<rect width="800" height="450" fill="#080b0f"/>
+<g font-family="Arial, Helvetica, sans-serif" fill="#ffffff">
+<text x="400" y="50" font-size="28" text-anchor="middle" fill="#ffffff" font-weight="bold">Four layers of agent testing</text>
+<rect x="20" y="95" width="380" height="66" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="210.0" y="135.0" font-size="20" text-anchor="middle" fill="#ffffff">Deterministic unit tests</text>
+<line x1="404" y1="128" x2="446" y2="128" stroke="#b3ff3a" stroke-width="3" marker-end="url(#a)"/>
+<rect x="450" y="95" width="330" height="66" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="615.0" y="135.0" font-size="20" text-anchor="middle" fill="#ffffff">No model, every commit</text>
+<rect x="20" y="179" width="380" height="66" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="210.0" y="219.0" font-size="20" text-anchor="middle" fill="#ffffff">Scripted and replayed runs</text>
+<line x1="404" y1="212" x2="446" y2="212" stroke="#b3ff3a" stroke-width="3" marker-end="url(#a)"/>
+<rect x="450" y="179" width="330" height="66" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="615.0" y="219.0" font-size="20" text-anchor="middle" fill="#ffffff">No model, every commit</text>
+<rect x="20" y="263" width="380" height="66" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="210.0" y="303.0" font-size="20" text-anchor="middle" fill="#ffffff">Scenario evaluations</text>
+<line x1="404" y1="296" x2="446" y2="296" stroke="#b3ff3a" stroke-width="3" marker-end="url(#a)"/>
+<rect x="450" y="263" width="330" height="66" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="615.0" y="303.0" font-size="20" text-anchor="middle" fill="#ffffff">Real model, pass rates</text>
+<rect x="20" y="347" width="380" height="66" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="210.0" y="387.0" font-size="20" text-anchor="middle" fill="#ffffff">Production monitoring</text>
+<line x1="404" y1="380" x2="446" y2="380" stroke="#b3ff3a" stroke-width="3" marker-end="url(#a)"/>
+<rect x="450" y="347" width="330" height="66" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="615.0" y="387.0" font-size="20" text-anchor="middle" fill="#ffffff">Real usage, continuous</text>
+</g>
+</svg>

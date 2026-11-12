@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 450" role="img" aria-labelledby="t">
+<title id="t">Every generated query is untrusted input</title>
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#b3ff3a"/></marker></defs>
+<rect width="800" height="450" fill="#080b0f"/>
+<g font-family="Arial, Helvetica, sans-serif" fill="#ffffff">
+<text x="400" y="50" font-size="28" text-anchor="middle" fill="#ffffff" font-weight="bold">Every generated query is untrusted input</text>
+<rect x="20" y="120" width="131" height="170" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="85.5" y="176.2" font-size="18" text-anchor="middle" fill="#ffffff">Question</text>
+<text x="85.5" y="199.6" font-size="18" text-anchor="middle" fill="#ffffff">in</text>
+<text x="85.5" y="223.0" font-size="18" text-anchor="middle" fill="#ffffff">everyday</text>
+<text x="85.5" y="246.4" font-size="18" text-anchor="middle" fill="#ffffff">language</text>
+<line x1="153" y1="205" x2="175" y2="205" stroke="#b3ff3a" stroke-width="3" marker-end="url(#a)"/>
+<rect x="177" y="120" width="131" height="170" rx="10" fill="#b3ff3a" stroke="#b3ff3a" stroke-width="2"/>
+<text x="242.5" y="199.6" font-size="18" text-anchor="middle" fill="#080b0f">LLM writes</text>
+<text x="242.5" y="223.0" font-size="18" text-anchor="middle" fill="#080b0f">the SQL</text>
+<line x1="310" y1="205" x2="332" y2="205" stroke="#b3ff3a" stroke-width="3" marker-end="url(#a)"/>
+<rect x="334" y="120" width="131" height="170" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="399.5" y="199.6" font-size="18" text-anchor="middle" fill="#ffffff">Validate</text>
+<text x="399.5" y="223.0" font-size="18" text-anchor="middle" fill="#ffffff">the query</text>
+<line x1="468" y1="205" x2="490" y2="205" stroke="#b3ff3a" stroke-width="3" marker-end="url(#a)"/>
+<rect x="492" y="120" width="131" height="170" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="557.5" y="187.9" font-size="18" text-anchor="middle" fill="#ffffff">Run with a</text>
+<text x="557.5" y="211.3" font-size="18" text-anchor="middle" fill="#ffffff">restricted</text>
+<text x="557.5" y="234.7" font-size="18" text-anchor="middle" fill="#ffffff">role</text>
+<line x1="625" y1="205" x2="647" y2="205" stroke="#b3ff3a" stroke-width="3" marker-end="url(#a)"/>
+<rect x="649" y="120" width="131" height="170" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="714.5" y="199.6" font-size="18" text-anchor="middle" fill="#ffffff">Present</text>
+<text x="714.5" y="223.0" font-size="18" text-anchor="middle" fill="#ffffff">the result</text>
+</g>
+</svg>

@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 450" role="img" aria-labelledby="t">
+<title id="t">Who picks the next step in each pattern</title>
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#b3ff3a"/></marker></defs>
+<rect width="800" height="450" fill="#080b0f"/>
+<g font-family="Arial, Helvetica, sans-serif" fill="#ffffff">
+<text x="400" y="50" font-size="28" text-anchor="middle" fill="#ffffff" font-weight="bold">Who picks the next step in each pattern</text>
+<rect x="20" y="90" width="240" height="64" rx="10" fill="#b3ff3a" stroke="#b3ff3a" stroke-width="2"/>
+<text x="140.0" y="129.0" font-size="20" text-anchor="middle" fill="#080b0f">Pipeline</text>
+<rect x="20" y="164" width="240" height="216" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="140.0" y="219.2" font-size="20" text-anchor="middle" fill="#ffffff">Your code picks</text>
+<text x="140.0" y="245.2" font-size="20" text-anchor="middle" fill="#ffffff">the next step</text>
+<text x="140.0" y="286.8" font-size="20" text-anchor="middle" fill="#ffffff">Final stage</text>
+<text x="140.0" y="312.8" font-size="20" text-anchor="middle" fill="#ffffff">usually talks to</text>
+<text x="140.0" y="338.8" font-size="20" text-anchor="middle" fill="#ffffff">the user</text>
+<rect x="280" y="90" width="240" height="64" rx="10" fill="#b3ff3a" stroke="#b3ff3a" stroke-width="2"/>
+<text x="400.0" y="129.0" font-size="20" text-anchor="middle" fill="#080b0f">Supervisor</text>
+<rect x="280" y="164" width="240" height="216" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="400.0" y="232.2" font-size="20" text-anchor="middle" fill="#ffffff">A coordinating</text>
+<text x="400.0" y="258.2" font-size="20" text-anchor="middle" fill="#ffffff">agent picks</text>
+<text x="400.0" y="299.8" font-size="20" text-anchor="middle" fill="#ffffff">The supervisor</text>
+<text x="400.0" y="325.8" font-size="20" text-anchor="middle" fill="#ffffff">talks to the user</text>
+<rect x="540" y="90" width="240" height="64" rx="10" fill="#b3ff3a" stroke="#b3ff3a" stroke-width="2"/>
+<text x="660.0" y="129.0" font-size="20" text-anchor="middle" fill="#080b0f">Handoff</text>
+<rect x="540" y="164" width="240" height="216" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="660.0" y="206.2" font-size="20" text-anchor="middle" fill="#ffffff">The current agent</text>
+<text x="660.0" y="232.2" font-size="20" text-anchor="middle" fill="#ffffff">picks, within your</text>
+<text x="660.0" y="258.2" font-size="20" text-anchor="middle" fill="#ffffff">rules</text>
+<text x="660.0" y="299.8" font-size="20" text-anchor="middle" fill="#ffffff">The active</text>
+<text x="660.0" y="325.8" font-size="20" text-anchor="middle" fill="#ffffff">specialist talks</text>
+<text x="660.0" y="351.8" font-size="20" text-anchor="middle" fill="#ffffff">to the user</text>
+</g>
+</svg>

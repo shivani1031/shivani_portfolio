@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 450" role="img" aria-labelledby="t">
+<title id="t">Knowledge failure or behaviour failure?</title>
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#b3ff3a"/></marker></defs>
+<rect width="800" height="450" fill="#080b0f"/>
+<g font-family="Arial, Helvetica, sans-serif" fill="#ffffff">
+<text x="400" y="50" font-size="28" text-anchor="middle" fill="#ffffff" font-weight="bold">Knowledge failure or behaviour failure?</text>
+<rect x="20" y="165" width="200" height="130" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="120.0" y="211.0" font-size="20" text-anchor="middle" fill="#ffffff">Paste the facts</text>
+<text x="120.0" y="237.0" font-size="20" text-anchor="middle" fill="#ffffff">into the prompt</text>
+<text x="120.0" y="263.0" font-size="20" text-anchor="middle" fill="#ffffff">by hand</text>
+<line x1="224" y1="230" x2="266" y2="230" stroke="#b3ff3a" stroke-width="3" marker-end="url(#a)"/>
+<rect x="270" y="165" width="210" height="130" rx="10" fill="#b3ff3a" stroke="#b3ff3a" stroke-width="2"/>
+<text x="375.0" y="224.0" font-size="20" text-anchor="middle" fill="#080b0f">Is the answer</text>
+<text x="375.0" y="250.0" font-size="20" text-anchor="middle" fill="#080b0f">good now?</text>
+<path d="M480 200 L520 200 L520 150 L556 150" fill="none" stroke="#b3ff3a" stroke-width="3" marker-end="url(#a)"/>
+<path d="M480 260 L520 260 L520 310 L556 310" fill="none" stroke="#b3ff3a" stroke-width="3" marker-end="url(#a)"/>
+<rect x="560" y="100" width="220" height="120" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="670.0" y="128.0" font-size="20" text-anchor="middle" fill="#ffffff">Knowledge</text>
+<text x="670.0" y="154.0" font-size="20" text-anchor="middle" fill="#ffffff">failure:</text>
+<text x="670.0" y="180.0" font-size="20" text-anchor="middle" fill="#ffffff">retrieval can</text>
+<text x="670.0" y="206.0" font-size="20" text-anchor="middle" fill="#ffffff">supply it</text>
+<rect x="560" y="250" width="220" height="120" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="670.0" y="291.0" font-size="20" text-anchor="middle" fill="#ffffff">Look at the</text>
+<text x="670.0" y="317.0" font-size="20" text-anchor="middle" fill="#ffffff">prompt, examples</text>
+<text x="670.0" y="343.0" font-size="20" text-anchor="middle" fill="#ffffff">or model</text>
+<text x="670" y="90" font-size="20" text-anchor="middle" fill="#b3ff3a" font-weight="bold">Yes</text>
+<text x="670" y="398" font-size="20" text-anchor="middle" fill="#b3ff3a" font-weight="bold">No</text>
+</g>
+</svg>

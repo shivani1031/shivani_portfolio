@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 450" role="img" aria-labelledby="t">
+<title id="t">Picking a LangGraph pattern for each step</title>
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#b3ff3a"/></marker></defs>
+<rect width="800" height="450" fill="#080b0f"/>
+<g font-family="Arial, Helvetica, sans-serif" fill="#ffffff">
+<text x="400" y="50" font-size="28" text-anchor="middle" fill="#ffffff" font-weight="bold">Picking a LangGraph pattern for each step</text>
+<rect x="20" y="85" width="470" height="56" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="255.0" y="120.0" font-size="20" text-anchor="middle" fill="#ffffff">Always the same next step?</text>
+<line x1="494" y1="113" x2="536" y2="113" stroke="#b3ff3a" stroke-width="3" marker-end="url(#a)"/>
+<rect x="540" y="85" width="240" height="56" rx="10" fill="#b3ff3a" stroke="#b3ff3a" stroke-width="2"/>
+<text x="660.0" y="120.0" font-size="20" text-anchor="middle" fill="#080b0f">Normal edge</text>
+<rect x="20" y="152" width="470" height="56" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="255.0" y="187.0" font-size="20" text-anchor="middle" fill="#ffffff">Next step depends on the result?</text>
+<line x1="494" y1="180" x2="536" y2="180" stroke="#b3ff3a" stroke-width="3" marker-end="url(#a)"/>
+<rect x="540" y="152" width="240" height="56" rx="10" fill="#b3ff3a" stroke="#b3ff3a" stroke-width="2"/>
+<text x="660.0" y="187.0" font-size="20" text-anchor="middle" fill="#080b0f">Conditional edge</text>
+<rect x="20" y="219" width="470" height="56" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="255.0" y="254.0" font-size="20" text-anchor="middle" fill="#ffffff">Can the result be checked and improved?</text>
+<line x1="494" y1="247" x2="536" y2="247" stroke="#b3ff3a" stroke-width="3" marker-end="url(#a)"/>
+<rect x="540" y="219" width="240" height="56" rx="10" fill="#b3ff3a" stroke="#b3ff3a" stroke-width="2"/>
+<text x="660.0" y="254.0" font-size="20" text-anchor="middle" fill="#080b0f">Loop with a limit</text>
+<rect x="20" y="286" width="470" height="56" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="255.0" y="321.0" font-size="20" text-anchor="middle" fill="#ffffff">Should a person decide first?</text>
+<line x1="494" y1="314" x2="536" y2="314" stroke="#b3ff3a" stroke-width="3" marker-end="url(#a)"/>
+<rect x="540" y="286" width="240" height="56" rx="10" fill="#b3ff3a" stroke="#b3ff3a" stroke-width="2"/>
+<text x="660.0" y="321.0" font-size="20" text-anchor="middle" fill="#080b0f">Interrupt</text>
+<rect x="20" y="353" width="470" height="56" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="255.0" y="388.0" font-size="20" text-anchor="middle" fill="#ffffff">A self-contained group of steps?</text>
+<line x1="494" y1="381" x2="536" y2="381" stroke="#b3ff3a" stroke-width="3" marker-end="url(#a)"/>
+<rect x="540" y="353" width="240" height="56" rx="10" fill="#b3ff3a" stroke="#b3ff3a" stroke-width="2"/>
+<text x="660.0" y="388.0" font-size="20" text-anchor="middle" fill="#080b0f">Subgraph</text>
+</g>
+</svg>

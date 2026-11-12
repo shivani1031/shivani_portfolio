@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 450" role="img" aria-labelledby="t">
+<title id="t">How overlap protects a sentence across a boundary</title>
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#b3ff3a"/></marker></defs>
+<rect width="800" height="450" fill="#080b0f"/>
+<g font-family="Arial, Helvetica, sans-serif" fill="#ffffff">
+<text x="400" y="50" font-size="28" text-anchor="middle" fill="#ffffff" font-weight="bold">How overlap protects a sentence across a boundary</text>
+<text x="400" y="100" font-size="22" text-anchor="middle" fill="#b3ff3a">Chunk size 400 tokens, overlap 100</text>
+<rect x="40" y="130" width="411" height="80" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="245.5" y="177.0" font-size="20" text-anchor="middle" fill="#ffffff">Chunk 1: tokens 0 to 400</text>
+<rect x="349" y="240" width="411" height="80" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="554.5" y="287.0" font-size="20" text-anchor="middle" fill="#ffffff">Chunk 2: tokens 300 to 700</text>
+<rect x="349" y="130" width="103" height="190" rx="10" fill="#b3ff3a" fill-opacity="0.25" stroke="#b3ff3a" stroke-width="2"/>
+<rect x="40" y="360" width="330" height="64" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="205.0" y="399.0" font-size="20" text-anchor="middle" fill="#ffffff">Sentence at the boundary</text>
+<line x1="374" y1="392" x2="345" y2="300" stroke="#b3ff3a" stroke-width="3" marker-end="url(#a)"/>
+<text x="600" y="395" font-size="20" text-anchor="middle" fill="#ffffff">Each chunk advances 300 tokens</text>
+</g>
+</svg>

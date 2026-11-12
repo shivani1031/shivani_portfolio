@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 450" role="img" aria-labelledby="t">
+<title id="t">Three ways to enforce permissions at query time</title>
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#b3ff3a"/></marker></defs>
+<rect width="800" height="450" fill="#080b0f"/>
+<g font-family="Arial, Helvetica, sans-serif" fill="#ffffff">
+<text x="400" y="50" font-size="28" text-anchor="middle" fill="#ffffff" font-weight="bold">Three ways to enforce permissions at query time</text>
+<rect x="20" y="90" width="240" height="64" rx="10" fill="#b3ff3a" stroke="#b3ff3a" stroke-width="2"/>
+<text x="140.0" y="129.0" font-size="20" text-anchor="middle" fill="#080b0f">Separate indexes</text>
+<rect x="20" y="164" width="240" height="196" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="140.0" y="209.2" font-size="20" text-anchor="middle" fill="#ffffff">One partition per</text>
+<text x="140.0" y="235.2" font-size="20" text-anchor="middle" fill="#ffffff">tenant</text>
+<text x="140.0" y="276.8" font-size="20" text-anchor="middle" fill="#ffffff">Poor fit for</text>
+<text x="140.0" y="302.8" font-size="20" text-anchor="middle" fill="#ffffff">widely shared</text>
+<text x="140.0" y="328.8" font-size="20" text-anchor="middle" fill="#ffffff">documents</text>
+<rect x="280" y="90" width="240" height="64" rx="10" fill="#b3ff3a" stroke="#b3ff3a" stroke-width="2"/>
+<text x="400.0" y="129.0" font-size="20" text-anchor="middle" fill="#080b0f">Early binding</text>
+<rect x="280" y="164" width="240" height="196" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="400.0" y="209.2" font-size="20" text-anchor="middle" fill="#ffffff">Allowed groups</text>
+<text x="400.0" y="235.2" font-size="20" text-anchor="middle" fill="#ffffff">stored on each</text>
+<text x="400.0" y="261.2" font-size="20" text-anchor="middle" fill="#ffffff">chunk</text>
+<text x="400.0" y="302.8" font-size="20" text-anchor="middle" fill="#ffffff">Fast, but can go</text>
+<text x="400.0" y="328.8" font-size="20" text-anchor="middle" fill="#ffffff">stale</text>
+<rect x="540" y="90" width="240" height="64" rx="10" fill="#b3ff3a" stroke="#b3ff3a" stroke-width="2"/>
+<text x="660.0" y="129.0" font-size="20" text-anchor="middle" fill="#080b0f">Late binding</text>
+<rect x="540" y="164" width="240" height="196" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="660.0" y="222.2" font-size="20" text-anchor="middle" fill="#ffffff">Ask the source</text>
+<text x="660.0" y="248.2" font-size="20" text-anchor="middle" fill="#ffffff">system per result</text>
+<text x="660.0" y="289.8" font-size="20" text-anchor="middle" fill="#ffffff">Freshest, adds</text>
+<text x="660.0" y="315.8" font-size="20" text-anchor="middle" fill="#ffffff">latency</text>
+<text x="400" y="410" font-size="20" text-anchor="middle" fill="#b3ff3a">Often paired: filter in the index, then check the source</text>
+</g>
+</svg>

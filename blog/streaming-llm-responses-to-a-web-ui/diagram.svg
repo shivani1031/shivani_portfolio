@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 450" role="img" aria-labelledby="t">
+<title id="t">The path of a streamed response</title>
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#b3ff3a"/></marker></defs>
+<rect width="800" height="450" fill="#080b0f"/>
+<g font-family="Arial, Helvetica, sans-serif" fill="#ffffff">
+<text x="400" y="50" font-size="28" text-anchor="middle" fill="#ffffff" font-weight="bold">The path of a streamed response</text>
+<rect x="20" y="120" width="131" height="170" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="85.5" y="186.0" font-size="20" text-anchor="middle" fill="#ffffff">Browser</text>
+<text x="85.5" y="212.0" font-size="20" text-anchor="middle" fill="#ffffff">sends the</text>
+<text x="85.5" y="238.0" font-size="20" text-anchor="middle" fill="#ffffff">prompt</text>
+<line x1="153" y1="205" x2="175" y2="205" stroke="#b3ff3a" stroke-width="3" marker-end="url(#a)"/>
+<rect x="177" y="120" width="131" height="170" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="242.5" y="173.0" font-size="20" text-anchor="middle" fill="#ffffff">Backend</text>
+<text x="242.5" y="199.0" font-size="20" text-anchor="middle" fill="#ffffff">checks</text>
+<text x="242.5" y="225.0" font-size="20" text-anchor="middle" fill="#ffffff">and calls</text>
+<text x="242.5" y="251.0" font-size="20" text-anchor="middle" fill="#ffffff">the model</text>
+<line x1="310" y1="205" x2="332" y2="205" stroke="#b3ff3a" stroke-width="3" marker-end="url(#a)"/>
+<rect x="334" y="120" width="131" height="170" rx="10" fill="#b3ff3a" stroke="#b3ff3a" stroke-width="2"/>
+<text x="399.5" y="173.0" font-size="20" text-anchor="middle" fill="#080b0f">Chunks</text>
+<text x="399.5" y="199.0" font-size="20" text-anchor="middle" fill="#080b0f">forwarded</text>
+<text x="399.5" y="225.0" font-size="20" text-anchor="middle" fill="#080b0f">as your</text>
+<text x="399.5" y="251.0" font-size="20" text-anchor="middle" fill="#080b0f">events</text>
+<line x1="468" y1="205" x2="490" y2="205" stroke="#b3ff3a" stroke-width="3" marker-end="url(#a)"/>
+<rect x="492" y="120" width="131" height="170" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="557.5" y="186.0" font-size="20" text-anchor="middle" fill="#ffffff">Browser</text>
+<text x="557.5" y="212.0" font-size="20" text-anchor="middle" fill="#ffffff">renders</text>
+<text x="557.5" y="238.0" font-size="20" text-anchor="middle" fill="#ffffff">the text</text>
+<line x1="625" y1="205" x2="647" y2="205" stroke="#b3ff3a" stroke-width="3" marker-end="url(#a)"/>
+<rect x="649" y="120" width="131" height="170" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="714.5" y="173.0" font-size="20" text-anchor="middle" fill="#ffffff">Store</text>
+<text x="714.5" y="199.0" font-size="20" text-anchor="middle" fill="#ffffff">message,</text>
+<text x="714.5" y="225.0" font-size="20" text-anchor="middle" fill="#ffffff">end the</text>
+<text x="714.5" y="251.0" font-size="20" text-anchor="middle" fill="#ffffff">stream</text>
+<text x="400" y="350" font-size="20" text-anchor="middle" fill="#b3ff3a">Your own event format keeps the front-end provider-independent</text>
+</g>
+</svg>

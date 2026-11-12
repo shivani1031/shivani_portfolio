@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 450" role="img" aria-labelledby="t">
+<title id="t">Three things called caching</title>
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#b3ff3a"/></marker></defs>
+<rect width="800" height="450" fill="#080b0f"/>
+<g font-family="Arial, Helvetica, sans-serif" fill="#ffffff">
+<text x="400" y="50" font-size="28" text-anchor="middle" fill="#ffffff" font-weight="bold">Three things called caching</text>
+<rect x="20" y="90" width="240" height="64" rx="10" fill="#b3ff3a" stroke="#b3ff3a" stroke-width="2"/>
+<text x="140.0" y="129.0" font-size="20" text-anchor="middle" fill="#080b0f">Exact response</text>
+<rect x="20" y="164" width="240" height="206" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="140.0" y="193.4" font-size="20" text-anchor="middle" fill="#ffffff">Key built from the</text>
+<text x="140.0" y="219.4" font-size="20" text-anchor="middle" fill="#ffffff">request matches</text>
+<text x="140.0" y="245.4" font-size="20" text-anchor="middle" fill="#ffffff">exactly</text>
+<text x="140.0" y="287.0" font-size="20" text-anchor="middle" fill="#ffffff">Stored output</text>
+<text x="140.0" y="313.0" font-size="20" text-anchor="middle" fill="#ffffff">returned</text>
+<text x="140.0" y="354.6" font-size="20" text-anchor="middle" fill="#ffffff">Model not called</text>
+<rect x="280" y="90" width="240" height="64" rx="10" fill="#b3ff3a" stroke="#b3ff3a" stroke-width="2"/>
+<text x="400.0" y="129.0" font-size="20" text-anchor="middle" fill="#080b0f">Semantic</text>
+<rect x="280" y="164" width="240" height="206" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="400.0" y="193.4" font-size="20" text-anchor="middle" fill="#ffffff">Request is close</text>
+<text x="400.0" y="219.4" font-size="20" text-anchor="middle" fill="#ffffff">in embedding space</text>
+<text x="400.0" y="261.0" font-size="20" text-anchor="middle" fill="#ffffff">Stored output</text>
+<text x="400.0" y="287.0" font-size="20" text-anchor="middle" fill="#ffffff">returned</text>
+<text x="400.0" y="328.6" font-size="20" text-anchor="middle" fill="#ffffff">Match is a</text>
+<text x="400.0" y="354.6" font-size="20" text-anchor="middle" fill="#ffffff">judgement call</text>
+<rect x="540" y="90" width="240" height="64" rx="10" fill="#b3ff3a" stroke="#b3ff3a" stroke-width="2"/>
+<text x="660.0" y="129.0" font-size="20" text-anchor="middle" fill="#080b0f">Provider prompt</text>
+<rect x="540" y="164" width="240" height="206" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="660.0" y="206.4" font-size="20" text-anchor="middle" fill="#ffffff">Repeated prompt</text>
+<text x="660.0" y="232.4" font-size="20" text-anchor="middle" fill="#ffffff">prefix is reused</text>
+<text x="660.0" y="274.0" font-size="20" text-anchor="middle" fill="#ffffff">Model still runs</text>
+<text x="660.0" y="315.6" font-size="20" text-anchor="middle" fill="#ffffff">Fresh answer every</text>
+<text x="660.0" y="341.6" font-size="20" text-anchor="middle" fill="#ffffff">time</text>
+<text x="400" y="420" font-size="20" text-anchor="middle" fill="#b3ff3a">Only the first two can return a wrong old answer</text>
+</g>
+</svg>

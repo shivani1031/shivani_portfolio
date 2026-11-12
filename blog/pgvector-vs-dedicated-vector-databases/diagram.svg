@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 450" role="img" aria-labelledby="t">
+<title id="t">How many systems do you want to run?</title>
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#b3ff3a"/></marker></defs>
+<rect width="800" height="450" fill="#080b0f"/>
+<g font-family="Arial, Helvetica, sans-serif" fill="#ffffff">
+<text x="400" y="50" font-size="28" text-anchor="middle" fill="#ffffff" font-weight="bold">How many systems do you want to run?</text>
+<rect x="20" y="90" width="370" height="64" rx="10" fill="#b3ff3a" stroke="#b3ff3a" stroke-width="2"/>
+<text x="205.0" y="129.0" font-size="20" text-anchor="middle" fill="#080b0f">pgvector in Postgres</text>
+<rect x="20" y="164" width="370" height="196" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="205.0" y="209.2" font-size="20" text-anchor="middle" fill="#ffffff">One database, one backup</text>
+<text x="205.0" y="235.2" font-size="20" text-anchor="middle" fill="#ffffff">process, one set of</text>
+<text x="205.0" y="261.2" font-size="20" text-anchor="middle" fill="#ffffff">permissions</text>
+<text x="205.0" y="302.8" font-size="20" text-anchor="middle" fill="#ffffff">Shares resources with</text>
+<text x="205.0" y="328.8" font-size="20" text-anchor="middle" fill="#ffffff">everything else</text>
+<rect x="410" y="90" width="370" height="64" rx="10" fill="#b3ff3a" stroke="#b3ff3a" stroke-width="2"/>
+<text x="595.0" y="129.0" font-size="20" text-anchor="middle" fill="#080b0f">Dedicated vector database</text>
+<rect x="410" y="164" width="370" height="196" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="595.0" y="235.2" font-size="20" text-anchor="middle" fill="#ffffff">Separates the vector workload</text>
+<text x="595.0" y="276.8" font-size="20" text-anchor="middle" fill="#ffffff">A second system to deploy,</text>
+<text x="595.0" y="302.8" font-size="20" text-anchor="middle" fill="#ffffff">secure and keep in sync</text>
+</g>
+</svg>

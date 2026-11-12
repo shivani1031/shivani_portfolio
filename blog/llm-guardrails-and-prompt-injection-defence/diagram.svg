@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 450" role="img" aria-labelledby="t">
+<title id="t">Layers of defence and how strong each one is</title>
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#b3ff3a"/></marker></defs>
+<rect width="800" height="450" fill="#080b0f"/>
+<g font-family="Arial, Helvetica, sans-serif" fill="#ffffff">
+<text x="400" y="50" font-size="28" text-anchor="middle" fill="#ffffff" font-weight="bold">Layers of defence and how strong each one is</text>
+<rect x="20" y="76" width="340" height="50" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="190.0" y="108.0" font-size="20" text-anchor="middle" fill="#ffffff">Input checks</text>
+<line x1="364" y1="101" x2="406" y2="101" stroke="#b3ff3a" stroke-width="3" marker-end="url(#a)"/>
+<rect x="410" y="76" width="370" height="50" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="595.0" y="108.0" font-size="20" text-anchor="middle" fill="#ffffff">Reduces likelihood</text>
+<rect x="20" y="137" width="340" height="50" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="190.0" y="169.0" font-size="20" text-anchor="middle" fill="#ffffff">Prompt design</text>
+<line x1="364" y1="162" x2="406" y2="162" stroke="#b3ff3a" stroke-width="3" marker-end="url(#a)"/>
+<rect x="410" y="137" width="370" height="50" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="595.0" y="169.0" font-size="20" text-anchor="middle" fill="#ffffff">Reduces likelihood</text>
+<rect x="20" y="198" width="340" height="50" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="190.0" y="230.0" font-size="20" text-anchor="middle" fill="#ffffff">Output checks</text>
+<line x1="364" y1="223" x2="406" y2="223" stroke="#b3ff3a" stroke-width="3" marker-end="url(#a)"/>
+<rect x="410" y="198" width="370" height="50" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="595.0" y="230.0" font-size="20" text-anchor="middle" fill="#ffffff">Strong for format</text>
+<rect x="20" y="259" width="340" height="50" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="190.0" y="291.0" font-size="20" text-anchor="middle" fill="#ffffff">Permissions in code</text>
+<line x1="364" y1="284" x2="406" y2="284" stroke="#b3ff3a" stroke-width="3" marker-end="url(#a)"/>
+<rect x="410" y="259" width="370" height="50" rx="10" fill="#b3ff3a" stroke="#b3ff3a" stroke-width="2"/>
+<text x="595.0" y="291.0" font-size="20" text-anchor="middle" fill="#080b0f">Hard boundary</text>
+<rect x="20" y="320" width="340" height="50" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="190.0" y="352.0" font-size="20" text-anchor="middle" fill="#ffffff">Human approval</text>
+<line x1="364" y1="345" x2="406" y2="345" stroke="#b3ff3a" stroke-width="3" marker-end="url(#a)"/>
+<rect x="410" y="320" width="370" height="50" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="595.0" y="352.0" font-size="20" text-anchor="middle" fill="#ffffff">Strong, human error</text>
+<rect x="20" y="381" width="340" height="50" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="190.0" y="413.0" font-size="20" text-anchor="middle" fill="#ffffff">Monitoring</text>
+<line x1="364" y1="406" x2="406" y2="406" stroke="#b3ff3a" stroke-width="3" marker-end="url(#a)"/>
+<rect x="410" y="381" width="370" height="50" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="595.0" y="413.0" font-size="20" text-anchor="middle" fill="#ffffff">Detects, limits scale</text>
+</g>
+</svg>

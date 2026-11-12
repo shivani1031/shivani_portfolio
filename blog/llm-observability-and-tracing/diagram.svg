@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 450" role="img" aria-labelledby="t">
+<title id="t">One request as a trace of nested spans</title>
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#b3ff3a"/></marker></defs>
+<rect width="800" height="450" fill="#080b0f"/>
+<g font-family="Arial, Helvetica, sans-serif" fill="#ffffff">
+<text x="400" y="50" font-size="28" text-anchor="middle" fill="#ffffff" font-weight="bold">One request as a trace of nested spans</text>
+<rect x="40" y="72" width="360" height="37" rx="10" fill="#b3ff3a" stroke="#b3ff3a" stroke-width="2"/>
+<text x="220.0" y="96.8" font-size="18" text-anchor="middle" fill="#080b0f">request: answer_question</text>
+<rect x="100" y="117" width="360" height="37" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="280.0" y="141.8" font-size="18" text-anchor="middle" fill="#ffffff">retrieve_documents</text>
+<rect x="160" y="162" width="360" height="37" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="340.0" y="186.8" font-size="18" text-anchor="middle" fill="#ffffff">embed_query</text>
+<rect x="160" y="207" width="360" height="37" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="340.0" y="231.8" font-size="18" text-anchor="middle" fill="#ffffff">vector_search</text>
+<rect x="100" y="252" width="360" height="37" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="280.0" y="276.8" font-size="18" text-anchor="middle" fill="#ffffff">chat (model call 1)</text>
+<rect x="100" y="297" width="360" height="37" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="280.0" y="321.8" font-size="18" text-anchor="middle" fill="#ffffff">tool: get_order_status</text>
+<rect x="100" y="342" width="360" height="37" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="280.0" y="366.8" font-size="18" text-anchor="middle" fill="#ffffff">chat (model call 2)</text>
+<rect x="100" y="387" width="360" height="37" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="280.0" y="411.8" font-size="18" text-anchor="middle" fill="#ffffff">validate_output</text>
+<rect x="540" y="150" width="240" height="150" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="660.0" y="206.0" font-size="20" text-anchor="middle" fill="#ffffff">Shared trace ID on</text>
+<text x="660.0" y="232.0" font-size="20" text-anchor="middle" fill="#ffffff">every step, plus a</text>
+<text x="660.0" y="258.0" font-size="20" text-anchor="middle" fill="#ffffff">session ID</text>
+</g>
+</svg>

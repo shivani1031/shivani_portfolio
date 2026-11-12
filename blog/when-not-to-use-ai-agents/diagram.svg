@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 450" role="img" aria-labelledby="t">
+<title id="t">Climb only as far as a test shows you need</title>
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#b3ff3a"/></marker></defs>
+<rect width="800" height="450" fill="#080b0f"/>
+<g font-family="Arial, Helvetica, sans-serif" fill="#ffffff">
+<text x="400" y="50" font-size="28" text-anchor="middle" fill="#ffffff" font-weight="bold">Climb only as far as a test shows you need</text>
+<rect x="20" y="395" width="380" height="40" rx="10" fill="#b3ff3a" stroke="#b3ff3a" stroke-width="2"/>
+<text x="210.0" y="421.3" font-size="18" text-anchor="middle" fill="#080b0f">Ordinary software</text>
+<rect x="20" y="348" width="410" height="40" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="225.0" y="374.3" font-size="18" text-anchor="middle" fill="#ffffff">Traditional machine learning</text>
+<rect x="20" y="301" width="440" height="40" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="240.0" y="327.3" font-size="18" text-anchor="middle" fill="#ffffff">A single LLM call</text>
+<rect x="20" y="254" width="470" height="40" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="255.0" y="280.3" font-size="18" text-anchor="middle" fill="#ffffff">Retrieval plus an LLM</text>
+<rect x="20" y="207" width="500" height="40" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="270.0" y="233.3" font-size="18" text-anchor="middle" fill="#ffffff">A fixed workflow with LLM steps</text>
+<rect x="20" y="160" width="530" height="40" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="285.0" y="186.3" font-size="18" text-anchor="middle" fill="#ffffff">An agent</text>
+<rect x="20" y="113" width="560" height="40" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="300.0" y="139.3" font-size="18" text-anchor="middle" fill="#ffffff">Several agents</text>
+<line x1="770" y1="420" x2="770" y2="90" stroke="#b3ff3a" stroke-width="3" marker-end="url(#a)"/>
+<text x="640" y="250" font-size="20" text-anchor="middle" fill="#b3ff3a">More variability</text>
+<text x="640" y="278" font-size="20" text-anchor="middle" fill="#b3ff3a">and operating work</text>
+</g>
+</svg>

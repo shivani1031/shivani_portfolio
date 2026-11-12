@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 450" role="img" aria-labelledby="t">
+<title id="t">Retrieved chunks in ranked order</title>
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#b3ff3a"/></marker></defs>
+<rect width="800" height="450" fill="#080b0f"/>
+<g font-family="Arial, Helvetica, sans-serif" fill="#ffffff">
+<text x="400" y="50" font-size="28" text-anchor="middle" fill="#ffffff" font-weight="bold">Retrieved chunks in ranked order</text>
+<rect x="20" y="95" width="540" height="70" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="290.0" y="124.6" font-size="18" text-anchor="middle" fill="#ffffff">1. Standard delivery takes three to five working</text>
+<text x="290.0" y="148.0" font-size="18" text-anchor="middle" fill="#ffffff">days</text>
+<line x1="564" y1="130" x2="606" y2="130" stroke="#b3ff3a" stroke-width="3" marker-end="url(#a)"/>
+<rect x="610" y="95" width="170" height="70" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="695.0" y="136.3" font-size="18" text-anchor="middle" fill="#ffffff">Not relevant</text>
+<rect x="20" y="183" width="540" height="70" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="290.0" y="224.3" font-size="18" text-anchor="middle" fill="#ffffff">2. Unopened items may be returned within 30 days</text>
+<line x1="564" y1="218" x2="606" y2="218" stroke="#b3ff3a" stroke-width="3" marker-end="url(#a)"/>
+<rect x="610" y="183" width="170" height="70" rx="10" fill="#b3ff3a" stroke="#b3ff3a" stroke-width="2"/>
+<text x="695.0" y="224.3" font-size="18" text-anchor="middle" fill="#080b0f">Relevant</text>
+<rect x="20" y="271" width="540" height="70" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="290.0" y="312.3" font-size="18" text-anchor="middle" fill="#ffffff">3. Gift cards cannot be exchanged for cash</text>
+<line x1="564" y1="306" x2="606" y2="306" stroke="#b3ff3a" stroke-width="3" marker-end="url(#a)"/>
+<rect x="610" y="271" width="170" height="70" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="695.0" y="312.3" font-size="18" text-anchor="middle" fill="#ffffff">Not relevant</text>
+<rect x="20" y="359" width="540" height="70" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="290.0" y="400.3" font-size="18" text-anchor="middle" fill="#ffffff">4. Customers pay return postage unless faulty</text>
+<line x1="564" y1="394" x2="606" y2="394" stroke="#b3ff3a" stroke-width="3" marker-end="url(#a)"/>
+<rect x="610" y="359" width="170" height="70" rx="10" fill="#b3ff3a" stroke="#b3ff3a" stroke-width="2"/>
+<text x="695.0" y="400.3" font-size="18" text-anchor="middle" fill="#080b0f">Relevant</text>
+</g>
+</svg>
