@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 450" role="img" aria-labelledby="t">
+<title id="t">Three kinds of long-term memory</title>
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#b3ff3a"/></marker></defs>
+<rect width="800" height="450" fill="#080b0f"/>
+<g font-family="Arial, Helvetica, sans-serif" fill="#ffffff">
+<text x="400" y="48" font-size="28" text-anchor="middle" fill="#ffffff" font-weight="bold">Three kinds of long-term memory</text>
+<rect x="20" y="80" width="240" height="60" rx="10" fill="#b3ff3a" stroke="#b3ff3a" stroke-width="2"/>
+<text x="140.0" y="117.7" font-size="22" text-anchor="middle" fill="#080b0f">Semantic</text>
+<rect x="20" y="160" width="240" height="100" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="140.0" y="204.0" font-size="20" text-anchor="middle" fill="#ffffff">Stores facts and</text>
+<text x="140.0" y="230.0" font-size="20" text-anchor="middle" fill="#ffffff">preferences</text>
+<rect x="20" y="280" width="240" height="110" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="140.0" y="316.0" font-size="20" text-anchor="middle" fill="#ffffff">Kept in database</text>
+<text x="140.0" y="342.0" font-size="20" text-anchor="middle" fill="#ffffff">rows or a</text>
+<text x="140.0" y="368.0" font-size="20" text-anchor="middle" fill="#ffffff">key-value store</text>
+<rect x="280" y="80" width="240" height="60" rx="10" fill="#b3ff3a" stroke="#b3ff3a" stroke-width="2"/>
+<text x="400.0" y="117.7" font-size="22" text-anchor="middle" fill="#080b0f">Episodic</text>
+<rect x="280" y="160" width="240" height="100" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="400.0" y="204.0" font-size="20" text-anchor="middle" fill="#ffffff">Stores records of</text>
+<text x="400.0" y="230.0" font-size="20" text-anchor="middle" fill="#ffffff">past events</text>
+<rect x="280" y="280" width="240" height="110" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="400.0" y="303.0" font-size="20" text-anchor="middle" fill="#ffffff">Kept in a</text>
+<text x="400.0" y="329.0" font-size="20" text-anchor="middle" fill="#ffffff">searchable log,</text>
+<text x="400.0" y="355.0" font-size="20" text-anchor="middle" fill="#ffffff">often with</text>
+<text x="400.0" y="381.0" font-size="20" text-anchor="middle" fill="#ffffff">embeddings</text>
+<rect x="540" y="80" width="240" height="60" rx="10" fill="#b3ff3a" stroke="#b3ff3a" stroke-width="2"/>
+<text x="660.0" y="117.7" font-size="22" text-anchor="middle" fill="#080b0f">Procedural</text>
+<rect x="540" y="160" width="240" height="100" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="660.0" y="204.0" font-size="20" text-anchor="middle" fill="#ffffff">Stores how to do</text>
+<text x="660.0" y="230.0" font-size="20" text-anchor="middle" fill="#ffffff">things</text>
+<rect x="540" y="280" width="240" height="110" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="660.0" y="316.0" font-size="20" text-anchor="middle" fill="#ffffff">Kept in versioned</text>
+<text x="660.0" y="342.0" font-size="20" text-anchor="middle" fill="#ffffff">prompts or</text>
+<text x="660.0" y="368.0" font-size="20" text-anchor="middle" fill="#ffffff">configuration</text>
+<text x="400" y="430" font-size="18" text-anchor="middle" fill="#ffffff">The boundaries are loose, and tools use these words differently</text>
+</g>
+</svg>

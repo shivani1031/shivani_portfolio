@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 450" role="img" aria-labelledby="t">
+<title id="t">Where a slow answer can come from</title>
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#b3ff3a"/></marker></defs>
+<rect width="800" height="450" fill="#080b0f"/>
+<g font-family="Arial, Helvetica, sans-serif" fill="#ffffff">
+<text x="400" y="48" font-size="28" text-anchor="middle" fill="#ffffff" font-weight="bold">Where a slow answer can come from</text>
+<text x="400" y="110" font-size="18" text-anchor="middle" fill="#b3ff3a">One request, several steps</text>
+<rect x="20.0" y="130" width="132.8" height="80" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="86.4" y="176.3" font-size="18" text-anchor="middle" fill="#ffffff">Retrieval</text>
+<line x1="154.8" y1="170.0" x2="174.8" y2="170.0" stroke="#b3ff3a" stroke-width="3" marker-end="url(#a)"/>
+<rect x="176.8" y="130" width="132.8" height="80" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="243.2" y="176.3" font-size="18" text-anchor="middle" fill="#ffffff">Reranker</text>
+<line x1="311.6" y1="170.0" x2="331.6" y2="170.0" stroke="#b3ff3a" stroke-width="3" marker-end="url(#a)"/>
+<rect x="333.6" y="130" width="132.8" height="80" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="400.0" y="176.3" font-size="18" text-anchor="middle" fill="#ffffff">Tool call</text>
+<line x1="468.4" y1="170.0" x2="488.4" y2="170.0" stroke="#b3ff3a" stroke-width="3" marker-end="url(#a)"/>
+<rect x="490.4" y="130" width="132.8" height="80" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="556.8" y="176.3" font-size="18" text-anchor="middle" fill="#ffffff">Queue</text>
+<line x1="625.2" y1="170.0" x2="645.2" y2="170.0" stroke="#b3ff3a" stroke-width="3" marker-end="url(#a)"/>
+<rect x="647.2" y="130" width="132.8" height="80" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="713.6" y="176.3" font-size="18" text-anchor="middle" fill="#ffffff">Model call</text>
+<text x="400" y="270" font-size="20" text-anchor="middle" fill="#b3ff3a">Record for every step before changing anything:</text>
+<text x="400" y="310" font-size="18" text-anchor="middle" fill="#ffffff">Input, output and cached tokens</text>
+<text x="400" y="345" font-size="18" text-anchor="middle" fill="#ffffff">Time to first token and total duration</text>
+<text x="400" y="380" font-size="18" text-anchor="middle" fill="#ffffff">Time spent in each non-model step</text>
+<text x="400" y="415" font-size="18" text-anchor="middle" fill="#ffffff">Estimated cost per request and per completed task</text>
+</g>
+</svg>

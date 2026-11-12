@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 450" role="img" aria-labelledby="t">
+<title id="t">What a small paid test should give you</title>
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#b3ff3a"/></marker></defs>
+<rect width="800" height="450" fill="#080b0f"/>
+<g font-family="Arial, Helvetica, sans-serif" fill="#ffffff">
+<text x="400" y="48" font-size="28" text-anchor="middle" fill="#ffffff" font-weight="bold">What a small paid test should give you</text>
+<rect x="30" y="160" width="260" height="150" rx="10" fill="#b3ff3a" stroke="#b3ff3a" stroke-width="2"/>
+<text x="160.0" y="216.0" font-size="20" text-anchor="middle" fill="#080b0f">A short paid test: a</text>
+<text x="160.0" y="242.0" font-size="20" text-anchor="middle" fill="#080b0f">discovery study or a</text>
+<text x="160.0" y="268.0" font-size="20" text-anchor="middle" fill="#080b0f">narrow prototype</text>
+<line x1="292" y1="235" x2="358" y2="115" stroke="#b3ff3a" stroke-width="3" marker-end="url(#a)"/>
+<rect x="360" y="75" width="410" height="80" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="565.0" y="109.6" font-size="18" text-anchor="middle" fill="#ffffff">Results on your own test cases,</text>
+<text x="565.0" y="133.0" font-size="18" text-anchor="middle" fill="#ffffff">including failures</text>
+<line x1="292" y1="235" x2="358" y2="230" stroke="#b3ff3a" stroke-width="3" marker-end="url(#a)"/>
+<rect x="360" y="190" width="410" height="80" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="565.0" y="224.6" font-size="18" text-anchor="middle" fill="#ffffff">A written account of what was tried,</text>
+<text x="565.0" y="248.0" font-size="18" text-anchor="middle" fill="#ffffff">learned and recommended</text>
+<line x1="292" y1="235" x2="358" y2="345" stroke="#b3ff3a" stroke-width="3" marker-end="url(#a)"/>
+<rect x="360" y="305" width="410" height="80" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="565.0" y="339.6" font-size="18" text-anchor="middle" fill="#ffffff">Code and instructions someone else</text>
+<text x="565.0" y="363.0" font-size="18" text-anchor="middle" fill="#ffffff">could run</text>
+<text x="400" y="432" font-size="18" text-anchor="middle" fill="#b3ff3a">It also shows how they work with you</text>
+</g>
+</svg>

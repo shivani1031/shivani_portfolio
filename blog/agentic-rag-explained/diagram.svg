@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 450" role="img" aria-labelledby="t">
+<title id="t">Who chooses the next step?</title>
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#b3ff3a"/></marker></defs>
+<rect width="800" height="450" fill="#080b0f"/>
+<g font-family="Arial, Helvetica, sans-serif" fill="#ffffff">
+<text x="400" y="48" font-size="28" text-anchor="middle" fill="#ffffff" font-weight="bold">Who chooses the next step?</text>
+<text x="20" y="92" font-size="20" text-anchor="start" fill="#b3ff3a">Plain RAG: the developer fixes the path</text>
+<rect x="20.0" y="105" width="167.5" height="66" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="103.8" y="145.0" font-size="20" text-anchor="middle" fill="#ffffff">Question</text>
+<line x1="189.5" y1="138.0" x2="215.5" y2="138.0" stroke="#b3ff3a" stroke-width="3" marker-end="url(#a)"/>
+<rect x="217.5" y="105" width="167.5" height="66" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="301.2" y="145.0" font-size="20" text-anchor="middle" fill="#ffffff">Search index</text>
+<line x1="387.0" y1="138.0" x2="413.0" y2="138.0" stroke="#b3ff3a" stroke-width="3" marker-end="url(#a)"/>
+<rect x="415.0" y="105" width="167.5" height="66" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="498.8" y="145.0" font-size="20" text-anchor="middle" fill="#ffffff">Build prompt</text>
+<line x1="584.5" y1="138.0" x2="610.5" y2="138.0" stroke="#b3ff3a" stroke-width="3" marker-end="url(#a)"/>
+<rect x="612.5" y="105" width="167.5" height="66" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="696.2" y="132.0" font-size="20" text-anchor="middle" fill="#ffffff">Generate</text>
+<text x="696.2" y="158.0" font-size="20" text-anchor="middle" fill="#ffffff">answer</text>
+<text x="20" y="222" font-size="20" text-anchor="start" fill="#b3ff3a">Agentic RAG: the model chooses at run time</text>
+<rect x="20" y="240" width="140" height="66" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="90.0" y="280.0" font-size="20" text-anchor="middle" fill="#ffffff">Question</text>
+<line x1="162" y1="273" x2="198" y2="273" stroke="#b3ff3a" stroke-width="3" marker-end="url(#a)"/>
+<rect x="200" y="240" width="180" height="66" rx="10" fill="#b3ff3a" stroke="#b3ff3a" stroke-width="2"/>
+<text x="290.0" y="280.0" font-size="20" text-anchor="middle" fill="#080b0f">Model decides</text>
+<line x1="382" y1="273" x2="628" y2="273" stroke="#b3ff3a" stroke-width="3" marker-end="url(#a)"/>
+<text x="505" y="262" font-size="18" text-anchor="middle" fill="#b3ff3a">answer when ready</text>
+<rect x="630" y="240" width="150" height="66" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="705.0" y="280.0" font-size="20" text-anchor="middle" fill="#ffffff">Answer</text>
+<line x1="300" y1="308" x2="300" y2="338" stroke="#b3ff3a" stroke-width="3" marker-end="url(#a)"/>
+<line x1="350" y1="338" x2="350" y2="308" stroke="#b3ff3a" stroke-width="3" marker-end="url(#a)"/>
+<rect x="200" y="340" width="360" height="90" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="380.0" y="379.6" font-size="18" text-anchor="middle" fill="#ffffff">Retriever tool: search, search</text>
+<text x="380.0" y="403.0" font-size="18" text-anchor="middle" fill="#ffffff">differently or use another source</text>
+</g>
+</svg>

@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 450" role="img" aria-labelledby="t">
+<title id="t">Where a RAG answer can go wrong</title>
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#b3ff3a"/></marker></defs>
+<rect width="800" height="450" fill="#080b0f"/>
+<g font-family="Arial, Helvetica, sans-serif" fill="#ffffff">
+<text x="400" y="48" font-size="28" text-anchor="middle" fill="#ffffff" font-weight="bold">Where a RAG answer can go wrong</text>
+<rect x="20.0" y="100" width="128.0" height="80" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="84.0" y="146.3" font-size="18" text-anchor="middle" fill="#ffffff">Parser</text>
+<line x1="150.0" y1="140.0" x2="176.0" y2="140.0" stroke="#b3ff3a" stroke-width="3" marker-end="url(#a)"/>
+<rect x="178.0" y="100" width="128.0" height="80" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="242.0" y="146.3" font-size="18" text-anchor="middle" fill="#ffffff">Retrieval</text>
+<line x1="308.0" y1="140.0" x2="334.0" y2="140.0" stroke="#b3ff3a" stroke-width="3" marker-end="url(#a)"/>
+<rect x="336.0" y="100" width="128.0" height="80" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="400.0" y="146.3" font-size="18" text-anchor="middle" fill="#ffffff">Reranker</text>
+<line x1="466.0" y1="140.0" x2="492.0" y2="140.0" stroke="#b3ff3a" stroke-width="3" marker-end="url(#a)"/>
+<rect x="494.0" y="100" width="128.0" height="80" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="558.0" y="146.3" font-size="18" text-anchor="middle" fill="#ffffff">Model</text>
+<line x1="624.0" y1="140.0" x2="650.0" y2="140.0" stroke="#b3ff3a" stroke-width="3" marker-end="url(#a)"/>
+<rect x="652.0" y="100" width="128.0" height="80" rx="10" fill="#b3ff3a" stroke="#b3ff3a" stroke-width="2"/>
+<text x="716.0" y="146.3" font-size="18" text-anchor="middle" fill="#080b0f">Answer</text>
+<text x="84.0" y="220.0" font-size="18" text-anchor="middle" fill="#b3ff3a">can garble a</text>
+<text x="84.0" y="243.4" font-size="18" text-anchor="middle" fill="#b3ff3a">table</text>
+<text x="242.0" y="220.0" font-size="18" text-anchor="middle" fill="#b3ff3a">can miss the</text>
+<text x="242.0" y="243.4" font-size="18" text-anchor="middle" fill="#b3ff3a">right</text>
+<text x="242.0" y="266.8" font-size="18" text-anchor="middle" fill="#b3ff3a">passage</text>
+<text x="400.0" y="220.0" font-size="18" text-anchor="middle" fill="#b3ff3a">can push it</text>
+<text x="400.0" y="243.4" font-size="18" text-anchor="middle" fill="#b3ff3a">down the</text>
+<text x="400.0" y="266.8" font-size="18" text-anchor="middle" fill="#b3ff3a">list</text>
+<text x="558.0" y="220.0" font-size="18" text-anchor="middle" fill="#b3ff3a">can misread</text>
+<text x="558.0" y="243.4" font-size="18" text-anchor="middle" fill="#b3ff3a">it or go</text>
+<text x="558.0" y="266.8" font-size="18" text-anchor="middle" fill="#b3ff3a">beyond it</text>
+<text x="400" y="380" font-size="20" text-anchor="middle" fill="#b3ff3a">The cause of a poor answer may be several steps back</text>
+<text x="400" y="420" font-size="18" text-anchor="middle" fill="#ffffff">So measure retrieval and answers separately</text>
+</g>
+</svg>

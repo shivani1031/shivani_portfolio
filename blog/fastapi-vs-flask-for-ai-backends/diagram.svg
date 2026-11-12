@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 450" role="img" aria-labelledby="t">
+<title id="t">Waiting on a model: WSGI and ASGI</title>
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#b3ff3a"/></marker></defs>
+<rect width="800" height="450" fill="#080b0f"/>
+<g font-family="Arial, Helvetica, sans-serif" fill="#ffffff">
+<text x="400" y="48" font-size="28" text-anchor="middle" fill="#ffffff" font-weight="bold">Waiting on a model: WSGI and ASGI</text>
+<line x1="400" y1="80" x2="400" y2="400" stroke="#b3ff3a" stroke-width="1" stroke-dasharray="4 6"/>
+<text x="200" y="100" font-size="20" text-anchor="middle" fill="#b3ff3a" font-weight="bold">WSGI (Flask)</text>
+<text x="600" y="100" font-size="20" text-anchor="middle" fill="#b3ff3a" font-weight="bold">ASGI (FastAPI)</text>
+<rect x="40" y="120" width="140" height="60" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="110.0" y="156.3" font-size="18" text-anchor="middle" fill="#ffffff">Worker</text>
+<line x1="182" y1="150" x2="218" y2="150" stroke="#b3ff3a" stroke-width="3" marker-end="url(#a)"/>
+<rect x="220" y="120" width="140" height="60" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="290.0" y="156.3" font-size="18" text-anchor="middle" fill="#ffffff">Request</text>
+<rect x="40" y="205" width="140" height="60" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="110.0" y="241.3" font-size="18" text-anchor="middle" fill="#ffffff">Worker</text>
+<line x1="182" y1="235" x2="218" y2="235" stroke="#b3ff3a" stroke-width="3" marker-end="url(#a)"/>
+<rect x="220" y="205" width="140" height="60" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="290.0" y="241.3" font-size="18" text-anchor="middle" fill="#ffffff">Request</text>
+<rect x="40" y="290" width="140" height="60" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="110.0" y="326.3" font-size="18" text-anchor="middle" fill="#ffffff">Worker</text>
+<line x1="182" y1="320" x2="218" y2="320" stroke="#b3ff3a" stroke-width="3" marker-end="url(#a)"/>
+<rect x="220" y="290" width="140" height="60" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="290.0" y="326.3" font-size="18" text-anchor="middle" fill="#ffffff">Request</text>
+<text x="200" y="400" font-size="18" text-anchor="middle" fill="#ffffff">One request per worker</text>
+<text x="200" y="430" font-size="18" text-anchor="middle" fill="#ffffff">Scale with threads or processes</text>
+<rect x="420" y="180" width="160" height="110" rx="10" fill="#b3ff3a" stroke="#b3ff3a" stroke-width="2"/>
+<text x="500.0" y="217.9" font-size="18" text-anchor="middle" fill="#080b0f">One worker</text>
+<text x="500.0" y="241.3" font-size="18" text-anchor="middle" fill="#080b0f">running an</text>
+<text x="500.0" y="264.7" font-size="18" text-anchor="middle" fill="#080b0f">event loop</text>
+<line x1="582" y1="235" x2="618" y2="145" stroke="#b3ff3a" stroke-width="3" marker-end="url(#a)"/>
+<rect x="620" y="120" width="150" height="50" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="695.0" y="151.3" font-size="18" text-anchor="middle" fill="#ffffff">Request</text>
+<line x1="582" y1="235" x2="618" y2="207" stroke="#b3ff3a" stroke-width="3" marker-end="url(#a)"/>
+<rect x="620" y="182" width="150" height="50" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="695.0" y="213.3" font-size="18" text-anchor="middle" fill="#ffffff">Request</text>
+<line x1="582" y1="235" x2="618" y2="269" stroke="#b3ff3a" stroke-width="3" marker-end="url(#a)"/>
+<rect x="620" y="244" width="150" height="50" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="695.0" y="275.3" font-size="18" text-anchor="middle" fill="#ffffff">Request</text>
+<line x1="582" y1="235" x2="618" y2="331" stroke="#b3ff3a" stroke-width="3" marker-end="url(#a)"/>
+<rect x="620" y="306" width="150" height="50" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="695.0" y="337.3" font-size="18" text-anchor="middle" fill="#ffffff">Request</text>
+<text x="600" y="400" font-size="18" text-anchor="middle" fill="#ffffff">While one request waits,</text>
+<text x="600" y="430" font-size="18" text-anchor="middle" fill="#ffffff">the loop serves the others</text>
+</g>
+</svg>

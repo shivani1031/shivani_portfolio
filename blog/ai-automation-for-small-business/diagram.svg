@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 450" role="img" aria-labelledby="t">
+<title id="t">Start with the work, not the tool</title>
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#b3ff3a"/></marker></defs>
+<rect width="800" height="450" fill="#080b0f"/>
+<g font-family="Arial, Helvetica, sans-serif" fill="#ffffff">
+<text x="400" y="48" font-size="28" text-anchor="middle" fill="#ffffff" font-weight="bold">Start with the work, not the tool</text>
+<rect x="20.0" y="130" width="132.8" height="150" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="86.4" y="187.9" font-size="18" text-anchor="middle" fill="#ffffff">List your</text>
+<text x="86.4" y="211.3" font-size="18" text-anchor="middle" fill="#ffffff">repetitive</text>
+<text x="86.4" y="234.7" font-size="18" text-anchor="middle" fill="#ffffff">work</text>
+<line x1="154.8" y1="205.0" x2="174.8" y2="205.0" stroke="#b3ff3a" stroke-width="3" marker-end="url(#a)"/>
+<rect x="176.8" y="130" width="132.8" height="150" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="243.2" y="199.6" font-size="18" text-anchor="middle" fill="#ffffff">Score each</text>
+<text x="243.2" y="223.0" font-size="18" text-anchor="middle" fill="#ffffff">candidate</text>
+<line x1="311.6" y1="205.0" x2="331.6" y2="205.0" stroke="#b3ff3a" stroke-width="3" marker-end="url(#a)"/>
+<rect x="333.6" y="130" width="132.8" height="150" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="400.0" y="199.6" font-size="18" text-anchor="middle" fill="#ffffff">Check data</text>
+<text x="400.0" y="223.0" font-size="18" text-anchor="middle" fill="#ffffff">and duties</text>
+<line x1="468.4" y1="205.0" x2="488.4" y2="205.0" stroke="#b3ff3a" stroke-width="3" marker-end="url(#a)"/>
+<rect x="490.4" y="130" width="132.8" height="150" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="556.8" y="187.9" font-size="18" text-anchor="middle" fill="#ffffff">Buy,</text>
+<text x="556.8" y="211.3" font-size="18" text-anchor="middle" fill="#ffffff">connect or</text>
+<text x="556.8" y="234.7" font-size="18" text-anchor="middle" fill="#ffffff">build</text>
+<line x1="625.2" y1="205.0" x2="645.2" y2="205.0" stroke="#b3ff3a" stroke-width="3" marker-end="url(#a)"/>
+<rect x="647.2" y="130" width="132.8" height="150" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="713.6" y="176.2" font-size="18" text-anchor="middle" fill="#ffffff">Run a</text>
+<text x="713.6" y="199.6" font-size="18" text-anchor="middle" fill="#ffffff">small</text>
+<text x="713.6" y="223.0" font-size="18" text-anchor="middle" fill="#ffffff">supervised</text>
+<text x="713.6" y="246.4" font-size="18" text-anchor="middle" fill="#ffffff">trial</text>
+<text x="86.4" y="115" font-size="18" text-anchor="middle" fill="#b3ff3a">Step 1</text>
+<text x="243.2" y="115" font-size="18" text-anchor="middle" fill="#b3ff3a">Step 2</text>
+<text x="400.0" y="115" font-size="18" text-anchor="middle" fill="#b3ff3a">Step 3</text>
+<text x="556.8" y="115" font-size="18" text-anchor="middle" fill="#b3ff3a">Step 4</text>
+<text x="713.6" y="115" font-size="18" text-anchor="middle" fill="#b3ff3a">Step 5</text>
+<text x="400" y="350" font-size="20" text-anchor="middle" fill="#b3ff3a">AI earns its place where the input is messy language</text>
+<text x="400" y="395" font-size="18" text-anchor="middle" fill="#ffffff">Tidy data and a written rule? Ordinary software may be more reliable</text>
+</g>
+</svg>

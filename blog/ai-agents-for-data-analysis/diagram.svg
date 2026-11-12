@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 450" role="img" aria-labelledby="t">
+<title id="t">Levels of consequence and their controls</title>
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#b3ff3a"/></marker></defs>
+<rect width="800" height="450" fill="#080b0f"/>
+<g font-family="Arial, Helvetica, sans-serif" fill="#ffffff">
+<text x="400" y="48" font-size="28" text-anchor="middle" fill="#ffffff" font-weight="bold">Levels of consequence and their controls</text>
+<rect x="20" y="75" width="180" height="60" rx="10" fill="#b3ff3a" stroke="#b3ff3a" stroke-width="2"/>
+<text x="110.0" y="112.0" font-size="20" text-anchor="middle" fill="#080b0f">Describe</text>
+<line x1="202" y1="105" x2="226" y2="105" stroke="#b3ff3a" stroke-width="3" marker-end="url(#a)"/>
+<rect x="228" y="75" width="552" height="60" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="504.0" y="111.7" font-size="19" text-anchor="middle" fill="#ffffff">Read-only access; light review</text>
+<rect x="20" y="148" width="180" height="60" rx="10" fill="#b3ff3a" stroke="#b3ff3a" stroke-width="2"/>
+<text x="110.0" y="185.0" font-size="20" text-anchor="middle" fill="#080b0f">Explore</text>
+<line x1="202" y1="178" x2="226" y2="178" stroke="#b3ff3a" stroke-width="3" marker-end="url(#a)"/>
+<rect x="228" y="148" width="552" height="60" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="504.0" y="184.7" font-size="19" text-anchor="middle" fill="#ffffff">Label output as leads, not findings</text>
+<rect x="20" y="221" width="180" height="60" rx="10" fill="#b3ff3a" stroke="#b3ff3a" stroke-width="2"/>
+<text x="110.0" y="258.0" font-size="20" text-anchor="middle" fill="#080b0f">Compute</text>
+<line x1="202" y1="251" x2="226" y2="251" stroke="#b3ff3a" stroke-width="3" marker-end="url(#a)"/>
+<rect x="228" y="221" width="552" height="60" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="504.0" y="257.6" font-size="19" text-anchor="middle" fill="#ffffff">Sandbox, automated checks, visible code</text>
+<rect x="20" y="294" width="180" height="60" rx="10" fill="#b3ff3a" stroke="#b3ff3a" stroke-width="2"/>
+<text x="110.0" y="331.0" font-size="20" text-anchor="middle" fill="#080b0f">Conclude</text>
+<line x1="202" y1="324" x2="226" y2="324" stroke="#b3ff3a" stroke-width="3" marker-end="url(#a)"/>
+<rect x="228" y="294" width="552" height="60" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="504.0" y="330.6" font-size="19" text-anchor="middle" fill="#ffffff">Named human reviewer before anyone relies on it</text>
+<rect x="20" y="367" width="180" height="60" rx="10" fill="#b3ff3a" stroke="#b3ff3a" stroke-width="2"/>
+<text x="110.0" y="404.0" font-size="20" text-anchor="middle" fill="#080b0f">Act</text>
+<line x1="202" y1="397" x2="226" y2="397" stroke="#b3ff3a" stroke-width="3" marker-end="url(#a)"/>
+<rect x="228" y="367" width="552" height="60" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="504.0" y="403.6" font-size="19" text-anchor="middle" fill="#ffffff">Separate approval step outside the agent</text>
+</g>
+</svg>

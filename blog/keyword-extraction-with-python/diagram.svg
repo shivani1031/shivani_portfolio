@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 450" role="img" aria-labelledby="t">
+<title id="t">Let the purpose decide the method</title>
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#b3ff3a"/></marker></defs>
+<rect width="800" height="450" fill="#080b0f"/>
+<g font-family="Arial, Helvetica, sans-serif" fill="#ffffff">
+<text x="400" y="48" font-size="28" text-anchor="middle" fill="#ffffff" font-weight="bold">Let the purpose decide the method</text>
+<rect x="30" y="80" width="300" height="70" rx="10" fill="#b3ff3a" stroke="#b3ff3a" stroke-width="2"/>
+<text x="180.0" y="122.0" font-size="20" text-anchor="middle" fill="#080b0f">Search and filtering</text>
+<line x1="332" y1="115" x2="378" y2="115" stroke="#b3ff3a" stroke-width="3" marker-end="url(#a)"/>
+<rect x="380" y="80" width="390" height="70" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="575.0" y="109.6" font-size="18" text-anchor="middle" fill="#ffffff">Terms users would type, applied</text>
+<text x="575.0" y="133.0" font-size="18" text-anchor="middle" fill="#ffffff">consistently</text>
+<rect x="30" y="168" width="300" height="70" rx="10" fill="#b3ff3a" stroke="#b3ff3a" stroke-width="2"/>
+<text x="180.0" y="210.0" font-size="20" text-anchor="middle" fill="#080b0f">A fixed taxonomy</text>
+<line x1="332" y1="203" x2="378" y2="203" stroke="#b3ff3a" stroke-width="3" marker-end="url(#a)"/>
+<rect x="380" y="168" width="390" height="70" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="575.0" y="197.6" font-size="18" text-anchor="middle" fill="#ffffff">Really classification: tags from a</text>
+<text x="575.0" y="221.0" font-size="18" text-anchor="middle" fill="#ffffff">known list</text>
+<rect x="30" y="256" width="300" height="70" rx="10" fill="#b3ff3a" stroke="#b3ff3a" stroke-width="2"/>
+<text x="180.0" y="298.0" font-size="20" text-anchor="middle" fill="#080b0f">Summarising at a glance</text>
+<line x1="332" y1="291" x2="378" y2="291" stroke="#b3ff3a" stroke-width="3" marker-end="url(#a)"/>
+<rect x="380" y="256" width="390" height="70" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="575.0" y="297.3" font-size="18" text-anchor="middle" fill="#ffffff">A few distinct, readable phrases</text>
+<rect x="30" y="344" width="300" height="70" rx="10" fill="#b3ff3a" stroke="#b3ff3a" stroke-width="2"/>
+<text x="180.0" y="386.0" font-size="20" text-anchor="middle" fill="#080b0f">Analysing a corpus</text>
+<line x1="332" y1="379" x2="378" y2="379" stroke="#b3ff3a" stroke-width="3" marker-end="url(#a)"/>
+<rect x="380" y="344" width="390" height="70" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="575.0" y="373.6" font-size="18" text-anchor="middle" fill="#ffffff">Terms comparable across documents,</text>
+<text x="575.0" y="397.0" font-size="18" text-anchor="middle" fill="#ffffff">at low cost</text>
+</g>
+</svg>

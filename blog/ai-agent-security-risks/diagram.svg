@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 450" role="img" aria-labelledby="t">
+<title id="t">When an agent&#x27;s judgement fails</title>
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#b3ff3a"/></marker></defs>
+<rect width="800" height="450" fill="#080b0f"/>
+<g font-family="Arial, Helvetica, sans-serif" fill="#ffffff">
+<text x="400" y="48" font-size="28" text-anchor="middle" fill="#ffffff" font-weight="bold">When an agent&#x27;s judgement fails</text>
+<rect x="40" y="80" width="330" height="80" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="205.0" y="114.0" font-size="20" text-anchor="middle" fill="#ffffff">A chatbot gets it wrong: a</text>
+<text x="205.0" y="140.0" font-size="20" text-anchor="middle" fill="#ffffff">bad sentence</text>
+<rect x="430" y="80" width="330" height="80" rx="10" fill="#b3ff3a" stroke="#b3ff3a" stroke-width="2"/>
+<text x="595.0" y="114.0" font-size="20" text-anchor="middle" fill="#080b0f">An agent gets it wrong: a</text>
+<text x="595.0" y="140.0" font-size="20" text-anchor="middle" fill="#080b0f">bad transaction</text>
+<text x="400" y="210" font-size="20" text-anchor="middle" fill="#b3ff3a">OWASP calls this Excessive Agency (LLM06:2025)</text>
+<text x="400" y="245" font-size="20" text-anchor="middle" fill="#ffffff">Three root causes:</text>
+<rect x="40" y="265" width="220" height="100" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="150.0" y="309.0" font-size="20" text-anchor="middle" fill="#ffffff">Too much</text>
+<text x="150.0" y="335.0" font-size="20" text-anchor="middle" fill="#ffffff">functionality</text>
+<rect x="290" y="265" width="220" height="100" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="400.0" y="309.0" font-size="20" text-anchor="middle" fill="#ffffff">Too many</text>
+<text x="400.0" y="335.0" font-size="20" text-anchor="middle" fill="#ffffff">permissions</text>
+<rect x="540" y="265" width="220" height="100" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="650.0" y="322.0" font-size="20" text-anchor="middle" fill="#ffffff">Too much autonomy</text>
+<text x="400" y="420" font-size="20" text-anchor="middle" fill="#ffffff">Assume the model will sometimes request the wrong thing</text>
+</g>
+</svg>

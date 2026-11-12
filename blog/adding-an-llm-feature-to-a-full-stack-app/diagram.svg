@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 450" role="img" aria-labelledby="t">
+<title id="t">Call the model from the backend</title>
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#b3ff3a"/></marker></defs>
+<rect width="800" height="450" fill="#080b0f"/>
+<g font-family="Arial, Helvetica, sans-serif" fill="#ffffff">
+<text x="400" y="48" font-size="28" text-anchor="middle" fill="#ffffff" font-weight="bold">Call the model from the backend</text>
+<rect x="40" y="80" width="340" height="64" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="210.0" y="119.0" font-size="20" text-anchor="middle" fill="#ffffff">Browser UI</text>
+<text x="410" y="119" font-size="20" text-anchor="start" fill="#b3ff3a">No API keys or model calls</text>
+<line x1="210" y1="146" x2="210" y2="173" stroke="#b3ff3a" stroke-width="3" marker-end="url(#a)"/>
+<rect x="40" y="175" width="340" height="64" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="210.0" y="214.0" font-size="20" text-anchor="middle" fill="#ffffff">Backend API</text>
+<text x="410" y="214" font-size="20" text-anchor="start" fill="#b3ff3a">Auth, validation, rate limits</text>
+<line x1="210" y1="241" x2="210" y2="268" stroke="#b3ff3a" stroke-width="3" marker-end="url(#a)"/>
+<rect x="40" y="270" width="340" height="64" rx="10" fill="#b3ff3a" stroke="#b3ff3a" stroke-width="2"/>
+<text x="210.0" y="309.0" font-size="20" text-anchor="middle" fill="#080b0f">AI service layer</text>
+<text x="410" y="309" font-size="20" text-anchor="start" fill="#b3ff3a">Prompts, context, output checks</text>
+<line x1="210" y1="336" x2="210" y2="363" stroke="#b3ff3a" stroke-width="3" marker-end="url(#a)"/>
+<rect x="40" y="365" width="340" height="64" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="210.0" y="391.0" font-size="20" text-anchor="middle" fill="#ffffff">Model provider or</text>
+<text x="210.0" y="417.0" font-size="20" text-anchor="middle" fill="#ffffff">self-hosted model</text>
+<text x="410" y="404" font-size="20" text-anchor="start" fill="#b3ff3a">Swappable with limited changes</text>
+</g>
+</svg>

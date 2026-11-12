@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 450" role="img" aria-labelledby="t">
+<title id="t">Hybrid search with reranking</title>
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#b3ff3a"/></marker></defs>
+<rect width="800" height="450" fill="#080b0f"/>
+<g font-family="Arial, Helvetica, sans-serif" fill="#ffffff">
+<text x="400" y="48" font-size="28" text-anchor="middle" fill="#ffffff" font-weight="bold">Hybrid search with reranking</text>
+<rect x="20" y="175" width="120" height="80" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="80.0" y="222.0" font-size="20" text-anchor="middle" fill="#ffffff">Query</text>
+<rect x="190" y="90" width="190" height="80" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="285.0" y="124.6" font-size="18" text-anchor="middle" fill="#ffffff">Keyword search</text>
+<text x="285.0" y="148.0" font-size="18" text-anchor="middle" fill="#ffffff">(BM25)</text>
+<rect x="190" y="260" width="190" height="80" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="285.0" y="306.3" font-size="18" text-anchor="middle" fill="#ffffff">Vector search</text>
+<rect x="420" y="175" width="150" height="80" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="495.0" y="221.3" font-size="18" text-anchor="middle" fill="#ffffff">Fusion</text>
+<rect x="610" y="175" width="170" height="80" rx="10" fill="#b3ff3a" stroke="#b3ff3a" stroke-width="2"/>
+<text x="695.0" y="209.6" font-size="18" text-anchor="middle" fill="#080b0f">Reranking</text>
+<text x="695.0" y="233.0" font-size="18" text-anchor="middle" fill="#080b0f">(optional)</text>
+<rect x="610" y="330" width="170" height="80" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="695.0" y="364.6" font-size="18" text-anchor="middle" fill="#ffffff">Top passages</text>
+<text x="695.0" y="388.0" font-size="18" text-anchor="middle" fill="#ffffff">to the LLM</text>
+<line x1="142" y1="200" x2="188" y2="130" stroke="#b3ff3a" stroke-width="3" marker-end="url(#a)"/>
+<line x1="142" y1="230" x2="188" y2="300" stroke="#b3ff3a" stroke-width="3" marker-end="url(#a)"/>
+<line x1="382" y1="130" x2="418" y2="205" stroke="#b3ff3a" stroke-width="3" marker-end="url(#a)"/>
+<line x1="382" y1="300" x2="418" y2="225" stroke="#b3ff3a" stroke-width="3" marker-end="url(#a)"/>
+<line x1="572" y1="215" x2="608" y2="215" stroke="#b3ff3a" stroke-width="3" marker-end="url(#a)"/>
+<line x1="695" y1="257" x2="695" y2="328" stroke="#b3ff3a" stroke-width="3" marker-end="url(#a)"/>
+<text x="285" y="221" font-size="18" text-anchor="middle" fill="#b3ff3a">Same filters on both</text>
+<text x="330" y="410" font-size="20" text-anchor="middle" fill="#ffffff">Each stage narrows the set</text>
+</g>
+</svg>

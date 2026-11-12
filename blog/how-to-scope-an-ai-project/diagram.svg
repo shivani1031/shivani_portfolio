@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 450" role="img" aria-labelledby="t">
+<title id="t">Choosing the level of autonomy</title>
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#b3ff3a"/></marker></defs>
+<rect width="800" height="450" fill="#080b0f"/>
+<g font-family="Arial, Helvetica, sans-serif" fill="#ffffff">
+<text x="400" y="48" font-size="28" text-anchor="middle" fill="#ffffff" font-weight="bold">Choosing the level of autonomy</text>
+<rect x="20.0" y="110" width="167.5" height="140" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="103.8" y="161.0" font-size="20" text-anchor="middle" fill="#ffffff">Suggests; a</text>
+<text x="103.8" y="187.0" font-size="20" text-anchor="middle" fill="#ffffff">person</text>
+<text x="103.8" y="213.0" font-size="20" text-anchor="middle" fill="#ffffff">decides</text>
+<line x1="189.5" y1="180.0" x2="215.5" y2="180.0" stroke="#b3ff3a" stroke-width="3" marker-end="url(#a)"/>
+<rect x="217.5" y="110" width="167.5" height="140" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="301.2" y="174.0" font-size="20" text-anchor="middle" fill="#ffffff">Acts with</text>
+<text x="301.2" y="200.0" font-size="20" text-anchor="middle" fill="#ffffff">approval</text>
+<line x1="387.0" y1="180.0" x2="413.0" y2="180.0" stroke="#b3ff3a" stroke-width="3" marker-end="url(#a)"/>
+<rect x="415.0" y="110" width="167.5" height="140" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="498.8" y="174.0" font-size="20" text-anchor="middle" fill="#ffffff">Acts and is</text>
+<text x="498.8" y="200.0" font-size="20" text-anchor="middle" fill="#ffffff">spot-checked</text>
+<line x1="584.5" y1="180.0" x2="610.5" y2="180.0" stroke="#b3ff3a" stroke-width="3" marker-end="url(#a)"/>
+<rect x="612.5" y="110" width="167.5" height="140" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="696.2" y="161.0" font-size="20" text-anchor="middle" fill="#ffffff">Acts alone</text>
+<text x="696.2" y="187.0" font-size="20" text-anchor="middle" fill="#ffffff">on low-risk</text>
+<text x="696.2" y="213.0" font-size="20" text-anchor="middle" fill="#ffffff">tasks</text>
+<text x="20" y="310" font-size="20" text-anchor="start" fill="#b3ff3a">More oversight</text>
+<text x="780" y="310" font-size="20" text-anchor="end" fill="#b3ff3a">Less oversight</text>
+<line x1="30" y1="335" x2="770" y2="335" stroke="#b3ff3a" stroke-width="3" marker-end="url(#a)"/>
+<text x="400" y="405" font-size="20" text-anchor="middle" fill="#ffffff">Start with more oversight and relax it as evidence builds</text>
+</g>
+</svg>

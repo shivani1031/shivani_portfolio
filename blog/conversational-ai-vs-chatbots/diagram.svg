@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 450" role="img" aria-labelledby="t">
+<title id="t">A hybrid behind one chat window</title>
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#b3ff3a"/></marker></defs>
+<rect width="800" height="450" fill="#080b0f"/>
+<g font-family="Arial, Helvetica, sans-serif" fill="#ffffff">
+<text x="400" y="48" font-size="28" text-anchor="middle" fill="#ffffff" font-weight="bold">A hybrid behind one chat window</text>
+<rect x="20" y="180" width="130" height="70" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="85.0" y="222.0" font-size="20" text-anchor="middle" fill="#ffffff">Message</text>
+<line x1="152" y1="215" x2="188" y2="215" stroke="#b3ff3a" stroke-width="3" marker-end="url(#a)"/>
+<rect x="190" y="160" width="170" height="110" rx="10" fill="#b3ff3a" stroke="#b3ff3a" stroke-width="2"/>
+<text x="275.0" y="186.2" font-size="18" text-anchor="middle" fill="#080b0f">Model or</text>
+<text x="275.0" y="209.6" font-size="18" text-anchor="middle" fill="#080b0f">classifier</text>
+<text x="275.0" y="233.0" font-size="18" text-anchor="middle" fill="#080b0f">routes the</text>
+<text x="275.0" y="256.4" font-size="18" text-anchor="middle" fill="#080b0f">request</text>
+<rect x="430" y="70" width="350" height="68" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="605.0" y="98.6" font-size="18" text-anchor="middle" fill="#ffffff">Tested flow: money, identity,</text>
+<text x="605.0" y="122.0" font-size="18" text-anchor="middle" fill="#ffffff">account changes</text>
+<line x1="362" y1="215" x2="428" y2="104" stroke="#b3ff3a" stroke-width="3" marker-end="url(#a)"/>
+<rect x="430" y="158" width="350" height="68" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="605.0" y="186.6" font-size="18" text-anchor="middle" fill="#ffffff">Generated answer citing approved</text>
+<text x="605.0" y="210.0" font-size="18" text-anchor="middle" fill="#ffffff">sources</text>
+<line x1="362" y1="215" x2="428" y2="192" stroke="#b3ff3a" stroke-width="3" marker-end="url(#a)"/>
+<rect x="430" y="246" width="350" height="68" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="605.0" y="274.6" font-size="18" text-anchor="middle" fill="#ffffff">Fixed approved text: legal</text>
+<text x="605.0" y="298.0" font-size="18" text-anchor="middle" fill="#ffffff">statements, complaints</text>
+<line x1="362" y1="215" x2="428" y2="280" stroke="#b3ff3a" stroke-width="3" marker-end="url(#a)"/>
+<rect x="430" y="334" width="350" height="68" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="605.0" y="362.6" font-size="18" text-anchor="middle" fill="#ffffff">Hand off to a person,</text>
+<text x="605.0" y="386.0" font-size="18" text-anchor="middle" fill="#ffffff">conversation attached</text>
+<line x1="362" y1="215" x2="428" y2="368" stroke="#b3ff3a" stroke-width="3" marker-end="url(#a)"/>
+<text x="400" y="432" font-size="18" text-anchor="middle" fill="#b3ff3a">Code, not the model, confirms identity before a refund</text>
+</g>
+</svg>

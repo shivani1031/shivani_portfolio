@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 450" role="img" aria-labelledby="t">
+<title id="t">The agent loop</title>
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#b3ff3a"/></marker></defs>
+<rect width="800" height="450" fill="#080b0f"/>
+<g font-family="Arial, Helvetica, sans-serif" fill="#ffffff">
+<text x="400" y="48" font-size="28" text-anchor="middle" fill="#ffffff" font-weight="bold">The agent loop</text>
+<rect x="20" y="180" width="160" height="80" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="100.0" y="202.9" font-size="18" text-anchor="middle" fill="#ffffff">Question and</text>
+<text x="100.0" y="226.3" font-size="18" text-anchor="middle" fill="#ffffff">system</text>
+<text x="100.0" y="249.7" font-size="18" text-anchor="middle" fill="#ffffff">prompt</text>
+<line x1="182" y1="220" x2="228" y2="220" stroke="#b3ff3a" stroke-width="3" marker-end="url(#a)"/>
+<rect x="230" y="170" width="170" height="100" rx="10" fill="#b3ff3a" stroke="#b3ff3a" stroke-width="2"/>
+<text x="315.0" y="201.0" font-size="20" text-anchor="middle" fill="#080b0f">Model reads</text>
+<text x="315.0" y="227.0" font-size="20" text-anchor="middle" fill="#080b0f">the</text>
+<text x="315.0" y="253.0" font-size="20" text-anchor="middle" fill="#080b0f">conversation</text>
+<rect x="500" y="70" width="270" height="90" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="635.0" y="109.6" font-size="18" text-anchor="middle" fill="#ffffff">Run each requested tool</text>
+<text x="635.0" y="133.0" font-size="18" text-anchor="middle" fill="#ffffff">and add its result</text>
+<rect x="500" y="300" width="270" height="80" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="635.0" y="347.0" font-size="20" text-anchor="middle" fill="#ffffff">Return the answer</text>
+<line x1="402" y1="190" x2="498" y2="120" stroke="#b3ff3a" stroke-width="3" marker-end="url(#a)"/>
+<text x="455" y="190" font-size="18" text-anchor="start" fill="#b3ff3a">tool calls</text>
+<path d="M 635 162 V 238 H 404" fill="none" stroke="#b3ff3a" stroke-width="3" marker-end="url(#a)"/>
+<text x="645" y="210" font-size="18" text-anchor="start" fill="#b3ff3a">results</text>
+<line x1="402" y1="255" x2="498" y2="335" stroke="#b3ff3a" stroke-width="3" marker-end="url(#a)"/>
+<text x="300" y="320" font-size="18" text-anchor="start" fill="#b3ff3a">no tool calls</text>
+<text x="400" y="430" font-size="20" text-anchor="middle" fill="#ffffff">It stops at a step limit or a time limit</text>
+</g>
+</svg>

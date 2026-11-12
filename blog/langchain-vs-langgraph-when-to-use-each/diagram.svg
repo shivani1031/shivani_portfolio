@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 450" role="img" aria-labelledby="t">
+<title id="t">LangChain, LangGraph or plain code?</title>
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#b3ff3a"/></marker></defs>
+<rect width="800" height="450" fill="#080b0f"/>
+<g font-family="Arial, Helvetica, sans-serif" fill="#ffffff">
+<text x="400" y="48" font-size="28" text-anchor="middle" fill="#ffffff" font-weight="bold">LangChain, LangGraph or plain code?</text>
+<rect x="30" y="70" width="400" height="60" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="230.0" y="94.6" font-size="18" text-anchor="middle" fill="#ffffff">Draw the process, with failures and</text>
+<text x="230.0" y="118.0" font-size="18" text-anchor="middle" fill="#ffffff">approvals</text>
+<line x1="230" y1="132" x2="230" y2="163" stroke="#b3ff3a" stroke-width="3" marker-end="url(#a)"/>
+<rect x="30" y="165" width="400" height="60" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="230.0" y="201.3" font-size="18" text-anchor="middle" fill="#ffffff">Is it a straight line?</text>
+<line x1="230" y1="227" x2="230" y2="258" stroke="#b3ff3a" stroke-width="3" marker-end="url(#a)"/>
+<text x="245" y="248" font-size="18" text-anchor="start" fill="#b3ff3a">no</text>
+<line x1="432" y1="195" x2="498" y2="195" stroke="#b3ff3a" stroke-width="3" marker-end="url(#a)"/>
+<text x="465" y="187" font-size="18" text-anchor="middle" fill="#b3ff3a">yes</text>
+<rect x="500" y="165" width="270" height="60" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="635.0" y="189.6" font-size="18" text-anchor="middle" fill="#ffffff">Plain code, or LangChain</text>
+<text x="635.0" y="213.0" font-size="18" text-anchor="middle" fill="#ffffff">components</text>
+<rect x="30" y="260" width="400" height="60" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="230.0" y="296.3" font-size="18" text-anchor="middle" fill="#ffffff">Branches but no state to keep?</text>
+<line x1="230" y1="322" x2="230" y2="353" stroke="#b3ff3a" stroke-width="3" marker-end="url(#a)"/>
+<text x="245" y="343" font-size="18" text-anchor="start" fill="#b3ff3a">no</text>
+<line x1="432" y1="290" x2="498" y2="290" stroke="#b3ff3a" stroke-width="3" marker-end="url(#a)"/>
+<text x="465" y="282" font-size="18" text-anchor="middle" fill="#b3ff3a">yes</text>
+<rect x="500" y="260" width="270" height="60" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="635.0" y="296.3" font-size="18" text-anchor="middle" fill="#ffffff">Ordinary conditionals</text>
+<rect x="30" y="355" width="400" height="60" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="230.0" y="379.6" font-size="18" text-anchor="middle" fill="#ffffff">Loops, long runs, resumption or</text>
+<text x="230.0" y="403.0" font-size="18" text-anchor="middle" fill="#ffffff">approval?</text>
+<line x1="432" y1="385" x2="498" y2="385" stroke="#b3ff3a" stroke-width="3" marker-end="url(#a)"/>
+<text x="465" y="377" font-size="18" text-anchor="middle" fill="#b3ff3a">yes</text>
+<rect x="500" y="355" width="270" height="60" rx="10" fill="#b3ff3a" stroke="#b3ff3a" stroke-width="2"/>
+<text x="635.0" y="379.6" font-size="18" text-anchor="middle" fill="#080b0f">Consider LangGraph, with</text>
+<text x="635.0" y="403.0" font-size="18" text-anchor="middle" fill="#080b0f">loop limits</text>
+<text x="400" y="440" font-size="18" text-anchor="middle" fill="#ffffff">Then prototype the hardest path, failures included</text>
+</g>
+</svg>

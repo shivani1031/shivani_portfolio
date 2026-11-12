@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 450" role="img" aria-labelledby="t">
+<title id="t">A method for choosing an embedding model</title>
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#b3ff3a"/></marker></defs>
+<rect width="800" height="450" fill="#080b0f"/>
+<g font-family="Arial, Helvetica, sans-serif" fill="#ffffff">
+<text x="400" y="48" font-size="28" text-anchor="middle" fill="#ffffff" font-weight="bold">A method for choosing an embedding model</text>
+<rect x="20.0" y="110" width="167.5" height="170" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="103.8" y="176.0" font-size="20" text-anchor="middle" fill="#ffffff">Rule out on</text>
+<text x="103.8" y="202.0" font-size="20" text-anchor="middle" fill="#ffffff">hard</text>
+<text x="103.8" y="228.0" font-size="20" text-anchor="middle" fill="#ffffff">constraints</text>
+<line x1="189.5" y1="195.0" x2="215.5" y2="195.0" stroke="#b3ff3a" stroke-width="3" marker-end="url(#a)"/>
+<rect x="217.5" y="110" width="167.5" height="170" rx="10" fill="#b3ff3a" stroke="#b3ff3a" stroke-width="2"/>
+<text x="301.2" y="163.0" font-size="20" text-anchor="middle" fill="#080b0f">Build a test</text>
+<text x="301.2" y="189.0" font-size="20" text-anchor="middle" fill="#080b0f">set from</text>
+<text x="301.2" y="215.0" font-size="20" text-anchor="middle" fill="#080b0f">real</text>
+<text x="301.2" y="241.0" font-size="20" text-anchor="middle" fill="#080b0f">questions</text>
+<line x1="387.0" y1="195.0" x2="413.0" y2="195.0" stroke="#b3ff3a" stroke-width="3" marker-end="url(#a)"/>
+<rect x="415.0" y="110" width="167.5" height="170" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="498.8" y="176.0" font-size="20" text-anchor="middle" fill="#ffffff">Compare on</text>
+<text x="498.8" y="202.0" font-size="20" text-anchor="middle" fill="#ffffff">the same</text>
+<text x="498.8" y="228.0" font-size="20" text-anchor="middle" fill="#ffffff">chunks</text>
+<line x1="584.5" y1="195.0" x2="610.5" y2="195.0" stroke="#b3ff3a" stroke-width="3" marker-end="url(#a)"/>
+<rect x="612.5" y="110" width="167.5" height="170" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="696.2" y="176.0" font-size="20" text-anchor="middle" fill="#ffffff">Check beyond</text>
+<text x="696.2" y="202.0" font-size="20" text-anchor="middle" fill="#ffffff">the main</text>
+<text x="696.2" y="228.0" font-size="20" text-anchor="middle" fill="#ffffff">score</text>
+<text x="400" y="350" font-size="20" text-anchor="middle" fill="#b3ff3a">Leaderboards find candidates; your own questions decide</text>
+<text x="400" y="395" font-size="18" text-anchor="middle" fill="#ffffff">Keep the test set so the next model change is routine</text>
+</g>
+</svg>

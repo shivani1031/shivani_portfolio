@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 450" role="img" aria-labelledby="t">
+<title id="t">Three tiers of support automation</title>
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#b3ff3a"/></marker></defs>
+<rect width="800" height="450" fill="#080b0f"/>
+<g font-family="Arial, Helvetica, sans-serif" fill="#ffffff">
+<text x="400" y="48" font-size="28" text-anchor="middle" fill="#ffffff" font-weight="bold">Three tiers of support automation</text>
+<rect x="30" y="75" width="230" height="56" rx="10" fill="#b3ff3a" stroke="#b3ff3a" stroke-width="2"/>
+<text x="145.0" y="110.7" font-size="22" text-anchor="middle" fill="#080b0f">Answer</text>
+<rect x="30" y="145" width="230" height="100" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="145.0" y="189.0" font-size="20" text-anchor="middle" fill="#ffffff">“What is your</text>
+<text x="145.0" y="215.0" font-size="20" text-anchor="middle" fill="#ffffff">returns window?”</text>
+<rect x="30" y="260" width="230" height="120" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="145.0" y="302.9" font-size="18" text-anchor="middle" fill="#ffffff">Needs current,</text>
+<text x="145.0" y="326.3" font-size="18" text-anchor="middle" fill="#ffffff">consistent</text>
+<text x="145.0" y="349.7" font-size="18" text-anchor="middle" fill="#ffffff">documentation</text>
+<rect x="285" y="75" width="230" height="56" rx="10" fill="#b3ff3a" stroke="#b3ff3a" stroke-width="2"/>
+<text x="400.0" y="110.7" font-size="22" text-anchor="middle" fill="#080b0f">Look up</text>
+<rect x="285" y="145" width="230" height="100" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="400.0" y="189.0" font-size="20" text-anchor="middle" fill="#ffffff">“Where is my</text>
+<text x="400.0" y="215.0" font-size="20" text-anchor="middle" fill="#ffffff">order?”</text>
+<rect x="285" y="260" width="230" height="120" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="400.0" y="302.9" font-size="18" text-anchor="middle" fill="#ffffff">Needs identity</text>
+<text x="400.0" y="326.3" font-size="18" text-anchor="middle" fill="#ffffff">checks and read-only</text>
+<text x="400.0" y="349.7" font-size="18" text-anchor="middle" fill="#ffffff">access</text>
+<rect x="540" y="75" width="230" height="56" rx="10" fill="#b3ff3a" stroke="#b3ff3a" stroke-width="2"/>
+<text x="655.0" y="110.7" font-size="22" text-anchor="middle" fill="#080b0f">Act</text>
+<rect x="540" y="145" width="230" height="100" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="655.0" y="189.0" font-size="20" text-anchor="middle" fill="#ffffff">“Cancel my</text>
+<text x="655.0" y="215.0" font-size="20" text-anchor="middle" fill="#ffffff">subscription”</text>
+<rect x="540" y="260" width="230" height="120" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="655.0" y="302.9" font-size="18" text-anchor="middle" fill="#ffffff">Needs strict rules,</text>
+<text x="655.0" y="326.3" font-size="18" text-anchor="middle" fill="#ffffff">audit logs and</text>
+<text x="655.0" y="349.7" font-size="18" text-anchor="middle" fill="#ffffff">confirmation</text>
+<text x="400" y="410" font-size="18" text-anchor="middle" fill="#b3ff3a">Each tier carries more risk than the last</text>
+<line x1="40" y1="430" x2="760" y2="430" stroke="#b3ff3a" stroke-width="3" marker-end="url(#a)"/>
+</g>
+</svg>

@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 450" role="img" aria-labelledby="t">
+<title id="t">How a chatbot answers from your content</title>
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#b3ff3a"/></marker></defs>
+<rect width="800" height="450" fill="#080b0f"/>
+<g font-family="Arial, Helvetica, sans-serif" fill="#ffffff">
+<text x="400" y="48" font-size="28" text-anchor="middle" fill="#ffffff" font-weight="bold">How a chatbot answers from your content</text>
+<rect x="20.0" y="140" width="167.5" height="160" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="103.8" y="214.0" font-size="20" text-anchor="middle" fill="#ffffff">Visitor asks</text>
+<text x="103.8" y="240.0" font-size="20" text-anchor="middle" fill="#ffffff">a question</text>
+<line x1="189.5" y1="220.0" x2="215.5" y2="220.0" stroke="#b3ff3a" stroke-width="3" marker-end="url(#a)"/>
+<rect x="217.5" y="140" width="167.5" height="160" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="301.2" y="214.0" font-size="20" text-anchor="middle" fill="#ffffff">Search your</text>
+<text x="301.2" y="240.0" font-size="20" text-anchor="middle" fill="#ffffff">own content</text>
+<line x1="387.0" y1="220.0" x2="413.0" y2="220.0" stroke="#b3ff3a" stroke-width="3" marker-end="url(#a)"/>
+<rect x="415.0" y="140" width="167.5" height="160" rx="10" fill="#b3ff3a" stroke="#b3ff3a" stroke-width="2"/>
+<text x="498.8" y="175.0" font-size="20" text-anchor="middle" fill="#080b0f">Model writes</text>
+<text x="498.8" y="201.0" font-size="20" text-anchor="middle" fill="#080b0f">an answer</text>
+<text x="498.8" y="227.0" font-size="20" text-anchor="middle" fill="#080b0f">from the</text>
+<text x="498.8" y="253.0" font-size="20" text-anchor="middle" fill="#080b0f">passages</text>
+<text x="498.8" y="279.0" font-size="20" text-anchor="middle" fill="#080b0f">found</text>
+<line x1="584.5" y1="220.0" x2="610.5" y2="220.0" stroke="#b3ff3a" stroke-width="3" marker-end="url(#a)"/>
+<rect x="612.5" y="140" width="167.5" height="160" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="696.2" y="201.0" font-size="20" text-anchor="middle" fill="#ffffff">Answer shown</text>
+<text x="696.2" y="227.0" font-size="20" text-anchor="middle" fill="#ffffff">to the</text>
+<text x="696.2" y="253.0" font-size="20" text-anchor="middle" fill="#ffffff">visitor</text>
+<text x="400" y="360" font-size="20" text-anchor="middle" fill="#b3ff3a">The chatbot can only be as good as the content behind it</text>
+<text x="400" y="400" font-size="20" text-anchor="middle" fill="#ffffff">This pattern is called retrieval-augmented generation (RAG)</text>
+</g>
+</svg>

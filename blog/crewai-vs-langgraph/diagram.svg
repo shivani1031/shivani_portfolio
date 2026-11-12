@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 450" role="img" aria-labelledby="t">
+<title id="t">Two different starting points</title>
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#b3ff3a"/></marker></defs>
+<rect width="800" height="450" fill="#080b0f"/>
+<g font-family="Arial, Helvetica, sans-serif" fill="#ffffff">
+<text x="400" y="48" font-size="28" text-anchor="middle" fill="#ffffff" font-weight="bold">Two different starting points</text>
+<line x1="400" y1="80" x2="400" y2="400" stroke="#b3ff3a" stroke-width="1" stroke-dasharray="4 6"/>
+<text x="200" y="100" font-size="18" text-anchor="middle" fill="#b3ff3a" font-weight="bold">CrewAI begins with a team</text>
+<text x="600" y="100" font-size="18" text-anchor="middle" fill="#b3ff3a" font-weight="bold">LangGraph begins with a program</text>
+<rect x="50" y="120" width="300" height="70" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="200.0" y="149.0" font-size="20" text-anchor="middle" fill="#ffffff">Agents: role, goal,</text>
+<text x="200.0" y="175.0" font-size="20" text-anchor="middle" fill="#ffffff">backstory</text>
+<line x1="200" y1="192" x2="200" y2="213" stroke="#b3ff3a" stroke-width="3" marker-end="url(#a)"/>
+<rect x="50" y="215" width="300" height="70" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="200.0" y="244.0" font-size="20" text-anchor="middle" fill="#ffffff">Tasks: description,</text>
+<text x="200.0" y="270.0" font-size="20" text-anchor="middle" fill="#ffffff">expected output</text>
+<line x1="200" y1="287" x2="200" y2="308" stroke="#b3ff3a" stroke-width="3" marker-end="url(#a)"/>
+<rect x="50" y="310" width="300" height="70" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="200.0" y="339.0" font-size="20" text-anchor="middle" fill="#ffffff">A crew, run by a process</text>
+<text x="200.0" y="365.0" font-size="20" text-anchor="middle" fill="#ffffff">setting</text>
+<rect x="450" y="120" width="300" height="70" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="600.0" y="162.0" font-size="20" text-anchor="middle" fill="#ffffff">A shared state object</text>
+<line x1="600" y1="192" x2="600" y2="213" stroke="#b3ff3a" stroke-width="3" marker-end="url(#a)"/>
+<rect x="450" y="215" width="300" height="70" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="600.0" y="244.0" font-size="20" text-anchor="middle" fill="#ffffff">Nodes that update the</text>
+<text x="600.0" y="270.0" font-size="20" text-anchor="middle" fill="#ffffff">state</text>
+<line x1="600" y1="287" x2="600" y2="308" stroke="#b3ff3a" stroke-width="3" marker-end="url(#a)"/>
+<rect x="450" y="310" width="300" height="70" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="600.0" y="339.0" font-size="20" text-anchor="middle" fill="#ffffff">Edges that decide what</text>
+<text x="600.0" y="365.0" font-size="20" text-anchor="middle" fill="#ffffff">runs next</text>
+<text x="400" y="432" font-size="18" text-anchor="middle" fill="#ffffff">CrewAI gives more structure; LangGraph assumes less</text>
+</g>
+</svg>

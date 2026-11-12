@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 450" role="img" aria-labelledby="t">
+<title id="t">Three places to keep your vectors</title>
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#b3ff3a"/></marker></defs>
+<rect width="800" height="450" fill="#080b0f"/>
+<g font-family="Arial, Helvetica, sans-serif" fill="#ffffff">
+<text x="400" y="48" font-size="28" text-anchor="middle" fill="#ffffff" font-weight="bold">Three places to keep your vectors</text>
+<rect x="25" y="80" width="230" height="110" rx="10" fill="#b3ff3a" stroke="#b3ff3a" stroke-width="2"/>
+<text x="140.0" y="116.0" font-size="20" text-anchor="middle" fill="#080b0f">Vector support in</text>
+<text x="140.0" y="142.0" font-size="20" text-anchor="middle" fill="#080b0f">your existing</text>
+<text x="140.0" y="168.0" font-size="20" text-anchor="middle" fill="#080b0f">database</text>
+<rect x="25" y="205" width="230" height="120" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="140.0" y="247.9" font-size="18" text-anchor="middle" fill="#ffffff">One system to run,</text>
+<text x="140.0" y="271.3" font-size="18" text-anchor="middle" fill="#ffffff">normal joins and</text>
+<text x="140.0" y="294.7" font-size="18" text-anchor="middle" fill="#ffffff">existing permissions</text>
+<rect x="285" y="80" width="230" height="110" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="400.0" y="129.0" font-size="20" text-anchor="middle" fill="#ffffff">Search engine with</text>
+<text x="400.0" y="155.0" font-size="20" text-anchor="middle" fill="#ffffff">vector support</text>
+<rect x="285" y="205" width="230" height="120" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="400.0" y="247.9" font-size="18" text-anchor="middle" fill="#ffffff">Mature keyword</text>
+<text x="400.0" y="271.3" font-size="18" text-anchor="middle" fill="#ffffff">search alongside</text>
+<text x="400.0" y="294.7" font-size="18" text-anchor="middle" fill="#ffffff">vectors</text>
+<rect x="545" y="80" width="230" height="110" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="660.0" y="129.0" font-size="20" text-anchor="middle" fill="#ffffff">Dedicated vector</text>
+<text x="660.0" y="155.0" font-size="20" text-anchor="middle" fill="#ffffff">database</text>
+<rect x="545" y="205" width="230" height="120" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="660.0" y="247.9" font-size="18" text-anchor="middle" fill="#ffffff">Features and tuning</text>
+<text x="660.0" y="271.3" font-size="18" text-anchor="middle" fill="#ffffff">focused on vector</text>
+<text x="660.0" y="294.7" font-size="18" text-anchor="middle" fill="#ffffff">workloads</text>
+<text x="400" y="375" font-size="18" text-anchor="middle" fill="#b3ff3a">Start with what your team already runs unless a requirement rules it out</text>
+<text x="400" y="415" font-size="18" text-anchor="middle" fill="#ffffff">Keep retrieval behind your own small interface</text>
+</g>
+</svg>

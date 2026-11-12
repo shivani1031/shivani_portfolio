@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 450" role="img" aria-labelledby="t">
+<title id="t">A document pipeline in seven stages</title>
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#b3ff3a"/></marker></defs>
+<rect width="800" height="450" fill="#080b0f"/>
+<g font-family="Arial, Helvetica, sans-serif" fill="#ffffff">
+<text x="400" y="48" font-size="28" text-anchor="middle" fill="#ffffff" font-weight="bold">A document pipeline in seven stages</text>
+<rect x="20.0" y="90" width="172.0" height="100" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="106.0" y="146.3" font-size="18" text-anchor="middle" fill="#ffffff">1. Intake</text>
+<line x1="194.0" y1="140.0" x2="214.0" y2="140.0" stroke="#b3ff3a" stroke-width="3" marker-end="url(#a)"/>
+<rect x="216.0" y="90" width="172.0" height="100" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="302.0" y="134.6" font-size="18" text-anchor="middle" fill="#ffffff">2. Text and</text>
+<text x="302.0" y="158.0" font-size="18" text-anchor="middle" fill="#ffffff">layout</text>
+<line x1="390.0" y1="140.0" x2="410.0" y2="140.0" stroke="#b3ff3a" stroke-width="3" marker-end="url(#a)"/>
+<rect x="412.0" y="90" width="172.0" height="100" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="498.0" y="122.9" font-size="18" text-anchor="middle" fill="#ffffff">3. Splitting</text>
+<text x="498.0" y="146.3" font-size="18" text-anchor="middle" fill="#ffffff">and</text>
+<text x="498.0" y="169.7" font-size="18" text-anchor="middle" fill="#ffffff">classification</text>
+<line x1="586.0" y1="140.0" x2="606.0" y2="140.0" stroke="#b3ff3a" stroke-width="3" marker-end="url(#a)"/>
+<rect x="608.0" y="90" width="172.0" height="100" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="694.0" y="146.3" font-size="18" text-anchor="middle" fill="#ffffff">4. Extraction</text>
+<path d="M 694.0 190 V 225 H 106.0 V 258" fill="none" stroke="#b3ff3a" stroke-width="3" marker-end="url(#a)"/>
+<rect x="20.0" y="260" width="172.0" height="100" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="106.0" y="316.3" font-size="18" text-anchor="middle" fill="#ffffff">5. Validation</text>
+<line x1="194.0" y1="310" x2="214.0" y2="310" stroke="#b3ff3a" stroke-width="3" marker-end="url(#a)"/>
+<rect x="216.0" y="260" width="172.0" height="100" rx="10" fill="#b3ff3a" stroke="#b3ff3a" stroke-width="2"/>
+<text x="302.0" y="304.6" font-size="18" text-anchor="middle" fill="#080b0f">6. Human</text>
+<text x="302.0" y="328.0" font-size="18" text-anchor="middle" fill="#080b0f">review</text>
+<line x1="390.0" y1="310" x2="410.0" y2="310" stroke="#b3ff3a" stroke-width="3" marker-end="url(#a)"/>
+<rect x="412.0" y="260" width="172.0" height="100" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="498.0" y="304.6" font-size="18" text-anchor="middle" fill="#ffffff">7. Export and</text>
+<text x="498.0" y="328.0" font-size="18" text-anchor="middle" fill="#ffffff">audit</text>
+<text x="400" y="415" font-size="20" text-anchor="middle" fill="#b3ff3a">If a value is wrong, you can see which stage caused it</text>
+</g>
+</svg>

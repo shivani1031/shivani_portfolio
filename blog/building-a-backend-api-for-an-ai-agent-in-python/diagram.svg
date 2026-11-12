@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 450" role="img" aria-labelledby="t">
+<title id="t">Allowed run state transitions</title>
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#b3ff3a"/></marker></defs>
+<rect width="800" height="450" fill="#080b0f"/>
+<g font-family="Arial, Helvetica, sans-serif" fill="#ffffff">
+<text x="400" y="48" font-size="28" text-anchor="middle" fill="#ffffff" font-weight="bold">Allowed run state transitions</text>
+<rect x="30" y="185" width="150" height="60" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="105.0" y="222.0" font-size="20" text-anchor="middle" fill="#ffffff">Queued</text>
+<rect x="250" y="185" width="160" height="60" rx="10" fill="#b3ff3a" stroke="#b3ff3a" stroke-width="2"/>
+<text x="330.0" y="222.0" font-size="20" text-anchor="middle" fill="#080b0f">Running</text>
+<rect x="250" y="330" width="170" height="80" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="335.0" y="364.0" font-size="20" text-anchor="middle" fill="#ffffff">Waiting for</text>
+<text x="335.0" y="390.0" font-size="20" text-anchor="middle" fill="#ffffff">approval</text>
+<rect x="560" y="85" width="190" height="58" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="655.0" y="121.0" font-size="20" text-anchor="middle" fill="#ffffff">Succeeded</text>
+<rect x="560" y="195" width="190" height="58" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="655.0" y="231.0" font-size="20" text-anchor="middle" fill="#ffffff">Failed</text>
+<rect x="560" y="345" width="190" height="58" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="655.0" y="381.0" font-size="20" text-anchor="middle" fill="#ffffff">Cancelled</text>
+<line x1="182" y1="215" x2="248" y2="215" stroke="#b3ff3a" stroke-width="3" marker-end="url(#a)"/>
+<line x1="412" y1="200" x2="558" y2="118" stroke="#b3ff3a" stroke-width="3" marker-end="url(#a)"/>
+<line x1="412" y1="220" x2="558" y2="224" stroke="#b3ff3a" stroke-width="3" marker-end="url(#a)"/>
+<line x1="412" y1="240" x2="558" y2="358" stroke="#b3ff3a" stroke-width="3" marker-end="url(#a)"/>
+<line x1="305" y1="247" x2="305" y2="328" stroke="#b3ff3a" stroke-width="3" marker-end="url(#a)"/>
+<line x1="365" y1="330" x2="365" y2="249" stroke="#b3ff3a" stroke-width="3" marker-end="url(#a)"/>
+<line x1="422" y1="378" x2="558" y2="378" stroke="#b3ff3a" stroke-width="3" marker-end="url(#a)"/>
+<path d="M 105 247 V 428 H 655 V 405" fill="none" stroke="#b3ff3a" stroke-width="3" marker-end="url(#a)"/>
+<text x="655" y="74" font-size="18" text-anchor="middle" fill="#b3ff3a">Final states</text>
+</g>
+</svg>
