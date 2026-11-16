@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 450" role="img" aria-labelledby="t">
+<title id="t">Hiring an AI developer in India</title>
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#b3ff3a"/></marker></defs>
+<rect width="800" height="450" fill="#080b0f"/>
+<g font-family="Arial, Helvetica, sans-serif" fill="#ffffff">
+<text x="400" y="50" font-size="28" text-anchor="middle" fill="#ffffff" font-weight="bold">Hiring an AI developer in India</text>
+<text x="30" y="110" font-size="20" text-anchor="start" fill="#b3ff3a">Five steps, in order</text>
+<rect x="20" y="130" width="140" height="100" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="90.0" y="174.0" font-size="18" text-anchor="middle" fill="#ffffff">Brief with</text>
+<text x="90.0" y="200.0" font-size="18" text-anchor="middle" fill="#ffffff">real examples</text>
+<line x1="161" y1="180" x2="174" y2="180" stroke="#b3ff3a" stroke-width="3" marker-end="url(#a)"/>
+<rect x="175" y="130" width="140" height="100" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="245.0" y="174.0" font-size="18" text-anchor="middle" fill="#ffffff">Check</text>
+<text x="245.0" y="200.0" font-size="18" text-anchor="middle" fill="#ffffff">evidence</text>
+<line x1="316" y1="180" x2="329" y2="180" stroke="#b3ff3a" stroke-width="3" marker-end="url(#a)"/>
+<rect x="330" y="130" width="140" height="100" rx="10" fill="#b3ff3a" stroke="#b3ff3a" stroke-width="2"/>
+<text x="400.0" y="174.0" font-size="18" text-anchor="middle" fill="#080b0f">Small paid</text>
+<text x="400.0" y="200.0" font-size="18" text-anchor="middle" fill="#080b0f">milestone</text>
+<line x1="471" y1="180" x2="484" y2="180" stroke="#b3ff3a" stroke-width="3" marker-end="url(#a)"/>
+<rect x="485" y="130" width="140" height="100" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="555.0" y="174.0" font-size="18" text-anchor="middle" fill="#ffffff">Contract,</text>
+<text x="555.0" y="200.0" font-size="18" text-anchor="middle" fill="#ffffff">invoices, IP</text>
+<line x1="626" y1="180" x2="639" y2="180" stroke="#b3ff3a" stroke-width="3" marker-end="url(#a)"/>
+<rect x="640" y="130" width="140" height="100" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="710.0" y="174.0" font-size="18" text-anchor="middle" fill="#ffffff">Milestones,</text>
+<text x="710.0" y="200.0" font-size="18" text-anchor="middle" fill="#ffffff">updates</text>
+<rect x="20" y="280" width="370" height="80" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="205.0" y="314.0" font-size="20" text-anchor="middle" fill="#ffffff">Code, accounts, data</text>
+<text x="205.0" y="340.0" font-size="20" text-anchor="middle" fill="#ffffff">stay in your name</text>
+<rect x="410" y="280" width="370" height="80" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="595.0" y="314.0" font-size="20" text-anchor="middle" fill="#ffffff">Written updates and</text>
+<text x="595.0" y="340.0" font-size="20" text-anchor="middle" fill="#ffffff">agreed acceptance</text>
+<text x="400" y="410" font-size="20" text-anchor="middle" fill="#ffffff">Judge the work on something you can try yourself</text>
+</g>
+</svg>

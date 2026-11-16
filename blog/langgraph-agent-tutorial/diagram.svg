@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 450" role="img" aria-labelledby="t">
+<title id="t">A tool-using agent in LangGraph</title>
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#b3ff3a"/></marker></defs>
+<rect width="800" height="450" fill="#080b0f"/>
+<g font-family="Arial, Helvetica, sans-serif" fill="#ffffff">
+<text x="400" y="50" font-size="28" text-anchor="middle" fill="#ffffff" font-weight="bold">A tool-using agent in LangGraph</text>
+<rect x="20" y="180" width="120" height="70" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="80.0" y="222.0" font-size="20" text-anchor="middle" fill="#ffffff">START</text>
+<line x1="142" y1="215" x2="198" y2="215" stroke="#b3ff3a" stroke-width="3" marker-end="url(#a)"/>
+<rect x="200" y="170" width="180" height="90" rx="10" fill="#b3ff3a" stroke="#b3ff3a" stroke-width="2"/>
+<text x="290.0" y="209.0" font-size="20" text-anchor="middle" fill="#080b0f">model</text>
+<text x="290.0" y="235.0" font-size="20" text-anchor="middle" fill="#080b0f">node</text>
+<rect x="560" y="90" width="220" height="80" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="670.0" y="124.0" font-size="20" text-anchor="middle" fill="#ffffff">tools</text>
+<text x="670.0" y="150.0" font-size="20" text-anchor="middle" fill="#ffffff">(ToolNode)</text>
+<rect x="560" y="190" width="220" height="70" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="670.0" y="232.0" font-size="20" text-anchor="middle" fill="#ffffff">give_up</text>
+<rect x="560" y="290" width="220" height="70" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="670.0" y="332.0" font-size="20" text-anchor="middle" fill="#ffffff">END</text>
+<line x1="382" y1="195" x2="558" y2="135" stroke="#b3ff3a" stroke-width="3" marker-end="url(#a)"/>
+<text x="470" y="135" font-size="20" text-anchor="middle" fill="#ffffff">tool calls</text>
+<line x1="382" y1="215" x2="558" y2="225" stroke="#b3ff3a" stroke-width="3" marker-end="url(#a)"/>
+<text x="470" y="205" font-size="18" text-anchor="middle" fill="#b3ff3a">limit hit</text>
+<line x1="382" y1="240" x2="558" y2="320" stroke="#b3ff3a" stroke-width="3" marker-end="url(#a)"/>
+<text x="440" y="320" font-size="20" text-anchor="middle" fill="#ffffff">no tool calls</text>
+<path d="M670 88 C670 60 300 60 290 168" fill="none" stroke="#b3ff3a" stroke-width="3" marker-end="url(#a)"/>
+<text x="470" y="82" font-size="18" text-anchor="middle" fill="#ffffff">results back to the model</text>
+<line x1="670" y1="262" x2="670" y2="288" stroke="#b3ff3a" stroke-width="3" marker-end="url(#a)"/>
+<text x="400" y="410" font-size="20" text-anchor="middle" fill="#ffffff">Conditional edge after the model; plain edge from tools</text>
+</g>
+</svg>

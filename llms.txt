@@ -100,6 +100,9 @@ The site describes the services on offer and publishes general technical guides.
 - [LangGraph human-in-the-loop with interrupt: approve, edit or reject](/blog/langgraph-human-in-the-loop-interrupt/): A three-outcome approval node using interrupt and Command(resume), finding paused threads, validating the reviewer's answer and avoiding subtle bugs.
 - [FastAPI LLM chatbot: models, streaming, conversation IDs and tests](/blog/fastapi-llm-chatbot/): Pydantic models, server-generated conversation IDs, Server-Sent Events streaming, timeouts and errors, and a TestClient suite.
 - [Approval workflows for AI agents in production](/blog/approval-workflows-for-ai-agents-in-production/): Approval policy, review queues, notifications, timeouts and escalation, audit logs and watching for approval fatigue.
+- [How to hire an AI developer in India](/blog/hire-an-ai-developer-in-india/): For Indian businesses and overseas clients: what to look for, how to brief, a paid first milestone, contracts, IP and communication.
+- [WhatsApp AI chatbot for business: a planning guide](/blog/whatsapp-ai-chatbot-for-business/): The official WhatsApp Business Platform, opt-in, the 24-hour window, RAG answers from your content, lead capture and handoff to a person.
+- [LangGraph agent tutorial: build a tool-using agent step by step](/blog/langgraph-agent-tutorial/): A model node, a ToolNode, a conditional edge with a step limit, the edge back to the model, and when to use the prebuilt agent.
 
 ## Projects
 

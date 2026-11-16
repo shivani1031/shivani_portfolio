@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 450" role="img" aria-labelledby="t">
+<title id="t">A WhatsApp AI chatbot for business</title>
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#b3ff3a"/></marker></defs>
+<rect width="800" height="450" fill="#080b0f"/>
+<g font-family="Arial, Helvetica, sans-serif" fill="#ffffff">
+<text x="400" y="50" font-size="28" text-anchor="middle" fill="#ffffff" font-weight="bold">A WhatsApp AI chatbot for business</text>
+<rect x="20" y="110" width="170" height="90" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="105.0" y="149.0" font-size="20" text-anchor="middle" fill="#ffffff">Customer</text>
+<text x="105.0" y="175.0" font-size="20" text-anchor="middle" fill="#ffffff">who opted in</text>
+<line x1="192" y1="155" x2="214" y2="155" stroke="#b3ff3a" stroke-width="3" marker-end="url(#a)"/>
+<rect x="216" y="110" width="170" height="90" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="301.0" y="136.0" font-size="18" text-anchor="middle" fill="#ffffff">WhatsApp</text>
+<text x="301.0" y="162.0" font-size="18" text-anchor="middle" fill="#ffffff">Business</text>
+<text x="301.0" y="188.0" font-size="18" text-anchor="middle" fill="#ffffff">Platform</text>
+<line x1="388" y1="155" x2="410" y2="155" stroke="#b3ff3a" stroke-width="3" marker-end="url(#a)"/>
+<rect x="412" y="110" width="170" height="90" rx="10" fill="#b3ff3a" stroke="#b3ff3a" stroke-width="2"/>
+<text x="497.0" y="149.0" font-size="20" text-anchor="middle" fill="#080b0f">Your</text>
+<text x="497.0" y="175.0" font-size="20" text-anchor="middle" fill="#080b0f">backend</text>
+<line x1="584" y1="155" x2="606" y2="155" stroke="#b3ff3a" stroke-width="3" marker-end="url(#a)"/>
+<rect x="608" y="110" width="172" height="90" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="694.0" y="149.0" font-size="20" text-anchor="middle" fill="#ffffff">RAG on your</text>
+<text x="694.0" y="175.0" font-size="20" text-anchor="middle" fill="#ffffff">own content</text>
+<line x1="470" y1="202" x2="300" y2="268" stroke="#b3ff3a" stroke-width="3" marker-end="url(#a)"/>
+<line x1="497" y1="202" x2="497" y2="268" stroke="#b3ff3a" stroke-width="3" marker-end="url(#a)"/>
+<line x1="524" y1="202" x2="694" y2="268" stroke="#b3ff3a" stroke-width="3" marker-end="url(#a)"/>
+<rect x="150" y="270" width="230" height="90" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="265.0" y="309.0" font-size="20" text-anchor="middle" fill="#ffffff">Short answer</text>
+<text x="265.0" y="335.0" font-size="20" text-anchor="middle" fill="#ffffff">in the chat</text>
+<rect x="412" y="270" width="170" height="90" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="497.0" y="309.0" font-size="20" text-anchor="middle" fill="#ffffff">Lead to</text>
+<text x="497.0" y="335.0" font-size="20" text-anchor="middle" fill="#ffffff">CRM or sheet</text>
+<rect x="608" y="270" width="172" height="90" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="694.0" y="309.0" font-size="20" text-anchor="middle" fill="#ffffff">Handoff to</text>
+<text x="694.0" y="335.0" font-size="20" text-anchor="middle" fill="#ffffff">a person</text>
+<text x="400" y="410" font-size="20" text-anchor="middle" fill="#ffffff">Free-form replies inside the 24-hour window</text>
+</g>
+</svg>
