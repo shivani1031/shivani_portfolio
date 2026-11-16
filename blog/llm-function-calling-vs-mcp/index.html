@@ -70,7 +70,7 @@
 <p>So the two meet at your application, or at a provider acting on its behalf. This guide assumes you know the basics of each. If not, begin with <a href="/blog/tool-calling-for-ai-agents/">tool calling for AI agents</a> and <a href="/blog/model-context-protocol-for-ai-agents/">Model Context Protocol for AI agents</a>.</p>
 
 <h2>One tool use, step by step</h2>
-<p>Suppose a user asks an assistant to look up a support ticket, and the search tool lives in an MCP server. In the classic arrangement the steps are:</p>
+<p>Suppose a user asks an assistant to look up a support ticket, and the search tool lives in an <a href="/blog/build-an-mcp-server-in-python/">MCP server</a>. In the classic arrangement the steps are:</p>
 <ol>
 <li><strong>MCP:</strong> the application's client sends <code>tools/list</code> and receives the tool's name, description and input schema.</li>
 <li><strong>Translation:</strong> the application rewrites that definition into its model provider's tool format.</li>
@@ -118,7 +118,7 @@ def split_tool_name(provider_name):
 <p>Errors need mapping too. The specification separates protocol errors, such as an unknown tool, from tool execution errors, reported in a result with <code>isError: true</code>. It says clients should pass execution errors to the model so that it can correct itself, whereas protocol errors are less likely to help. An adapter that treats both alike loses that distinction.</p>
 
 <h3>3. The provider connects to the server</h3>
-<p>Some APIs can call a remote MCP server for you. You name the server in the request, and the provider handles listing and calling, so your application writes no client code. OpenAI documents a <a href="https://developers.openai.com/api/docs/guides/tools-connectors-mcp" rel="noopener">remote MCP tool</a> in its Responses API, and Anthropic documents an <a href="https://platform.claude.com/docs/en/agents-and-tools/mcp-connector" rel="noopener">MCP connector</a> for its Messages API, marked as beta when this was written.</p>
+<p>Some APIs can call a remote MCP server for you. You name the server and the provider handles listing and calling. OpenAI documents a <a href="https://developers.openai.com/api/docs/guides/tools-connectors-mcp" rel="noopener">remote MCP tool</a> in its Responses API, and Anthropic documents an <a href="https://platform.claude.com/docs/en/agents-and-tools/mcp-connector" rel="noopener">MCP connector</a> for its Messages API, marked as beta when this was written.</p>
 <p>The convenience comes with constraints. Anthropic's connector supports only tool calls from the MCP feature set, requires a server publicly exposed over HTTP and cannot reach local stdio servers directly. A call also runs without passing through your code first, so your checks have to use whatever the provider offers. OpenAI's tool, for example, requests approval by default and can limit which tools are imported. Its documentation warns that a malicious server could exfiltrate sensitive data from anything in the model's context, and advises connecting only to servers you trust. Features vary by provider and change quickly, so read the current documentation before relying on this option.</p>
 
 <h2>How to choose</h2>
