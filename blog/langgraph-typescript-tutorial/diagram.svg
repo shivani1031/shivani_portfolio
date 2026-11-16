@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 450" role="img" aria-labelledby="t">
+<title id="t">A first LangGraph.js graph</title>
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#b3ff3a"/></marker></defs>
+<rect width="800" height="450" fill="#080b0f"/>
+<g font-family="Arial, Helvetica, sans-serif" fill="#ffffff">
+<text x="400" y="50" font-size="28" text-anchor="middle" fill="#ffffff" font-weight="bold">A first LangGraph.js graph</text>
+<rect x="20" y="180" width="130" height="90" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="85.0" y="232.0" font-size="20" text-anchor="middle" fill="#ffffff">START</text>
+<line x1="152" y1="225" x2="178" y2="225" stroke="#b3ff3a" stroke-width="3" marker-end="url(#a)"/>
+<rect x="180" y="180" width="178" height="90" rx="10" fill="#b3ff3a" stroke="#b3ff3a" stroke-width="2"/>
+<text x="269.0" y="232.0" font-size="20" text-anchor="middle" fill="#080b0f">classify</text>
+<text x="180" y="165" font-size="20" text-anchor="start" fill="#b3ff3a">conditional edge</text>
+<path d="M360 210 L400 210 L400 135 L440 135" fill="none" stroke="#b3ff3a" stroke-width="3" marker-end="url(#a)"/>
+<path d="M360 240 L400 240 L400 315 L440 315" fill="none" stroke="#b3ff3a" stroke-width="3" marker-end="url(#a)"/>
+<rect x="442" y="90" width="178" height="90" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="531.0" y="142.0" font-size="20" text-anchor="middle" fill="#ffffff">billing</text>
+<rect x="442" y="270" width="178" height="90" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="531.0" y="322.0" font-size="20" text-anchor="middle" fill="#ffffff">general</text>
+<path d="M622 135 L660 135 L660 205 L668 205" fill="none" stroke="#b3ff3a" stroke-width="3" marker-end="url(#a)"/>
+<path d="M622 315 L660 315 L660 245 L668 245" fill="none" stroke="#b3ff3a" stroke-width="3" marker-end="url(#a)"/>
+<rect x="670" y="180" width="110" height="90" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="725.0" y="232.0" font-size="20" text-anchor="middle" fill="#ffffff">END</text>
+<text x="400" y="410" font-size="20" text-anchor="middle" fill="#ffffff">Each node returns a partial update to the shared state</text>
+</g>
+</svg>

@@ -1,0 +1,236 @@
+<!doctype html>
+<html lang="en">
+<head>
+<script async src="https://www.googletagmanager.com/gtm.js?id=GTM-THN7RV8R"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+</script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="canonical" href="https://shivanigupta.store/blog/gliner-vs-llm-for-ner/">
+<title>GLiNER vs LLM for Named Entity Recognition | Shivani</title>
+<meta name="description" content="When to use a compact GLiNER model and when to prompt an LLM for named entity recognition, with zero-shot and few-shot examples and a way to compare them.">
+<meta name="robots" content="index,follow">
+<meta name="author" content="Shivani Gupta">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<link rel="manifest" href="/site.webmanifest">
+<meta name="theme-color" content="#080b0f">
+<meta property="og:type" content="article">
+<meta property="og:title" content="GLiNER vs LLM for Named Entity Recognition | Shivani">
+<meta property="og:description" content="When to use a compact GLiNER model and when to prompt an LLM for named entity recognition, with zero-shot and few-shot examples and a way to compare them.">
+<meta property="og:url" content="https://shivanigupta.store/blog/gliner-vs-llm-for-ner/">
+<meta property="og:image" content="https://shivanigupta.store/assets/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"GLiNER vs LLM for named entity recognition","description":"When to use a compact GLiNER model and when to prompt an LLM for named entity recognition, with zero-shot and few-shot examples and a way to compare them.","mainEntityOfPage":"https://shivanigupta.store/blog/gliner-vs-llm-for-ner/","datePublished":"2026-11-16","dateModified":"2026-11-16","image":"https://shivanigupta.store/blog/gliner-vs-llm-for-ner/diagram.svg","author":{"@type":"Person","name":"Shivani Gupta"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://shivanigupta.store/"},{"@type":"ListItem","position":2,"name":"Blog","item":"https://shivanigupta.store/blog/"},{"@type":"ListItem","position":3,"name":"GLiNER vs LLM for named entity recognition","item":"https://shivanigupta.store/blog/gliner-vs-llm-for-ner/"}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"What is the best model for named entity recognition?","acceptedAnswer":{"@type":"Answer","text":"It depends on your labels and data. Trained models suit standard labels, zero-shot models such as GLiNER suit custom labels at volume, and prompted LLMs suit entities that need judgement or normalisation. Test candidates on your own documents."}},{"@type":"Question","name":"Is GLiNER better than an LLM for NER?","acceptedAnswer":{"@type":"Answer","text":"Neither is better in every case. GLiNER is small, can run locally and returns spans from the text. An LLM follows richer instructions and can normalise values, but costs more per call and its output must be checked against the text."}},{"@type":"Question","name":"What is the difference between zero-shot and few-shot NER?","acceptedAnswer":{"@type":"Answer","text":"In zero-shot NER the model gets only the label names or descriptions. In few-shot NER the prompt also includes a few worked examples, which usually helps with unusual labels and edge cases."}},{"@type":"Question","name":"Can GLiNER run without a GPU?","acceptedAnswer":{"@type":"Answer","text":"Yes. The project describes GLiNER as lightweight enough to run on CPUs and consumer hardware. Larger models and long documents will run more slowly, so measure speed on your own machine."}}]}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&family=Poppins:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+<a class="skip-link" href="#top">Skip to content</a>
+<header class="nav">
+  <div class="wrap nav-in">
+    <a class="logo" href="/" aria-label="Shivani, home"><img src="/assets/logo.svg" alt="Shivani" width="144" height="40"></a>
+    <nav id="nav-links" aria-label="Main">
+      <a href="/#services">Services</a>
+      <a href="/#skills">Skills</a>
+      <a href="/#work">Work</a>
+      <a href="/#process">Process</a>
+      <a href="/#faq">FAQ</a>
+      <a href="/blog/">Blog</a>
+      <a class="btn btn-sm" href="/#contact">Hire Me</a>
+    </nav>
+    <button id="menu-toggle" class="menu-toggle" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="nav-links"><span></span><span></span><span></span></button>
+  </div>
+</header>
+
+<main id="top">
+  <section class="page-head">
+    <div class="wrap">
+      <nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a><span aria-hidden="true">/</span><a href="/blog/">Blog</a><span aria-hidden="true">/</span><span aria-current="page">GLiNER vs LLM for named entity recognition</span></nav>
+      <p class="eyebrow">Guide</p>
+      <h1>GLiNER vs LLM for named entity recognition</h1>
+      <p class="lead">For named entity recognition with your own entity types and no training data, start with a compact zero-shot model such as GLiNER when you need fast, cheap extraction of short, well-named entities over a lot of text, and prompt a large language model when the entities need judgement, context or normalisation, or when you also want other structured fields. There is no single best model for NER: the right choice depends on your labels, your volume and where the data may be processed, so test both on a sample of your own documents.</p>
+    </div>
+  </section>
+  <section class="article">
+    <div class="wrap prose">
+<h2>Two ways to get entities without training</h2>
+<p>Traditional NER models are trained on a fixed set of labels, such as person, organisation and location. If you need "policy number" or "drug dosage", you would once have labelled thousands of examples and trained a model. Two newer approaches remove that step.</p>
+<p><strong>GLiNER</strong> is a family of compact open models designed for zero-shot NER. You give it the text and a list of label names at run time, and it scores spans of the text against each label. The project describes it as lightweight enough to run on CPUs and consumer hardware, and the models are published on Hugging Face in several sizes.</p>
+<p><strong>A prompted LLM</strong> is a general model that you instruct to extract entities, usually returning JSON. With no examples this is zero-shot; with a handful of worked examples in the prompt it is few-shot. The broader picture of extraction with LLMs, including schemas and validation, is in <a href="/blog/named-entity-recognition-and-data-extraction-with-llms/">named entity recognition and data extraction with LLMs</a>. This guide focuses on the choice between the two.</p>
+
+<figure class="post-figure"><img src="/blog/gliner-vs-llm-for-ner/diagram.svg" alt="Diagram of two routes to named entities. In the first, text and label names go to a small encoder model such as GLiNER, which scores spans for each label and returns entities found in the text. In the second, text, labels and examples go to a large language model call that returns JSON, and each returned entity is checked to make sure it exists in the text." width="800" height="450" loading="lazy"><figcaption>A compact model scores spans directly; an LLM writes entities as JSON, which you then check against the source text.</figcaption></figure>
+
+<h2>How they differ in practice</h2>
+<ul>
+<li><strong>Output.</strong> GLiNER returns spans that come from the input text, so an entity cannot be invented. An LLM writes its answer, so it can paraphrase, normalise or occasionally produce an entity that is not there.</li>
+<li><strong>Cost and speed.</strong> A small model running on your own machine has no per-call fee and suits large batches. An LLM call costs per token and is usually slower, especially for long documents.</li>
+<li><strong>Where data goes.</strong> GLiNER can run entirely on your own infrastructure. A hosted LLM means sending text to a provider, unless you run an open model yourself.</li>
+<li><strong>Judgement.</strong> An LLM can follow instructions such as "only the buyer, not the seller" or "convert dates to ISO format". A span model finds mentions; it does not reason about roles.</li>
+<li><strong>Labels.</strong> Both accept label names at run time. GLiNER is sensitive to how a label is worded, so "organisation" and "company name" may give different results. An LLM can take a description of each label as well as a name.</li>
+</ul>
+
+<h2>Running GLiNER</h2>
+<p>The package installs with <code>pip install gliner</code>. The sample below follows the usage shown in the official repository and model card: load a model with <code>from_pretrained</code>, then call <code>predict_entities</code> with the text, the labels and a threshold. It is illustrative, and it downloads model weights from Hugging Face the first time it runs.</p>
+<pre><code># Illustrative only. Downloads a model from Hugging Face on first run.
+from gliner import GLiNER
+
+model = GLiNER.from_pretrained(&quot;gliner-community/gliner_small-v2.5&quot;)
+
+text = &quot;Priya Nair from Acme Analytics signed the renewal on 12 June 2026.&quot;
+labels = [&quot;person&quot;, &quot;organisation&quot;, &quot;date&quot;, &quot;product&quot;]
+
+entities = model.predict_entities(text, labels, threshold=0.5)
+for entity in entities:
+    print(entity[&quot;text&quot;], &quot;=&gt;&quot;, entity[&quot;label&quot;])</code></pre>
+<p>The <code>threshold</code> sets how confident the model must be before a span is returned. Raise it for fewer, surer entities; lower it if you are missing mentions. Text longer than the model's input limit needs splitting into chunks first, and labels work best as short, ordinary nouns. Check each model's card for its licence before using it commercially, because terms differ between models.</p>
+
+<h2>Prompting an LLM: zero-shot and few-shot</h2>
+<p>With an LLM, the prompt is the model's whole specification. A good extraction prompt names the labels, describes any that are ambiguous, fixes the output format and tells the model to copy entities exactly as they appear. Adding two or three examples, few-shot prompting, usually helps most with unusual labels and edge cases, such as whether a job title belongs with a person.</p>
+<p>The sample below is illustrative. A stub stands in for the model so it runs without an API key, and it deliberately returns one entity that is not in the text, to show why the check at the end matters.</p>
+<pre><code># Illustrative only. fake_llm stands in for a real chat model call.
+import json
+
+LABELS = [&quot;person&quot;, &quot;organisation&quot;, &quot;date&quot;, &quot;product&quot;]
+
+PROMPT = &quot;&quot;&quot;Extract entities of these types: {labels}.
+Return JSON: {{&quot;entities&quot;: [{{&quot;text&quot;: &quot;...&quot;, &quot;label&quot;: &quot;...&quot;}}]}}.
+Copy each entity exactly as it appears in the text. If none, return an empty list.
+
+Example
+Text: Ravi joined Infotech Ltd on 3 March.
+Output: {{&quot;entities&quot;: [{{&quot;text&quot;: &quot;Ravi&quot;, &quot;label&quot;: &quot;person&quot;}},
+ {{&quot;text&quot;: &quot;Infotech Ltd&quot;, &quot;label&quot;: &quot;organisation&quot;}}, {{&quot;text&quot;: &quot;3 March&quot;, &quot;label&quot;: &quot;date&quot;}}]}}
+
+Text: {text}
+Output:&quot;&quot;&quot;
+
+
+def fake_llm(prompt: str) -&gt; str:
+    &quot;&quot;&quot;Placeholder: replace with your model provider&#x27;s call, ideally with JSON mode.&quot;&quot;&quot;
+    return json.dumps({&quot;entities&quot;: [
+        {&quot;text&quot;: &quot;Priya Nair&quot;, &quot;label&quot;: &quot;person&quot;},
+        {&quot;text&quot;: &quot;Acme Analytics&quot;, &quot;label&quot;: &quot;organisation&quot;},
+        {&quot;text&quot;: &quot;12 June 2026&quot;, &quot;label&quot;: &quot;date&quot;},
+        {&quot;text&quot;: &quot;Acme Cloud Pro&quot;, &quot;label&quot;: &quot;product&quot;},   # not in the text: a hallucination
+    ]})
+
+
+def extract(text: str) -&gt; list[dict]:
+    raw = fake_llm(PROMPT.format(labels=&quot;, &quot;.join(LABELS), text=text))
+    entities = json.loads(raw).get(&quot;entities&quot;, [])
+    kept = []
+    for ent in entities:
+        start = text.find(ent.get(&quot;text&quot;, &quot;&quot;))
+        if ent.get(&quot;label&quot;) in LABELS and ent.get(&quot;text&quot;) and start != -1:
+            kept.append({**ent, &quot;start&quot;: start, &quot;end&quot;: start + len(ent[&quot;text&quot;])})
+    return kept
+
+
+doc = &quot;Priya Nair from Acme Analytics signed the renewal on 12 June 2026.&quot;
+for ent in extract(doc):
+    print(ent[&quot;label&quot;], &quot;|&quot;, ent[&quot;text&quot;], ent[&quot;start&quot;], ent[&quot;end&quot;])</code></pre>
+<p>Running it prints the person, organisation and date with their character offsets and drops the invented product. That last step is the important habit: never trust an LLM's entities until you have confirmed they exist in the source and their labels are in your list. If you use your provider's structured output or JSON mode, you also avoid most formatting failures; <a href="/blog/structured-output-from-llms/">structured output from LLMs</a> explains the options.</p>
+
+<h2>What is the best model for named entity recognition?</h2>
+<p>There is no single answer, and anyone who names one without asking about your data is guessing. For standard labels in well-supported languages, a trained model from a library such as spaCy may already do the job. For custom labels with no training data, a zero-shot model like GLiNER and a prompted LLM are the two main candidates. If you have labelled data and a stable set of labels, fine-tuning a compact model often gives the most consistent results.</p>
+<p>The same trade-off appears across NLP tasks, and <a href="/blog/text-classification-llms-vs-traditional-nlp/">text classification with LLMs vs traditional NLP</a> walks through it for classification. The pattern is similar: LLMs are quick to start and flexible; smaller models are cheaper and more predictable at volume.</p>
+
+<h2>Comparing them on your own data</h2>
+<p>A fair comparison needs a small test set, not impressions from a demo:</p>
+<ol>
+<li>Pick a sample of real documents, including awkward ones, and mark the correct entities by hand.</li>
+<li>Run both approaches with the same labels. Tune the GLiNER threshold and the LLM prompt on part of the set, and keep the rest for the final check.</li>
+<li>Measure precision and recall per label, not just overall, because one difficult label often hides behind a good average.</li>
+<li>Record time and cost per document at the volume you expect.</li>
+<li>Read the errors. Missed entities, wrong boundaries and wrong labels each point to a different fix.</li>
+</ol>
+<p>Decide in advance what counts as a match. If the reference says "Acme Analytics Pvt Ltd" and the model returns "Acme Analytics", is that right? Exact-match scoring will say no; for many uses a partial match is fine.</p>
+
+<h2>Combining the two</h2>
+<p>You do not have to pick one. A common pattern is to run the compact model on everything and send only the hard cases to an LLM, such as low-confidence spans or documents where a required entity is missing. Another is to let GLiNER find candidate spans and ask an LLM to decide roles, for example which of two organisations is the supplier. Both keep most of the cost and latency of the small model while using the LLM's judgement where it pays off.</p>
+
+<h2>Choosing</h2>
+<p>Lean towards GLiNER when volume is high, data must stay on your own servers, the entities are short mentions with clear names, and you want outputs that always come from the text. Lean towards an LLM when labels need explanation, entities need normalising, you are also extracting other fields from the same document, or volume is modest enough that per-call cost does not matter. Either way, validate the output and measure on your own documents before you rely on it.</p>
+<p>For help designing and building an extraction pipeline, see <a href="/services/nlp-development/">NLP development</a>.</p>
+<aside class="post-cta" aria-label="Work with Shivani">
+<h2>Need an NLP solution built?</h2>
+<p>I design and build NLP solutions end to end, from the AI workflow to the backend and UI. Tell me what you want to build and I will reply with next steps.</p>
+<p class="post-cta-btns"><a class="btn" href="https://wa.me/919720466504?text=Hi%20Shivani%2C%20I%20read%20your%20guide%20%22GLiNER%20vs%20LLM%20for%20named%20entity%20recognition%22%20and%20would%20like%20to%20discuss%20an%20NLP%20solution." target="_blank" rel="noopener">Chat on WhatsApp</a> <a class="btn btn-line" href="/#contact">Send project details</a> <a class="post-cta-link" href="/services/nlp-development/">See the service</a></p>
+</aside>
+      <h2>Frequently asked questions</h2>
+      <h3>What is the best model for named entity recognition?</h3>
+      <p>It depends on your labels and data. Trained models suit standard labels, zero-shot models such as GLiNER suit custom labels at volume, and prompted LLMs suit entities that need judgement or normalisation. Test candidates on your own documents.</p>
+      <h3>Is GLiNER better than an LLM for NER?</h3>
+      <p>Neither is better in every case. GLiNER is small, can run locally and returns spans from the text. An LLM follows richer instructions and can normalise values, but costs more per call and its output must be checked against the text.</p>
+      <h3>What is the difference between zero-shot and few-shot NER?</h3>
+      <p>In zero-shot NER the model gets only the label names or descriptions. In few-shot NER the prompt also includes a few worked examples, which usually helps with unusual labels and edge cases.</p>
+      <h3>Can GLiNER run without a GPU?</h3>
+      <p>Yes. The project describes GLiNER as lightweight enough to run on CPUs and consumer hardware. Larger models and long documents will run more slowly, so measure speed on your own machine.</p>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="foot-cta">
+      <div>
+        <h2>Have an AI or full stack project in mind?</h2>
+        <p>Tell me what you want to build.</p>
+      </div>
+      <div class="foot-cta-btns">
+        <a class="btn" href="/#contact">Start a conversation</a>
+        <a class="btn btn-line" href="mailto:shivanigupta4876@gmail.com">Send an email</a>
+      </div>
+    </div>
+    <div class="foot-grid">
+      <div>
+        <a href="/" aria-label="Shivani, home"><img src="/assets/logo.svg" alt="Shivani" width="144" height="40"></a>
+        <p>AI/ML engineer working across generative AI, LLMs, RAG, agentic AI and NLP, plus full stack development.</p>
+        <span class="avail">Taking new projects</span>
+      </div>
+      <div>
+        <h3>Explore</h3>
+        <ul>
+          <li><a href="/services/">Services</a></li>
+          <li><a href="/#work">Projects</a></li>
+          <li><a href="/#process">Process</a></li>
+          <li><a href="/#faq">FAQ</a></li>
+          <li><a href="/blog/">Blog</a></li>
+          <li><a href="/#contact">Contact</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Services</h3>
+        <ul>
+          <li><a href="/services/generative-ai-llm-development/">Generative AI and LLMs</a></li>
+          <li><a href="/services/rag-development/">RAG development</a></li>
+          <li><a href="/services/multi-agent-systems/">Multi-agent systems</a></li>
+          <li><a href="/services/ai-orchestration-langgraph/">Orchestration with LangGraph</a></li>
+          <li><a href="/services/nlp-development/">NLP development</a></li>
+          <li><a href="/services/full-stack-development/">Full stack development</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Contact</h3>
+        <ul>
+          <li><a href="mailto:shivanigupta4876@gmail.com">shivanigupta4876@gmail.com</a></li>
+          <li><a href="tel:+919720466504">+91 97204 66504</a></li>
+          <li><a href="https://github.com/shivani1031" rel="me noopener" target="_blank">GitHub</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="foot-bottom">&copy; <span id="year">2026</span> Shivani Gupta. All rights reserved.</div>
+  </div>
+</footer>
+<a class="wa-float" href="https://wa.me/919720466504?text=Hi%20Shivani%2C%20I%20saw%20your%20website%20and%20would%20like%20to%20talk%20about%20a%20project." target="_blank" rel="noopener" aria-label="Chat on WhatsApp"><svg viewBox="0 0 24 24" width="28" height="28" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15L2 22l5.1-1.3A10 10 0 1 0 12 2zm0 18.2a8.2 8.2 0 0 1-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1a6.700 6.700 0 0 1-3.300-2.900c-.2-.3 0-.4.1-.6l.4-.4.2-.4v-.5l-.8-1.800c-.2-.5-.4-.4-.6-.4h-.5c-.2 0-.4.1-.6.3-.2.2-.8.8-.8 2s.9 2.300 1 2.500c.1.2 1.700 2.600 4.100 3.600 1.500.7 2.100.7 2.900.6.500-.1 1.500-.6 1.700-1.200.2-.6.2-1.100.1-1.200l-.2-.2z"/></svg></a>
+<script src="/assets/js/site.js" defer></script>
+</body>
+</html>

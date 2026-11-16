@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 450" role="img" aria-labelledby="t">
+<title id="t">How LangGraph applies a node's update</title>
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#b3ff3a"/></marker></defs>
+<rect width="800" height="450" fill="#080b0f"/>
+<g font-family="Arial, Helvetica, sans-serif" fill="#ffffff">
+<text x="400" y="50" font-size="28" text-anchor="middle" fill="#ffffff" font-weight="bold">How LangGraph applies a node's update</text>
+<rect x="20" y="85" width="230" height="90" rx="10" fill="#b3ff3a" stroke="#b3ff3a" stroke-width="2"/>
+<text x="135.0" y="124.0" font-size="20" text-anchor="middle" fill="#080b0f">Node returns</text>
+<text x="135.0" y="150.0" font-size="20" text-anchor="middle" fill="#080b0f">only changed keys</text>
+<line x1="252" y1="130" x2="298" y2="130" stroke="#b3ff3a" stroke-width="3" marker-end="url(#a)"/>
+<rect x="300" y="85" width="480" height="90" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="540.0" y="124.0" font-size="20" text-anchor="middle" fill="#ffffff">Each key goes through its own</text>
+<text x="540.0" y="150.0" font-size="20" text-anchor="middle" fill="#ffffff">reducer, or replaces the old value</text>
+<text x="30" y="225" font-size="20" text-anchor="start" fill="#b3ff3a">Three common behaviours</text>
+<rect x="20" y="245" width="240" height="110" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="140.0" y="281.0" font-size="20" text-anchor="middle" fill="#ffffff">topic: no reducer</text>
+<text x="140.0" y="307.0" font-size="20" text-anchor="middle" fill="#ffffff">new value</text>
+<text x="140.0" y="333.0" font-size="20" text-anchor="middle" fill="#ffffff">replaces old</text>
+<rect x="280" y="245" width="240" height="110" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="400.0" y="281.0" font-size="20" text-anchor="middle" fill="#ffffff">notes: operator.add</text>
+<text x="400.0" y="307.0" font-size="20" text-anchor="middle" fill="#ffffff">lists are</text>
+<text x="400.0" y="333.0" font-size="20" text-anchor="middle" fill="#ffffff">joined</text>
+<rect x="540" y="245" width="240" height="110" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="660.0" y="281.0" font-size="20" text-anchor="middle" fill="#ffffff">messages:</text>
+<text x="660.0" y="307.0" font-size="20" text-anchor="middle" fill="#ffffff">add_messages</text>
+<text x="660.0" y="333.0" font-size="20" text-anchor="middle" fill="#ffffff">merges by id</text>
+<text x="400" y="410" font-size="20" text-anchor="middle" fill="#ffffff">The merged result is the state the next node sees</text>
+</g>
+</svg>

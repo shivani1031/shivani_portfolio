@@ -1,0 +1,279 @@
+<!doctype html>
+<html lang="en">
+<head>
+<script async src="https://www.googletagmanager.com/gtm.js?id=GTM-THN7RV8R"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+</script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="canonical" href="https://shivanigupta.store/blog/langgraph-state-explained/">
+<title>LangGraph State Explained: Reducers and Updates | Shivani</title>
+<meta name="description" content="How LangGraph state works: the state schema, reducers, partial updates from nodes, MessagesState and add_messages, parallel writes and common mistakes.">
+<meta name="robots" content="index,follow">
+<meta name="author" content="Shivani Gupta">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<link rel="manifest" href="/site.webmanifest">
+<meta name="theme-color" content="#080b0f">
+<meta property="og:type" content="article">
+<meta property="og:title" content="LangGraph State Explained: Reducers and Updates | Shivani">
+<meta property="og:description" content="How LangGraph state works: the state schema, reducers, partial updates from nodes, MessagesState and add_messages, parallel writes and common mistakes.">
+<meta property="og:url" content="https://shivanigupta.store/blog/langgraph-state-explained/">
+<meta property="og:image" content="https://shivanigupta.store/assets/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"LangGraph state explained: schemas, reducers and updates","description":"How LangGraph state works: the state schema, reducers, partial updates from nodes, MessagesState and add_messages, parallel writes and common mistakes.","mainEntityOfPage":"https://shivanigupta.store/blog/langgraph-state-explained/","datePublished":"2026-11-16","dateModified":"2026-11-16","image":"https://shivanigupta.store/blog/langgraph-state-explained/diagram.svg","author":{"@type":"Person","name":"Shivani Gupta"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://shivanigupta.store/"},{"@type":"ListItem","position":2,"name":"Blog","item":"https://shivanigupta.store/blog/"},{"@type":"ListItem","position":3,"name":"LangGraph state explained: schemas, reducers and updates","item":"https://shivanigupta.store/blog/langgraph-state-explained/"}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"What is state in LangGraph?","acceptedAnswer":{"@type":"Answer","text":"State is the shared data that flows through a graph. You define its keys in a schema, nodes read it and return partial updates, and LangGraph merges those updates using each key's reducer before the next node runs."}},{"@type":"Question","name":"What is a reducer in LangGraph?","acceptedAnswer":{"@type":"Answer","text":"A reducer is a function attached to a state key with Annotated. It takes the current value and an update and returns the new value, for example operator.add to join lists. Keys without a reducer keep the latest value."}},{"@type":"Question","name":"Why do I get InvalidUpdateError in LangGraph?","acceptedAnswer":{"@type":"Answer","text":"Usually because two nodes running in the same step wrote to a key that has no reducer. Add a reducer to that key, or have each parallel branch write to a different key."}},{"@type":"Question","name":"What does add_messages do?","acceptedAnswer":{"@type":"Answer","text":"It is the reducer used by MessagesState. It appends new messages, replaces a message that has the same id as an existing one, and removes a message when it receives RemoveMessage with that id."}}]}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&family=Poppins:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+<a class="skip-link" href="#top">Skip to content</a>
+<header class="nav">
+  <div class="wrap nav-in">
+    <a class="logo" href="/" aria-label="Shivani, home"><img src="/assets/logo.svg" alt="Shivani" width="144" height="40"></a>
+    <nav id="nav-links" aria-label="Main">
+      <a href="/#services">Services</a>
+      <a href="/#skills">Skills</a>
+      <a href="/#work">Work</a>
+      <a href="/#process">Process</a>
+      <a href="/#faq">FAQ</a>
+      <a href="/blog/">Blog</a>
+      <a class="btn btn-sm" href="/#contact">Hire Me</a>
+    </nav>
+    <button id="menu-toggle" class="menu-toggle" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="nav-links"><span></span><span></span><span></span></button>
+  </div>
+</header>
+
+<main id="top">
+  <section class="page-head">
+    <div class="wrap">
+      <nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a><span aria-hidden="true">/</span><a href="/blog/">Blog</a><span aria-hidden="true">/</span><span aria-current="page">LangGraph state explained: schemas, reducers and updates</span></nav>
+      <p class="eyebrow">Guide</p>
+      <h1>LangGraph state explained: schemas, reducers and updates</h1>
+      <p class="lead">In LangGraph, state is the shared data that flows through a graph. You declare its shape with a state schema, usually a <code>TypedDict</code>; each node receives the current state and returns only the keys it wants to change; and LangGraph merges each returned key into the state using that key's reducer, or simply replaces the value if the key has no reducer. Getting reducers right is what makes lists accumulate, chat histories merge and parallel branches combine without errors.</p>
+    </div>
+  </section>
+  <section class="article">
+    <div class="wrap prose">
+<h2>State, nodes and edges</h2>
+<p>LangGraph is usually explained through three ideas: state, nodes and edges. Edges decide which node runs next, and nodes do the work. State is what connects them: it is the only thing a node sees, and the only thing it can change. If you have already built a first graph with <a href="/blog/langgraph-tutorial-for-beginners/">the LangGraph tutorial for beginners</a>, you have used state without needing to think much about it. This guide looks at how updates are actually applied, which is where most confusing bugs come from.</p>
+<p>Everything here was checked against the installed <code>langgraph</code> Python package, version 1.2, and its source. The samples are illustrative, run as written, and use plain functions instead of model calls.</p>
+
+<h2>The state schema</h2>
+<p>The schema is the class you pass to <code>StateGraph</code>. A <code>TypedDict</code> is the common choice; a dataclass or a Pydantic model also works, with Pydantic adding validation at run time at some cost in speed. Each key in the schema becomes a separate channel inside the graph, and each channel has its own rule for combining updates.</p>
+<p>A key's rule comes from its type annotation. A plain type, such as <code>topic: str</code>, means "last value wins". A type wrapped in <code>Annotated</code> with a function, such as <code>Annotated[list[str], operator.add]</code>, means "combine the old value and the update with this function". That function is the reducer. It receives the current value and the update, and returns the new value.</p>
+<p><code>StateGraph</code> also accepts separate <code>input_schema</code> and <code>output_schema</code> arguments, so callers can provide fewer keys than the graph uses internally and receive only the keys they need. A separate <code>context_schema</code> holds run-time settings, such as a user id or model name, that are not part of the state and are not updated by nodes.</p>
+
+<figure class="post-figure"><img src="/blog/langgraph-state-explained/diagram.svg" alt="Diagram of how LangGraph applies a node&#x27;s update. A node returns only the keys it changed, and each key goes through its own reducer or replaces the old value. Three examples: a topic key with no reducer, where the new value replaces the old; a notes key with operator.add, where lists are joined; and a messages key with add_messages, which merges messages by id." width="800" height="450" loading="lazy"><figcaption>A node returns only what changed. Each key is then merged by its reducer, or replaced if it has none, to form the state the next node sees.</figcaption></figure>
+
+<h2>Nodes return partial updates</h2>
+<p>A node returns a dictionary containing only the keys it changed. It does not return the whole state, and it should not modify the state it was given. LangGraph collects the update, runs each key through its reducer, and the merged result is what the next node receives.</p>
+<p>Partial updates are what make parallel branches possible. When two nodes run in the same step, each returns its own small update, and the reducers decide how they combine. The sample below fans out to two search nodes that both write to <code>notes</code>, then joins them in a summary node:</p>
+<pre><code># Illustrative only. Plain functions stand in for model calls.
+import operator
+from typing import Annotated
+from typing_extensions import TypedDict
+from langgraph.graph import StateGraph, START, END
+
+
+class ResearchState(TypedDict):
+    topic: str                                   # no reducer: last write wins
+    notes: Annotated[list[str], operator.add]    # reducer: lists are concatenated
+    summary: str
+
+
+def search_web(state: ResearchState) -&gt; dict:
+    return {&quot;notes&quot;: [f&quot;web result about {state[&#x27;topic&#x27;]}&quot;]}
+
+
+def search_docs(state: ResearchState) -&gt; dict:
+    return {&quot;notes&quot;: [f&quot;internal doc about {state[&#x27;topic&#x27;]}&quot;]}
+
+
+def summarise(state: ResearchState) -&gt; dict:
+    return {&quot;summary&quot;: f&quot;{len(state[&#x27;notes&#x27;])} notes on {state[&#x27;topic&#x27;]}&quot;}
+
+
+builder = StateGraph(ResearchState)
+builder.add_node(&quot;search_web&quot;, search_web)
+builder.add_node(&quot;search_docs&quot;, search_docs)
+builder.add_node(&quot;summarise&quot;, summarise)
+builder.add_edge(START, &quot;search_web&quot;)
+builder.add_edge(START, &quot;search_docs&quot;)          # both run in the same step
+builder.add_edge([&quot;search_web&quot;, &quot;search_docs&quot;], &quot;summarise&quot;)
+builder.add_edge(&quot;summarise&quot;, END)
+graph = builder.compile()
+
+result = graph.invoke({&quot;topic&quot;: &quot;vector databases&quot;, &quot;notes&quot;: []})
+print(sorted(result[&quot;notes&quot;]))
+print(result[&quot;summary&quot;])</code></pre>
+<p>It prints both notes and then <code>2 notes on vector databases</code>. Because <code>notes</code> has the <code>operator.add</code> reducer, the two lists are concatenated. The order in which parallel updates are applied is not something to rely on, which is why the sample sorts before printing.</p>
+
+<h2>What happens without a reducer</h2>
+<p>Remove the reducer and the same fan-out fails. A key with no reducer can receive only one value per step, because LangGraph has no rule for choosing between two. This sample has two parallel nodes writing a plain <code>note</code> key:</p>
+<pre><code># Illustrative only. Shows the error when two parallel nodes write a key with no reducer.
+from typing_extensions import TypedDict
+from langgraph.graph import StateGraph, START, END
+from langgraph.errors import InvalidUpdateError
+
+
+class State(TypedDict):
+    topic: str
+    note: str   # no reducer
+
+
+builder = StateGraph(State)
+builder.add_node(&quot;a&quot;, lambda s: {&quot;note&quot;: &quot;from a&quot;})
+builder.add_node(&quot;b&quot;, lambda s: {&quot;note&quot;: &quot;from b&quot;})
+builder.add_edge(START, &quot;a&quot;)
+builder.add_edge(START, &quot;b&quot;)
+builder.add_edge([&quot;a&quot;, &quot;b&quot;], END)
+graph = builder.compile()
+
+try:
+    graph.invoke({&quot;topic&quot;: &quot;x&quot;})
+except InvalidUpdateError as err:
+    print(&quot;InvalidUpdateError:&quot;, str(err).splitlines()[0])</code></pre>
+<p>It raises <code>InvalidUpdateError</code> with the message that the key can receive only one value per step, and suggests using an annotated key. The fix is to give the key a reducer, or to have each branch write to its own key. In a sequential graph the same plain key works fine, because only one node writes to it at a time.</p>
+
+<h2>Messages state and add_messages</h2>
+<p>Chat applications keep a list of messages in state, and appending with <code>operator.add</code> is not quite enough: sometimes you need to replace or delete a message. LangGraph provides the <code>add_messages</code> reducer for this. It appends new messages, replaces any message whose id matches an existing one, and deletes messages when given a <code>RemoveMessage</code> with that id. It also converts plain dictionaries and tuples into message objects.</p>
+<p><code>MessagesState</code> is a ready-made schema with a single <code>messages</code> key that uses <code>add_messages</code>. You can extend it with your own keys:</p>
+<pre><code># Illustrative only. A stub replaces the chat model.
+from langchain_core.messages import AIMessage, HumanMessage, RemoveMessage
+from langgraph.graph import StateGraph, MessagesState, START, END
+from langgraph.graph.message import add_messages
+
+
+class ChatState(MessagesState):
+    turns: int
+
+
+def fake_model(state: ChatState) -&gt; dict:
+    last = state[&quot;messages&quot;][-1].content
+    return {&quot;messages&quot;: [AIMessage(content=f&quot;You said: {last}&quot;)],
+            &quot;turns&quot;: state.get(&quot;turns&quot;, 0) + 1}
+
+
+builder = StateGraph(ChatState)
+builder.add_node(&quot;model&quot;, fake_model)
+builder.add_edge(START, &quot;model&quot;)
+builder.add_edge(&quot;model&quot;, END)
+graph = builder.compile()
+
+out = graph.invoke({&quot;messages&quot;: [HumanMessage(content=&quot;hello&quot;, id=&quot;m1&quot;)], &quot;turns&quot;: 0})
+for m in out[&quot;messages&quot;]:
+    print(type(m).__name__, &quot;|&quot;, m.content)
+print(&quot;turns:&quot;, out[&quot;turns&quot;])
+
+# The reducer on its own: same id replaces, RemoveMessage deletes.
+history = [HumanMessage(content=&quot;hi&quot;, id=&quot;m1&quot;), AIMessage(content=&quot;draft&quot;, id=&quot;m2&quot;)]
+history = add_messages(history, [AIMessage(content=&quot;final&quot;, id=&quot;m2&quot;)])
+print([m.content for m in history])
+history = add_messages(history, [RemoveMessage(id=&quot;m1&quot;)])
+print([m.content for m in history])</code></pre>
+<p>The graph prints the human and AI messages and a turn count of one. The second half calls the reducer directly: sending a message with id <code>m2</code> replaces the draft, and <code>RemoveMessage(id="m1")</code> removes the first message, leaving only <code>final</code>. Trimming old messages this way is one approach to keeping a long conversation within the model's context.</p>
+
+<h2>Bypassing a reducer with Overwrite</h2>
+<p>Occasionally a node needs to replace a value that normally accumulates, for example to reset a list of notes. Recent versions provide <code>Overwrite</code> in <code>langgraph.types</code>: returning <code>{"notes": Overwrite(["fresh start"])}</code> writes the value directly instead of passing it through the reducer. Two <code>Overwrite</code> updates to the same key in one step raise an error, for the same reason as above. If your version does not have it, a custom reducer that treats a special value as "reset" achieves the same thing.</p>
+
+<h2>Designing a good state</h2>
+<ul>
+<li><strong>Keep it small and explicit.</strong> Store what nodes need to make decisions: inputs, intermediate results, counters and flags. Large documents can live elsewhere, with an id in state.</li>
+<li><strong>Choose reducers deliberately.</strong> For each key, ask whether more than one node can write it, and whether values should replace or accumulate.</li>
+<li><strong>Use counters for loops.</strong> A retry or step count in state lets a router stop a loop, in addition to LangGraph's own recursion limit.</li>
+<li><strong>Keep state serialisable.</strong> With a checkpointer, state is saved after each step. Clients, connections and open files belong in context or in the node's code, not in state.</li>
+<li><strong>Separate run state from long-term memory.</strong> State and checkpoints hold what a single conversation or task needs. Facts that should outlast it belong in a store, as described in <a href="/blog/agent-memory-short-term-and-long-term-state/">agent memory: short-term and long-term state</a>.</li>
+</ul>
+
+<h2>Common mistakes</h2>
+<ul>
+<li><strong>Returning the whole state from every node.</strong> With reducers, this duplicates data: a node that returns the full <code>notes</code> list under <code>operator.add</code> doubles it.</li>
+<li><strong>Mutating the input state.</strong> Changing <code>state["notes"]</code> in place is not recorded as an update and can behave unpredictably with checkpoints. Return a new value.</li>
+<li><strong>Forgetting the reducer on a list.</strong> Without one, each update replaces the list, so earlier items disappear silently in a sequential graph and fail loudly in a parallel one.</li>
+<li><strong>Reading a key that was never set.</strong> A <code>TypedDict</code> key has no default. Provide it in the input or read it with <code>state.get</code>.</li>
+<li><strong>Messages without ids.</strong> <code>add_messages</code> assigns ids to new messages, but if you build your own replacement message without the original id, it is appended instead of replacing.</li>
+</ul>
+
+<h2>Next steps</h2>
+<p>Try adding a third parallel branch to the first sample, then a reset node that uses <code>Overwrite</code>. When you design a production graph, write down each key, who writes it and its reducer before you write any node code. For help designing and building one, see <a href="/services/ai-orchestration-langgraph/">orchestration with LangGraph</a>.</p>
+<aside class="post-cta" aria-label="Work with Shivani">
+<h2>Need a LangGraph workflow built?</h2>
+<p>I design and build LangGraph workflows end to end, from the AI workflow to the backend and UI. Tell me what you want to build and I will reply with next steps.</p>
+<p class="post-cta-btns"><a class="btn" href="https://wa.me/919720466504?text=Hi%20Shivani%2C%20I%20read%20your%20guide%20%22LangGraph%20state%20explained%3A%20schemas%2C%20reducers%20and%20updates%22%20and%20would%20like%20to%20discuss%20a%20LangGraph%20workflow." target="_blank" rel="noopener">Chat on WhatsApp</a> <a class="btn btn-line" href="/#contact">Send project details</a> <a class="post-cta-link" href="/services/ai-orchestration-langgraph/">See the service</a></p>
+</aside>
+      <h2>Frequently asked questions</h2>
+      <h3>What is state in LangGraph?</h3>
+      <p>State is the shared data that flows through a graph. You define its keys in a schema, nodes read it and return partial updates, and LangGraph merges those updates using each key&#x27;s reducer before the next node runs.</p>
+      <h3>What is a reducer in LangGraph?</h3>
+      <p>A reducer is a function attached to a state key with Annotated. It takes the current value and an update and returns the new value, for example operator.add to join lists. Keys without a reducer keep the latest value.</p>
+      <h3>Why do I get InvalidUpdateError in LangGraph?</h3>
+      <p>Usually because two nodes running in the same step wrote to a key that has no reducer. Add a reducer to that key, or have each parallel branch write to a different key.</p>
+      <h3>What does add_messages do?</h3>
+      <p>It is the reducer used by MessagesState. It appends new messages, replaces a message that has the same id as an existing one, and removes a message when it receives RemoveMessage with that id.</p>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="foot-cta">
+      <div>
+        <h2>Have an AI or full stack project in mind?</h2>
+        <p>Tell me what you want to build.</p>
+      </div>
+      <div class="foot-cta-btns">
+        <a class="btn" href="/#contact">Start a conversation</a>
+        <a class="btn btn-line" href="mailto:shivanigupta4876@gmail.com">Send an email</a>
+      </div>
+    </div>
+    <div class="foot-grid">
+      <div>
+        <a href="/" aria-label="Shivani, home"><img src="/assets/logo.svg" alt="Shivani" width="144" height="40"></a>
+        <p>AI/ML engineer working across generative AI, LLMs, RAG, agentic AI and NLP, plus full stack development.</p>
+        <span class="avail">Taking new projects</span>
+      </div>
+      <div>
+        <h3>Explore</h3>
+        <ul>
+          <li><a href="/services/">Services</a></li>
+          <li><a href="/#work">Projects</a></li>
+          <li><a href="/#process">Process</a></li>
+          <li><a href="/#faq">FAQ</a></li>
+          <li><a href="/blog/">Blog</a></li>
+          <li><a href="/#contact">Contact</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Services</h3>
+        <ul>
+          <li><a href="/services/generative-ai-llm-development/">Generative AI and LLMs</a></li>
+          <li><a href="/services/rag-development/">RAG development</a></li>
+          <li><a href="/services/multi-agent-systems/">Multi-agent systems</a></li>
+          <li><a href="/services/ai-orchestration-langgraph/">Orchestration with LangGraph</a></li>
+          <li><a href="/services/nlp-development/">NLP development</a></li>
+          <li><a href="/services/full-stack-development/">Full stack development</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Contact</h3>
+        <ul>
+          <li><a href="mailto:shivanigupta4876@gmail.com">shivanigupta4876@gmail.com</a></li>
+          <li><a href="tel:+919720466504">+91 97204 66504</a></li>
+          <li><a href="https://github.com/shivani1031" rel="me noopener" target="_blank">GitHub</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="foot-bottom">&copy; <span id="year">2026</span> Shivani Gupta. All rights reserved.</div>
+  </div>
+</footer>
+<a class="wa-float" href="https://wa.me/919720466504?text=Hi%20Shivani%2C%20I%20saw%20your%20website%20and%20would%20like%20to%20talk%20about%20a%20project." target="_blank" rel="noopener" aria-label="Chat on WhatsApp"><svg viewBox="0 0 24 24" width="28" height="28" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15L2 22l5.1-1.3A10 10 0 1 0 12 2zm0 18.2a8.2 8.2 0 0 1-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1a6.700 6.700 0 0 1-3.300-2.900c-.2-.3 0-.4.1-.6l.4-.4.2-.4v-.5l-.8-1.800c-.2-.5-.4-.4-.6-.4h-.5c-.2 0-.4.1-.6.3-.2.2-.8.8-.8 2s.9 2.300 1 2.500c.1.2 1.700 2.600 4.100 3.600 1.500.7 2.100.7 2.900.6.500-.1 1.500-.6 1.700-1.200.2-.6.2-1.100.1-1.200l-.2-.2z"/></svg></a>
+<script src="/assets/js/site.js" defer></script>
+</body>
+</html>

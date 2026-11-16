@@ -1,0 +1,239 @@
+<!doctype html>
+<html lang="en">
+<head>
+<script async src="https://www.googletagmanager.com/gtm.js?id=GTM-THN7RV8R"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+</script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="canonical" href="https://shivanigupta.store/blog/langgraph-typescript-tutorial/">
+<title>LangGraph TypeScript Tutorial: First Graph | Shivani</title>
+<meta name="description" content="Build a first graph in LangGraph.js with TypeScript: define state with StateSchema and zod, add nodes and edges, route with a conditional edge, and run it.">
+<meta name="robots" content="index,follow">
+<meta name="author" content="Shivani Gupta">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<link rel="manifest" href="/site.webmanifest">
+<meta name="theme-color" content="#080b0f">
+<meta property="og:type" content="article">
+<meta property="og:title" content="LangGraph TypeScript Tutorial: First Graph | Shivani">
+<meta property="og:description" content="Build a first graph in LangGraph.js with TypeScript: define state with StateSchema and zod, add nodes and edges, route with a conditional edge, and run it.">
+<meta property="og:url" content="https://shivanigupta.store/blog/langgraph-typescript-tutorial/">
+<meta property="og:image" content="https://shivanigupta.store/assets/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"LangGraph TypeScript tutorial: your first LangGraph.js graph","description":"Build a first graph in LangGraph.js with TypeScript: define state with StateSchema and zod, add nodes and edges, route with a conditional edge, and run it.","mainEntityOfPage":"https://shivanigupta.store/blog/langgraph-typescript-tutorial/","datePublished":"2026-11-16","dateModified":"2026-11-16","image":"https://shivanigupta.store/blog/langgraph-typescript-tutorial/diagram.svg","author":{"@type":"Person","name":"Shivani Gupta"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://shivanigupta.store/"},{"@type":"ListItem","position":2,"name":"Blog","item":"https://shivanigupta.store/blog/"},{"@type":"ListItem","position":3,"name":"LangGraph TypeScript tutorial: your first LangGraph.js graph","item":"https://shivanigupta.store/blog/langgraph-typescript-tutorial/"}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Is LangGraph available for TypeScript?","acceptedAnswer":{"@type":"Answer","text":"Yes. LangGraph.js is published on npm as @langchain/langgraph and offers the same core ideas as the Python library: a shared state, nodes, edges, conditional edges, checkpointers and streaming."}},{"@type":"Question","name":"Should I use StateSchema or Annotation.Root?","acceptedAnswer":{"@type":"Answer","text":"The current LangGraph.js documentation defines state with StateSchema and zod. Annotation.Root is still exported and appears in older tutorials. Use one style consistently within a project."}},{"@type":"Question","name":"How does a conditional edge work in LangGraph.js?","acceptedAnswer":{"@type":"Answer","text":"After the source node runs, LangGraph calls your routing function with the updated state and moves to the node whose name it returns. You can list the possible destinations or map return values to node names."}},{"@type":"Question","name":"Do I need an LLM to use LangGraph.js?","acceptedAnswer":{"@type":"Answer","text":"No. Nodes are ordinary functions, so a graph can run with no model at all. That makes it easy to learn and test the control flow first, then add model calls inside nodes."}}]}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&family=Poppins:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+<a class="skip-link" href="#top">Skip to content</a>
+<header class="nav">
+  <div class="wrap nav-in">
+    <a class="logo" href="/" aria-label="Shivani, home"><img src="/assets/logo.svg" alt="Shivani" width="144" height="40"></a>
+    <nav id="nav-links" aria-label="Main">
+      <a href="/#services">Services</a>
+      <a href="/#skills">Skills</a>
+      <a href="/#work">Work</a>
+      <a href="/#process">Process</a>
+      <a href="/#faq">FAQ</a>
+      <a href="/blog/">Blog</a>
+      <a class="btn btn-sm" href="/#contact">Hire Me</a>
+    </nav>
+    <button id="menu-toggle" class="menu-toggle" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="nav-links"><span></span><span></span><span></span></button>
+  </div>
+</header>
+
+<main id="top">
+  <section class="page-head">
+    <div class="wrap">
+      <nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a><span aria-hidden="true">/</span><a href="/blog/">Blog</a><span aria-hidden="true">/</span><span aria-current="page">LangGraph TypeScript tutorial: your first LangGraph.js graph</span></nav>
+      <p class="eyebrow">Guide</p>
+      <h1>LangGraph TypeScript tutorial: your first LangGraph.js graph</h1>
+      <p class="lead">To build a first graph in LangGraph.js, install <code>@langchain/langgraph</code>, <code>@langchain/core</code> and <code>zod</code>, describe the shared state with <code>StateSchema</code>, write each node as a function that receives the state and returns a partial update, then connect the nodes with <code>addEdge</code> and <code>addConditionalEdges</code> on a <code>StateGraph</code>. Call <code>compile()</code> and run it with <code>invoke</code>. The complete example below type-checks and runs as written.</p>
+    </div>
+  </section>
+  <section class="article">
+    <div class="wrap prose">
+<h2>What you will build</h2>
+<p>A small support router. A <code>classify</code> node reads a customer question and decides whether it is about billing. A conditional edge then sends the run to either a <code>billing</code> node or a <code>general</code> node, and both end the graph. Every node also appends its name to a <code>steps</code> list, so you can see the path each run took.</p>
+<p>There is no model call yet. A keyword check stands in for the classifier, so you can learn the graph mechanics without an API key and then swap in a model later. If you work in Python instead, the same ideas are covered in <a href="/blog/langgraph-tutorial-for-beginners/">the LangGraph tutorial for beginners</a>; this guide is the TypeScript version, using the JavaScript library's own way of defining state.</p>
+
+<h2>Step 1: set up the project</h2>
+<p>In a new folder, install the packages:</p>
+<pre><code>npm install @langchain/langgraph @langchain/core zod
+npm install --save-dev typescript</code></pre>
+<p>This tutorial was checked against <code>@langchain/langgraph</code> 1.7, <code>@langchain/core</code> 1.4 and zod 4, and the code follows the Graph API page of the official LangGraph JavaScript documentation. LangGraph.js has changed how state is declared over time: older tutorials use <code>Annotation.Root</code>, which the package still exports, while the current documentation uses <code>StateSchema</code>. If your installed version differs, check its documentation before copying code from any tutorial.</p>
+<p>The sample uses top-level <code>await</code>, so set <code>"type": "module"</code> in <code>package.json</code> and use a <code>tsconfig.json</code> with <code>"module": "NodeNext"</code> and <code>"strict": true</code>. Run it with a TypeScript runner such as <code>tsx</code>, or compile it with <code>tsc</code> first.</p>
+
+<h2>Step 2: the complete example</h2>
+<p>Here is the whole program. It is illustrative: the routing rule is deliberately simple. The sections that follow explain each part.</p>
+<pre><code>// Illustrative only. A keyword check stands in for a model call.
+import { StateGraph, StateSchema, ReducedValue, START, END } from &quot;@langchain/langgraph&quot;;
+import type { GraphNode } from &quot;@langchain/langgraph&quot;;
+import * as z from &quot;zod&quot;;
+
+const TicketState = new StateSchema({
+  question: z.string(),
+  category: z.string().default(&quot;&quot;),
+  answer: z.string().default(&quot;&quot;),
+  steps: new ReducedValue(z.array(z.string()).default(() =&gt; []), {
+    inputSchema: z.string(),
+    reducer: (current, step) =&gt; [...current, step],
+  }),
+});
+
+const classify: GraphNode&lt;typeof TicketState&gt; = (state) =&gt; {
+  const text = state.question.toLowerCase();
+  const category = text.includes(&quot;refund&quot;) || text.includes(&quot;invoice&quot;) ? &quot;billing&quot; : &quot;general&quot;;
+  return { category, steps: &quot;classify&quot; };
+};
+
+const billing: GraphNode&lt;typeof TicketState&gt; = (state) =&gt; ({
+  answer: `The billing team will review: ${state.question}`,
+  steps: &quot;billing&quot;,
+});
+
+const general: GraphNode&lt;typeof TicketState&gt; = (state) =&gt; ({
+  answer: `Here is some general help for: ${state.question}`,
+  steps: &quot;general&quot;,
+});
+
+function routeByCategory(state: typeof TicketState.State): &quot;billing&quot; | &quot;general&quot; {
+  return state.category === &quot;billing&quot; ? &quot;billing&quot; : &quot;general&quot;;
+}
+
+const graph = new StateGraph(TicketState)
+  .addNode(&quot;classify&quot;, classify)
+  .addNode(&quot;billing&quot;, billing)
+  .addNode(&quot;general&quot;, general)
+  .addEdge(START, &quot;classify&quot;)
+  .addConditionalEdges(&quot;classify&quot;, routeByCategory, [&quot;billing&quot;, &quot;general&quot;])
+  .addEdge(&quot;billing&quot;, END)
+  .addEdge(&quot;general&quot;, END)
+  .compile();
+
+const first = await graph.invoke({ question: &quot;Where is my refund?&quot; });
+console.log(first.category, &quot;|&quot;, first.answer);
+console.log(first.steps.join(&quot; -&gt; &quot;));
+
+const second = await graph.invoke({ question: &quot;How do I reset my password?&quot; });
+console.log(second.category, &quot;|&quot;, second.steps.join(&quot; -&gt; &quot;));</code></pre>
+<p>Running it prints:</p>
+<pre><code>billing | The billing team will review: Where is my refund?
+classify -&gt; billing
+general | classify -&gt; general</code></pre>
+
+<figure class="post-figure"><img src="/blog/langgraph-typescript-tutorial/diagram.svg" alt="Diagram of the tutorial graph. START leads to a classify node. A conditional edge from classify goes either to a billing node or to a general node, and both of those lead to END. Each node returns a partial update to the shared state." width="800" height="450" loading="lazy"><figcaption>The tutorial graph: one classify node, a conditional edge, two branches and a shared state that every node updates.</figcaption></figure>
+
+<h2>Step 3: understand the state</h2>
+<p>The state is the shared record that every node reads and updates. <code>StateSchema</code> takes an object whose fields are zod schemas. A plain field such as <code>question: z.string()</code> keeps its latest value: when a node returns a new value, it replaces the old one. Defaults such as <code>z.string().default("")</code> mean a field has a value even before a node sets it, so the caller only has to provide the question.</p>
+<p>The <code>steps</code> field is different. It is wrapped in <code>ReducedValue</code>, which pairs the stored type, an array of strings, with a reducer that says how an update is combined with the current value. Here each node returns a single string and the reducer appends it. Because <code>inputSchema</code> is <code>z.string()</code>, TypeScript expects nodes to return a string for <code>steps</code>, not an array, and will flag a mistake at compile time. State design goes much deeper than this, including messages and parallel updates, and is covered in <a href="/blog/langgraph-state-explained/">LangGraph state explained</a>.</p>
+
+<h2>Step 4: write the nodes</h2>
+<p>A node is a function that receives the current state and returns an object with only the fields it wants to change. The <code>classify</code> node returns <code>category</code> and a step; it does not repeat <code>question</code> or <code>answer</code>, and it does not modify the state object it was given. LangGraph merges the returned fields into the state, applying a reducer where one is defined.</p>
+<p>Typing the nodes as <code>GraphNode&lt;typeof TicketState&gt;</code> gives you checked access to the state fields and checked return values, so a misspelt field name is a compile error rather than a silent no-op. Note that <code>GraphNode</code> is imported with <code>import type</code>: it exists only for the type checker, and runners that strip types need it marked that way. Nodes can also be <code>async</code>, which you will need once they call a model or an API.</p>
+
+<h2>Step 5: connect nodes with edges</h2>
+<p><code>addEdge(START, "classify")</code> makes <code>classify</code> the entry point, and <code>addEdge("billing", END)</code> ends the run after billing. <code>START</code> and <code>END</code> are special node names imported from the package.</p>
+<p>The conditional edge is where routing happens. <code>addConditionalEdges("classify", routeByCategory, ["billing", "general"])</code> means: after <code>classify</code> runs, call <code>routeByCategory</code> with the updated state and go to the node it names. The third argument lists the possible destinations. Declaring them lets LangGraph draw and check the graph, and the router's return type, a union of the two names, gives you a compile-time check too. You can also pass an object that maps the router's return values to node names, which is handy when the router returns labels such as <code>"yes"</code> and <code>"no"</code>.</p>
+<p>Keep routers simple and free of side effects: read the state, return a name. If a decision needs a model call, make that call in a node, store the result in state, and let the router read it, exactly as <code>classify</code> does here.</p>
+
+<h2>Step 6: compile and invoke</h2>
+<p><code>compile()</code> checks the structure, for example that every edge points at a node that exists, and returns a runnable graph. <code>invoke</code> takes the input state and resolves with the final state once the run reaches <code>END</code>. For long runs you can use <code>stream</code> instead to receive updates as each node finishes, which is how you show progress in a user interface.</p>
+<p>To keep state between calls, for a chat that continues over several messages, pass a checkpointer such as <code>MemorySaver</code> to <code>compile</code> and give each conversation a thread id in the config. The in-memory saver is for development; production systems use a persistent store.</p>
+
+<h2>Step 7: replace the stand-in with a model</h2>
+<p>To make <code>classify</code> real, make it <code>async</code>, call a chat model with the question and a short instruction listing the allowed categories, and validate the reply before storing it. Ask for a structured response, or check that the returned label is one of your categories and fall back to <code>"general"</code> if it is not. The graph, edges and router stay the same, and that is the main benefit of the design: the control flow is ordinary, testable code, and the model only fills in the decision.</p>
+
+<h2>Common mistakes</h2>
+<ul>
+<li><strong>Returning the whole state.</strong> Return only what changed. Returning stale copies of other fields can overwrite newer values.</li>
+<li><strong>Mutating the input.</strong> Changing <code>state</code> in place is not how updates are recorded; return them instead.</li>
+<li><strong>Router names that do not match.</strong> A router that returns a name the graph does not know will fail at run time. A union return type catches most of these.</li>
+<li><strong>Mixing tutorial styles.</strong> Combining <code>Annotation.Root</code> snippets with <code>StateSchema</code> code from different versions causes confusing type errors. Pick one style for a project.</li>
+</ul>
+
+<h2>Where to go next</h2>
+<p>Before adding features, write a small test that invokes the graph with a billing question and a general one and checks the <code>steps</code> each run took. Tests like this keep routing changes safe as the graph grows.</p>
+<p>Add a third branch, then a node that loops back to <code>classify</code> with a retry limit stored in state. For more graph shapes, including tool calls and approval steps, see <a href="/blog/langgraph-examples/">LangGraph examples</a>. If you are planning a production workflow, the <a href="/services/ai-orchestration-langgraph/">orchestration with LangGraph</a> page describes what I can help with.</p>
+<aside class="post-cta" aria-label="Work with Shivani">
+<h2>Need a LangGraph workflow built?</h2>
+<p>I design and build LangGraph workflows end to end, from the AI workflow to the backend and UI. Tell me what you want to build and I will reply with next steps.</p>
+<p class="post-cta-btns"><a class="btn" href="https://wa.me/919720466504?text=Hi%20Shivani%2C%20I%20read%20your%20guide%20%22LangGraph%20TypeScript%20tutorial%3A%20your%20first%20LangGraph.js%20graph%22%20and%20would%20like%20to%20discuss%20a%20LangGraph%20workflow." target="_blank" rel="noopener">Chat on WhatsApp</a> <a class="btn btn-line" href="/#contact">Send project details</a> <a class="post-cta-link" href="/services/ai-orchestration-langgraph/">See the service</a></p>
+</aside>
+      <h2>Frequently asked questions</h2>
+      <h3>Is LangGraph available for TypeScript?</h3>
+      <p>Yes. LangGraph.js is published on npm as @langchain/langgraph and offers the same core ideas as the Python library: a shared state, nodes, edges, conditional edges, checkpointers and streaming.</p>
+      <h3>Should I use StateSchema or Annotation.Root?</h3>
+      <p>The current LangGraph.js documentation defines state with StateSchema and zod. Annotation.Root is still exported and appears in older tutorials. Use one style consistently within a project.</p>
+      <h3>How does a conditional edge work in LangGraph.js?</h3>
+      <p>After the source node runs, LangGraph calls your routing function with the updated state and moves to the node whose name it returns. You can list the possible destinations or map return values to node names.</p>
+      <h3>Do I need an LLM to use LangGraph.js?</h3>
+      <p>No. Nodes are ordinary functions, so a graph can run with no model at all. That makes it easy to learn and test the control flow first, then add model calls inside nodes.</p>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="foot-cta">
+      <div>
+        <h2>Have an AI or full stack project in mind?</h2>
+        <p>Tell me what you want to build.</p>
+      </div>
+      <div class="foot-cta-btns">
+        <a class="btn" href="/#contact">Start a conversation</a>
+        <a class="btn btn-line" href="mailto:shivanigupta4876@gmail.com">Send an email</a>
+      </div>
+    </div>
+    <div class="foot-grid">
+      <div>
+        <a href="/" aria-label="Shivani, home"><img src="/assets/logo.svg" alt="Shivani" width="144" height="40"></a>
+        <p>AI/ML engineer working across generative AI, LLMs, RAG, agentic AI and NLP, plus full stack development.</p>
+        <span class="avail">Taking new projects</span>
+      </div>
+      <div>
+        <h3>Explore</h3>
+        <ul>
+          <li><a href="/services/">Services</a></li>
+          <li><a href="/#work">Projects</a></li>
+          <li><a href="/#process">Process</a></li>
+          <li><a href="/#faq">FAQ</a></li>
+          <li><a href="/blog/">Blog</a></li>
+          <li><a href="/#contact">Contact</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Services</h3>
+        <ul>
+          <li><a href="/services/generative-ai-llm-development/">Generative AI and LLMs</a></li>
+          <li><a href="/services/rag-development/">RAG development</a></li>
+          <li><a href="/services/multi-agent-systems/">Multi-agent systems</a></li>
+          <li><a href="/services/ai-orchestration-langgraph/">Orchestration with LangGraph</a></li>
+          <li><a href="/services/nlp-development/">NLP development</a></li>
+          <li><a href="/services/full-stack-development/">Full stack development</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Contact</h3>
+        <ul>
+          <li><a href="mailto:shivanigupta4876@gmail.com">shivanigupta4876@gmail.com</a></li>
+          <li><a href="tel:+919720466504">+91 97204 66504</a></li>
+          <li><a href="https://github.com/shivani1031" rel="me noopener" target="_blank">GitHub</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="foot-bottom">&copy; <span id="year">2026</span> Shivani Gupta. All rights reserved.</div>
+  </div>
+</footer>
+<a class="wa-float" href="https://wa.me/919720466504?text=Hi%20Shivani%2C%20I%20saw%20your%20website%20and%20would%20like%20to%20talk%20about%20a%20project." target="_blank" rel="noopener" aria-label="Chat on WhatsApp"><svg viewBox="0 0 24 24" width="28" height="28" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15L2 22l5.1-1.3A10 10 0 1 0 12 2zm0 18.2a8.2 8.2 0 0 1-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1a6.700 6.700 0 0 1-3.300-2.900c-.2-.3 0-.4.1-.6l.4-.4.2-.4v-.5l-.8-1.800c-.2-.5-.4-.4-.6-.4h-.5c-.2 0-.4.1-.6.3-.2.2-.8.8-.8 2s.9 2.300 1 2.500c.1.2 1.700 2.600 4.100 3.600 1.500.7 2.100.7 2.900.6.500-.1 1.500-.6 1.700-1.200.2-.6.2-1.100.1-1.200l-.2-.2z"/></svg></a>
+<script src="/assets/js/site.js" defer></script>
+</body>
+</html>

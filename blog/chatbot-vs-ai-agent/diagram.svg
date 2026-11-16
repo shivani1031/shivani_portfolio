@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 450" role="img" aria-labelledby="t">
+<title id="t">Chatbot vs AI agent</title>
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#b3ff3a"/></marker></defs>
+<rect width="800" height="450" fill="#080b0f"/>
+<g font-family="Arial, Helvetica, sans-serif" fill="#ffffff">
+<text x="400" y="50" font-size="28" text-anchor="middle" fill="#ffffff" font-weight="bold">Chatbot vs AI agent</text>
+<text x="30" y="100" font-size="20" text-anchor="start" fill="#b3ff3a">Chatbot: one turn, one reply</text>
+<rect x="20" y="115" width="178" height="90" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="109.0" y="154.0" font-size="20" text-anchor="middle" fill="#ffffff">User</text>
+<text x="109.0" y="180.0" font-size="20" text-anchor="middle" fill="#ffffff">message</text>
+<line x1="200" y1="160" x2="212" y2="160" stroke="#b3ff3a" stroke-width="3" marker-end="url(#a)"/>
+<rect x="214" y="115" width="178" height="90" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="303.0" y="154.0" font-size="20" text-anchor="middle" fill="#ffffff">Language</text>
+<text x="303.0" y="180.0" font-size="20" text-anchor="middle" fill="#ffffff">model</text>
+<line x1="394" y1="160" x2="406" y2="160" stroke="#b3ff3a" stroke-width="3" marker-end="url(#a)"/>
+<rect x="408" y="115" width="178" height="90" rx="10" fill="#b3ff3a" stroke="#b3ff3a" stroke-width="2"/>
+<text x="497.0" y="167.0" font-size="20" text-anchor="middle" fill="#080b0f">Reply</text>
+<text x="30" y="255" font-size="20" text-anchor="start" fill="#b3ff3a">AI agent: works towards a goal</text>
+<rect x="20" y="270" width="178" height="90" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="109.0" y="322.0" font-size="20" text-anchor="middle" fill="#ffffff">Goal</text>
+<line x1="200" y1="315" x2="212" y2="315" stroke="#b3ff3a" stroke-width="3" marker-end="url(#a)"/>
+<rect x="214" y="270" width="178" height="90" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="303.0" y="309.0" font-size="20" text-anchor="middle" fill="#ffffff">Plan next</text>
+<text x="303.0" y="335.0" font-size="20" text-anchor="middle" fill="#ffffff">step</text>
+<line x1="394" y1="315" x2="406" y2="315" stroke="#b3ff3a" stroke-width="3" marker-end="url(#a)"/>
+<rect x="408" y="270" width="178" height="90" rx="10" fill="none" stroke="#b3ff3a" stroke-width="2"/>
+<text x="497.0" y="309.0" font-size="20" text-anchor="middle" fill="#ffffff">Call a tool</text>
+<text x="497.0" y="335.0" font-size="20" text-anchor="middle" fill="#ffffff">or system</text>
+<line x1="588" y1="315" x2="600" y2="315" stroke="#b3ff3a" stroke-width="3" marker-end="url(#a)"/>
+<rect x="602" y="270" width="178" height="90" rx="10" fill="#b3ff3a" stroke="#b3ff3a" stroke-width="2"/>
+<text x="691.0" y="309.0" font-size="20" text-anchor="middle" fill="#080b0f">Goal met:</text>
+<text x="691.0" y="335.0" font-size="20" text-anchor="middle" fill="#080b0f">report back</text>
+<path d="M497 362 L497 390 L303 390 L303 364" fill="none" stroke="#b3ff3a" stroke-width="3" marker-end="url(#a)"/>
+<text x="400" y="425" font-size="20" text-anchor="middle" fill="#ffffff">Not done yet: check the result and plan again</text>
+</g>
+</svg>

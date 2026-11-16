@@ -103,6 +103,10 @@ The site describes the services on offer and publishes general technical guides.
 - [How to hire an AI developer in India](/blog/hire-an-ai-developer-in-india/): For Indian businesses and overseas clients: what to look for, how to brief, a paid first milestone, contracts, IP and communication.
 - [WhatsApp AI chatbot for business: a planning guide](/blog/whatsapp-ai-chatbot-for-business/): The official WhatsApp Business Platform, opt-in, the 24-hour window, RAG answers from your content, lead capture and handoff to a person.
 - [LangGraph agent tutorial: build a tool-using agent step by step](/blog/langgraph-agent-tutorial/): A model node, a ToolNode, a conditional edge with a step limit, the edge back to the model, and when to use the prebuilt agent.
+- [Chatbot vs AI agent: the real difference](/blog/chatbot-vs-ai-agent/): A chatbot answers each turn while an agent takes several steps towards a goal with tools, and where ChatGPT-style assistants fit.
+- [GLiNER vs LLM for named entity recognition](/blog/gliner-vs-llm-for-ner/): When a compact zero-shot model like GLiNER fits, when to prompt an LLM, how to compare them on your documents and how to combine them.
+- [LangGraph TypeScript tutorial: your first graph](/blog/langgraph-typescript-tutorial/): A first LangGraph.js graph with a typed state schema, a reducer, typed nodes and a conditional edge.
+- [LangGraph state explained: schemas, reducers and updates](/blog/langgraph-state-explained/): State schemas, reducers, partial updates, parallel fan-out, MessagesState and add_messages, and common mistakes.
 
 ## Projects
 
