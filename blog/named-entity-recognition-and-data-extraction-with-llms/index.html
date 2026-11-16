@@ -64,7 +64,7 @@
 <h2>NER and extraction are related but different</h2>
 <p>Named entity recognition, or NER, finds mentions of things in text and labels their type: people, organisations, places, dates, amounts. Its output is a set of spans, each pointing to a position in the source text.</p>
 <p>Structured data extraction asks for more. It fills a defined record from a document, such as the supplier, invoice date, total and line items of an invoice. Values may need normalising, inferring from context or combining from several places. A date written in words becomes a standard format, and "the Supplier" in a contract has to be resolved to the company named in its opening paragraph.</p>
-<p>The distinction matters because the two tasks fail differently. NER can be scored by checking spans against the text. Extraction also has to be right about meaning, relationships and which of several candidates is the correct one. Both are common <a href="/services/nlp-development/">NLP development</a> tasks, and if you only need to assign a label to a whole text, <a href="/blog/text-classification-llms-vs-traditional-nlp/">text classification</a> is the simpler problem.</p>
+<p>The distinction matters because the two tasks fail differently. NER can be scored by checking spans against the text. Extraction must also get meaning, relationships and the right candidate correct. Both are common <a href="/services/nlp-development/">NLP development</a> tasks, and if you only need to assign a label to a whole text, <a href="/blog/text-classification-llms-vs-traditional-nlp/">text classification</a> is the simpler problem.</p>
 
 <p>LLMs change how NER is set up. Instead of training a token classifier on labelled examples, you can describe the entity types in an instruction and ask for structured output, which is zero-shot NER. Adding a few worked examples to the prompt is few-shot NER, and it often helps with custom, domain-specific entity types that pretrained models do not cover. The output still needs the validation described below.</p>
 
@@ -106,7 +106,7 @@ class Invoice:
     currency: ExtractedValue    # three-letter currency code</code></pre>
 
 <h2>Getting structured output from the model</h2>
-<p>Many LLM providers offer a way of requesting JSON or of constraining output to a schema, and tool calling can be used for this as well. The details differ between providers and change over time, so check the current documentation for yours. Where available, these features reduce formatting errors considerably.</p>
+<p>Many LLM providers offer a way of requesting JSON or of constraining output to a schema, and tool calling can be used for this as well. Details differ by provider and change, so check current documentation.</p>
 <p>They do not make the content correct. A response can match the schema perfectly and still contain the wrong date. So treat validation as a series of layers:</p>
 <ol>
 <li><strong>Syntax.</strong> Does it parse?</li>

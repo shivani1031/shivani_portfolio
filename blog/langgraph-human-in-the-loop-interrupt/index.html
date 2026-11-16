@@ -1,0 +1,266 @@
+<!doctype html>
+<html lang="en">
+<head>
+<script async src="https://www.googletagmanager.com/gtm.js?id=GTM-THN7RV8R"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+</script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="canonical" href="https://shivanigupta.store/blog/langgraph-human-in-the-loop-interrupt/">
+<title>LangGraph Human-in-the-Loop with interrupt() | Shivani</title>
+<meta name="description" content="Add human approval to a LangGraph agent with interrupt and Command(resume=...): checkpointers, thread IDs, approve, edit and reject routes, and pitfalls.">
+<meta name="robots" content="index,follow">
+<meta name="author" content="Shivani Gupta">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<link rel="manifest" href="/site.webmanifest">
+<meta name="theme-color" content="#080b0f">
+<meta property="og:type" content="article">
+<meta property="og:title" content="LangGraph Human-in-the-Loop with interrupt() | Shivani">
+<meta property="og:description" content="Add human approval to a LangGraph agent with interrupt and Command(resume=...): checkpointers, thread IDs, approve, edit and reject routes, and pitfalls.">
+<meta property="og:url" content="https://shivanigupta.store/blog/langgraph-human-in-the-loop-interrupt/">
+<meta property="og:image" content="https://shivanigupta.store/assets/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"LangGraph human-in-the-loop with interrupt: approve, edit or reject","description":"Add human approval to a LangGraph agent with interrupt and Command(resume=...): checkpointers, thread IDs, approve, edit and reject routes, and pitfalls.","mainEntityOfPage":"https://shivanigupta.store/blog/langgraph-human-in-the-loop-interrupt/","datePublished":"2026-11-16","dateModified":"2026-11-16","image":"https://shivanigupta.store/blog/langgraph-human-in-the-loop-interrupt/diagram.svg","author":{"@type":"Person","name":"Shivani Gupta"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://shivanigupta.store/"},{"@type":"ListItem","position":2,"name":"Blog","item":"https://shivanigupta.store/blog/"},{"@type":"ListItem","position":3,"name":"LangGraph human-in-the-loop with interrupt: approve, edit or reject","item":"https://shivanigupta.store/blog/langgraph-human-in-the-loop-interrupt/"}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"How does interrupt work in LangGraph?","acceptedAnswer":{"@type":"Answer","text":"Calling interrupt inside a node stops the run, saves the state through the checkpointer and returns the value you passed to the caller. When you invoke the graph again with Command(resume=...) and the same thread ID, the node runs again and interrupt returns the resume value."}},{"@type":"Question","name":"Why does my LangGraph interrupt not pause?","acceptedAnswer":{"@type":"Answer","text":"The usual causes are compiling the graph without a checkpointer, not passing a thread_id in the config, or wrapping interrupt in a broad try and except block that catches the exception it uses to pause."}},{"@type":"Question","name":"How do I resume a LangGraph graph after an interrupt?","acceptedAnswer":{"@type":"Answer","text":"Call invoke or stream with Command(resume=value) as the input and the same config, including the same thread ID. The value becomes the return value of interrupt in the paused node."}},{"@type":"Question","name":"Can a reviewer edit the agent's proposal?","acceptedAnswer":{"@type":"Answer","text":"Yes. Resume with the changed fields, merge them into the proposal inside the review node, validate the result and route to execution. Keep the original as well, so that you can see what was changed."}},{"@type":"Question","name":"Which checkpointer should I use for human approval in production?","acceptedAnswer":{"@type":"Answer","text":"Use a durable, database-backed checkpointer rather than InMemorySaver, because a person may answer hours or days later, after the process has restarted."}}]}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&family=Poppins:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+<a class="skip-link" href="#top">Skip to content</a>
+<header class="nav">
+  <div class="wrap nav-in">
+    <a class="logo" href="/" aria-label="Shivani, home"><img src="/assets/logo.svg" alt="Shivani" width="144" height="40"></a>
+    <nav id="nav-links" aria-label="Main">
+      <a href="/#services">Services</a>
+      <a href="/#skills">Skills</a>
+      <a href="/#work">Work</a>
+      <a href="/#process">Process</a>
+      <a href="/#faq">FAQ</a>
+      <a href="/blog/">Blog</a>
+      <a class="btn btn-sm" href="/#contact">Hire Me</a>
+    </nav>
+    <button id="menu-toggle" class="menu-toggle" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="nav-links"><span></span><span></span><span></span></button>
+  </div>
+</header>
+
+<main id="top">
+  <section class="page-head">
+    <div class="wrap">
+      <nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a><span aria-hidden="true">/</span><a href="/blog/">Blog</a><span aria-hidden="true">/</span><span aria-current="page">LangGraph human-in-the-loop with interrupt: approve, edit or reject</span></nav>
+      <p class="eyebrow">Guide</p>
+      <h1>LangGraph human-in-the-loop with interrupt: approve, edit or reject</h1>
+      <p class="lead">To add human approval in LangGraph, call <code>interrupt()</code> inside a review node with the proposed action as its payload, compile the graph with a checkpointer, and run it with a <code>thread_id</code> in the config. The run pauses and saves its state. When the reviewer decides, invoke the graph again with <code>Command(resume=decision)</code> and the same thread ID: <code>interrupt()</code> returns the decision, and the node routes to execute the original, execute an edited version, or stop.</p>
+    </div>
+  </section>
+  <section class="article">
+    <div class="wrap prose">
+<h2>What this guide adds</h2>
+<p>Two earlier guides cover the ground around this one. <a href="/blog/human-in-the-loop-approval-for-ai-agents/">Human-in-the-loop approval for AI agents</a> explains which actions deserve a pause and how to design the review step, independent of any framework. <a href="/blog/langgraph-examples/">LangGraph examples</a> includes a minimal pause that resumes with a yes or no. This guide goes further on the LangGraph side: a structured decision with three outcomes, routing with <code>Command</code>, finding paused threads, validating the reviewer's answer, and the rules that cause subtle bugs.</p>
+<p>The code was run against the <code>langgraph</code> 1.2 Python package and checked against the LangGraph interrupts documentation and the docstrings in the installed package. LangGraph has changed its human-in-the-loop API before, so compare these details with the version you have installed.</p>
+
+<h2>The three pieces you need</h2>
+<ul>
+<li><strong><code>interrupt(value)</code>.</strong> Called inside a node, it stops the run and surfaces <code>value</code> to the caller. The value should be JSON-serialisable: the proposal, a question and the allowed options work well.</li>
+<li><strong>A checkpointer.</strong> Pausing only works if the graph's state is saved somewhere. Pass one to <code>compile(checkpointer=...)</code>. <code>InMemorySaver</code> is fine for tests but is lost when the process stops, so production needs a database-backed checkpointer.</li>
+<li><strong>A thread ID.</strong> Every run goes in <code>config["configurable"]["thread_id"]</code>. The checkpoint is stored under that ID, and resuming needs the same ID. A new ID starts an empty thread rather than continuing the paused one.</li>
+</ul>
+<p>Resuming uses <code>Command(resume=...)</code> as the input to <code>invoke</code> or <code>stream</code>. Whatever you put in <code>resume</code> becomes the return value of <code>interrupt()</code> inside the node.</p>
+
+<figure class="post-figure"><img src="/blog/langgraph-human-in-the-loop-interrupt/diagram.svg" alt="Diagram of a LangGraph approval flow in two invocations. On the first, an agent node proposes an action, the review node calls interrupt, the state is saved in a checkpoint under the thread ID and the reviewer sees the payload. On the second, the same thread ID is sent with the decision, the review node runs again, Command with goto picks a route, and the graph moves to the execute node or the rejected node." width="800" height="450" loading="lazy"><figcaption>The first invoke stops at <code>interrupt()</code> and saves a checkpoint; the second resumes the same thread with the reviewer's decision.</figcaption></figure>
+
+<h2>A complete approve, edit or reject example</h2>
+<p>The sample below is illustrative and runs as written. A fixed proposal stands in for a model call, and the execute node only builds a string, so nothing is refunded. It runs three threads, one for each decision.</p>
+<pre><code># Illustrative only. propose stands in for a model call; nothing is paid.
+from typing import Literal, TypedDict
+
+from langgraph.checkpoint.memory import InMemorySaver
+from langgraph.graph import END, START, StateGraph
+from langgraph.types import Command, interrupt
+
+
+class State(TypedDict, total=False):
+    ticket: str
+    proposal: dict
+    decision: str
+    note: str
+    result: str
+
+
+def propose(state: State):
+    # In a real graph a model drafts this proposal; here it is fixed.
+    return {&quot;proposal&quot;: {&quot;action&quot;: &quot;refund&quot;, &quot;order&quot;: &quot;A-1001&quot;, &quot;amount&quot;: 40}}
+
+
+def review(state: State) -&gt; Command[Literal[&quot;execute&quot;, &quot;rejected&quot;]]:
+    # Code above interrupt() runs again on resume, so keep it free of side effects.
+    answer = interrupt({
+        &quot;kind&quot;: &quot;approval&quot;,
+        &quot;proposal&quot;: state[&quot;proposal&quot;],
+        &quot;options&quot;: [&quot;approve&quot;, &quot;edit&quot;, &quot;reject&quot;],
+    })
+    choice = answer.get(&quot;decision&quot;)
+    if choice == &quot;approve&quot;:
+        return Command(goto=&quot;execute&quot;, update={&quot;decision&quot;: &quot;approve&quot;})
+    if choice == &quot;edit&quot;:
+        edited = {**state[&quot;proposal&quot;], **answer.get(&quot;changes&quot;, {})}
+        return Command(goto=&quot;execute&quot;, update={&quot;decision&quot;: &quot;edit&quot;, &quot;proposal&quot;: edited})
+    return Command(goto=&quot;rejected&quot;,
+                   update={&quot;decision&quot;: &quot;reject&quot;, &quot;note&quot;: answer.get(&quot;reason&quot;, &quot;&quot;)})
+
+
+def execute(state: State):
+    p = state[&quot;proposal&quot;]
+    # A real call should send an idempotency key, such as the thread ID.
+    return {&quot;result&quot;: f&quot;refunded {p[&#x27;amount&#x27;]} on {p[&#x27;order&#x27;]}&quot;}
+
+
+def rejected(state: State):
+    return {&quot;result&quot;: &quot;not run: &quot; + (state.get(&quot;note&quot;) or &quot;no reason given&quot;)}
+
+
+builder = StateGraph(State)
+builder.add_node(&quot;propose&quot;, propose)
+builder.add_node(&quot;review&quot;, review)
+builder.add_node(&quot;execute&quot;, execute)
+builder.add_node(&quot;rejected&quot;, rejected)
+builder.add_edge(START, &quot;propose&quot;)
+builder.add_edge(&quot;propose&quot;, &quot;review&quot;)
+builder.add_edge(&quot;execute&quot;, END)
+builder.add_edge(&quot;rejected&quot;, END)
+graph = builder.compile(checkpointer=InMemorySaver())
+
+
+def run_case(thread_id, human_answer):
+    config = {&quot;configurable&quot;: {&quot;thread_id&quot;: thread_id}}
+    graph.invoke({&quot;ticket&quot;: &quot;Customer asks for a refund&quot;}, config)
+
+    snapshot = graph.get_state(config)
+    pending = snapshot.interrupts[0]
+    print(thread_id, &quot;paused before&quot;, snapshot.next, pending.value[&quot;proposal&quot;])
+
+    final = graph.invoke(Command(resume=human_answer), config)
+    print(thread_id, final[&quot;decision&quot;], &quot;|&quot;, final[&quot;result&quot;])
+
+
+run_case(&quot;ticket-1&quot;, {&quot;decision&quot;: &quot;approve&quot;})
+run_case(&quot;ticket-2&quot;, {&quot;decision&quot;: &quot;edit&quot;, &quot;changes&quot;: {&quot;amount&quot;: 25}})
+run_case(&quot;ticket-3&quot;, {&quot;decision&quot;: &quot;reject&quot;, &quot;reason&quot;: &quot;outside the refund window&quot;})</code></pre>
+<p>Running it prints a pause for each thread, followed by an approved refund of 40, an edited refund of 25, and a rejection that records the reason. The interesting parts are the review node and the resume value.</p>
+
+<h2>Routing the decision with Command</h2>
+<p><code>Command</code> appears in two roles here, and it helps to keep them apart. As the <em>input</em> to <code>invoke</code>, <code>Command(resume=...)</code> carries the human's answer back into the paused node. As the <em>return value</em> of a node, <code>Command(goto=..., update=...)</code> updates state and chooses the next node in one step, which replaces a separate conditional edge.</p>
+<p>The return annotation <code>Command[Literal["execute", "rejected"]]</code> declares which nodes the review node can reach, so that LangGraph can show those routes when it draws the graph.</p>
+<p>Notice the default. Anything other than <code>approve</code> or <code>edit</code> goes to <code>rejected</code>. A typo, a missing field or an unexpected value should never execute an action, so make "do not run" the fallback.</p>
+
+<h2>Handling edits safely</h2>
+<p>An edit is the most useful option and the easiest to get wrong. In the example, the reviewer sends only the fields they changed, and the node merges them into the original proposal. In a real system, limit which fields can be edited, validate the merged result with the same checks that the agent's proposal passed, and keep both versions in state so that your logs show what the agent proposed and what was approved.</p>
+<p>If an edit changes the action enough to need a second look, for example a much larger amount, route back to the review node instead of to execution. Because the node is called again on a new step, it raises a fresh interrupt for the new proposal.</p>
+
+<h2>Finding paused threads</h2>
+<p>A reviewer works from a list, not a terminal. Two tools help to build one:</p>
+<ul>
+<li>The result of <code>invoke</code> contains an <code>__interrupt__</code> key when the run paused, holding the interrupt objects and their values.</li>
+<li><code>graph.get_state(config)</code> returns a snapshot for a thread. <code>snapshot.next</code> shows the node waiting to run, and <code>snapshot.interrupts</code> lists pending interrupts, each with a <code>value</code> and an <code>id</code>.</li>
+</ul>
+<p>Checkpointers are not a work queue, so record each pause in your own table as well: the thread ID, the payload, who should review it and when it was created. Your review screen reads that table, and the decision handler resumes the matching thread. The guide on <a href="/blog/building-a-backend-api-for-an-ai-agent-in-python/">building a backend API for an AI agent</a> shows how to wrap runs in endpoints.</p>
+
+<h2>Rules that cause subtle bugs</h2>
+<p>The LangGraph documentation lists several rules for interrupts. These are the ones most likely to bite:</p>
+<ul>
+<li><strong>The node runs again from the start.</strong> On resume, LangGraph re-executes the interrupted node from its first line, and <code>interrupt()</code> then returns the resume value instead of pausing. Code before the call runs twice, so keep it free of side effects. Never send the email and then ask for approval in the same node.</li>
+<li><strong>Do not catch the pause.</strong> <code>interrupt()</code> works by raising an exception. A bare <code>try</code> and <code>except</code> around it swallows the pause. Catch specific exception types, or keep the call outside the <code>try</code> block.</li>
+<li><strong>Keep the order stable.</strong> When a node calls <code>interrupt()</code> more than once, resume values are matched by position. Do not skip interrupts conditionally or loop over data that might change between runs.</li>
+<li><strong>Several pauses at once.</strong> If parallel branches interrupt together, resume with a dictionary that maps each interrupt's ID to its value.</li>
+<li><strong>Make execution idempotent.</strong> A retry or a duplicate resume should not repeat a refund. Pass an idempotency key, such as the thread ID plus the proposal, to the system that performs the action.</li>
+</ul>
+
+<h2>Validating the reviewer's answer</h2>
+<p>The resume value comes from outside the graph, so treat it as untrusted input. Check that the person resuming is allowed to approve this kind of action before you call <code>invoke</code>, and validate the shape of the decision.</p>
+<p>Recent versions add a <code>response_schema</code> argument to <code>interrupt()</code>. The documentation states that it needs <code>langgraph</code> 1.2.12 or later. Given a Pydantic model, <code>TypedDict</code> or dataclass, it publishes a JSON Schema for the client and validates the resume value, returning the validated object. On older versions, validate the decision yourself at the start of the review node or in the API handler.</p>
+
+<h2>Going to production</h2>
+<p>Swap <code>InMemorySaver</code> for a durable checkpointer, give every run a meaningful thread ID such as a ticket number, and decide what happens when nobody answers. Reminders, escalation, expiry and audit logs are organisational choices as much as code, and <a href="/blog/approval-workflows-for-ai-agents-in-production/">approval workflows for AI agents in production</a> covers how to design them. Test each route with a fixed proposal and scripted decisions, as the example does; <a href="/blog/testing-ai-agents/">testing AI agents</a> has more on testing without a live model.</p>
+<p>To have an approval flow designed and built into your own LangGraph application, see <a href="/services/ai-orchestration-langgraph/">orchestration with LangGraph</a>.</p>
+<aside class="post-cta" aria-label="Work with Shivani">
+<h2>Need a LangGraph workflow built?</h2>
+<p>I design and build LangGraph workflows end to end, from the AI workflow to the backend and UI. Tell me what you want to build and I will reply with next steps.</p>
+<p class="post-cta-btns"><a class="btn" href="https://wa.me/919720466504?text=Hi%20Shivani%2C%20I%20read%20your%20guide%20%22LangGraph%20human-in-the-loop%20with%20interrupt%3A%20approve%2C%20edit%20or%20reject%22%20and%20would%20like%20to%20discuss%20a%20LangGraph%20workflow." target="_blank" rel="noopener">Chat on WhatsApp</a> <a class="btn btn-line" href="/#contact">Send project details</a> <a class="post-cta-link" href="/services/ai-orchestration-langgraph/">See the service</a></p>
+</aside>
+      <h2>Frequently asked questions</h2>
+      <h3>How does interrupt work in LangGraph?</h3>
+      <p>Calling interrupt inside a node stops the run, saves the state through the checkpointer and returns the value you passed to the caller. When you invoke the graph again with Command(resume=...) and the same thread ID, the node runs again and interrupt returns the resume value.</p>
+      <h3>Why does my LangGraph interrupt not pause?</h3>
+      <p>The usual causes are compiling the graph without a checkpointer, not passing a thread_id in the config, or wrapping interrupt in a broad try and except block that catches the exception it uses to pause.</p>
+      <h3>How do I resume a LangGraph graph after an interrupt?</h3>
+      <p>Call invoke or stream with Command(resume=value) as the input and the same config, including the same thread ID. The value becomes the return value of interrupt in the paused node.</p>
+      <h3>Can a reviewer edit the agent&#x27;s proposal?</h3>
+      <p>Yes. Resume with the changed fields, merge them into the proposal inside the review node, validate the result and route to execution. Keep the original as well, so that you can see what was changed.</p>
+      <h3>Which checkpointer should I use for human approval in production?</h3>
+      <p>Use a durable, database-backed checkpointer rather than InMemorySaver, because a person may answer hours or days later, after the process has restarted.</p>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="foot-cta">
+      <div>
+        <h2>Have an AI or full stack project in mind?</h2>
+        <p>Tell me what you want to build.</p>
+      </div>
+      <div class="foot-cta-btns">
+        <a class="btn" href="/#contact">Start a conversation</a>
+        <a class="btn btn-line" href="mailto:shivanigupta4876@gmail.com">Send an email</a>
+      </div>
+    </div>
+    <div class="foot-grid">
+      <div>
+        <a href="/" aria-label="Shivani, home"><img src="/assets/logo.svg" alt="Shivani" width="144" height="40"></a>
+        <p>AI/ML engineer working across generative AI, LLMs, RAG, agentic AI and NLP, plus full stack development.</p>
+        <span class="avail">Taking new projects</span>
+      </div>
+      <div>
+        <h3>Explore</h3>
+        <ul>
+          <li><a href="/services/">Services</a></li>
+          <li><a href="/#work">Projects</a></li>
+          <li><a href="/#process">Process</a></li>
+          <li><a href="/#faq">FAQ</a></li>
+          <li><a href="/blog/">Blog</a></li>
+          <li><a href="/#contact">Contact</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Services</h3>
+        <ul>
+          <li><a href="/services/generative-ai-llm-development/">Generative AI and LLMs</a></li>
+          <li><a href="/services/rag-development/">RAG development</a></li>
+          <li><a href="/services/multi-agent-systems/">Multi-agent systems</a></li>
+          <li><a href="/services/ai-orchestration-langgraph/">Orchestration with LangGraph</a></li>
+          <li><a href="/services/nlp-development/">NLP development</a></li>
+          <li><a href="/services/full-stack-development/">Full stack development</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Contact</h3>
+        <ul>
+          <li><a href="mailto:shivanigupta4876@gmail.com">shivanigupta4876@gmail.com</a></li>
+          <li><a href="tel:+919720466504">+91 97204 66504</a></li>
+          <li><a href="https://github.com/shivani1031" rel="me noopener" target="_blank">GitHub</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="foot-bottom">&copy; <span id="year">2026</span> Shivani Gupta. All rights reserved.</div>
+  </div>
+</footer>
+<a class="wa-float" href="https://wa.me/919720466504?text=Hi%20Shivani%2C%20I%20saw%20your%20website%20and%20would%20like%20to%20talk%20about%20a%20project." target="_blank" rel="noopener" aria-label="Chat on WhatsApp"><svg viewBox="0 0 24 24" width="28" height="28" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15L2 22l5.1-1.3A10 10 0 1 0 12 2zm0 18.2a8.2 8.2 0 0 1-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1a6.700 6.700 0 0 1-3.300-2.900c-.2-.3 0-.4.1-.6l.4-.4.2-.4v-.5l-.8-1.800c-.2-.5-.4-.4-.6-.4h-.5c-.2 0-.4.1-.6.3-.2.2-.8.8-.8 2s.9 2.300 1 2.500c.1.2 1.700 2.600 4.100 3.600 1.500.7 2.100.7 2.900.6.500-.1 1.500-.6 1.700-1.200.2-.6.2-1.100.1-1.200l-.2-.2z"/></svg></a>
+<script src="/assets/js/site.js" defer></script>
+</body>
+</html>

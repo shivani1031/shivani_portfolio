@@ -97,6 +97,9 @@ The site describes the services on offer and publishes general technical guides.
 - [ChromaDB RAG tutorial: indexing, persistence and filters](/blog/chromadb-rag-tutorial/): Indexing and querying with ChromaDB in Python: a persistent client, upsert with stable ids, your own embeddings, where filters and deletes.
 - [No-code chatbot builder vs custom chatbot: which do you need?](/blog/no-code-chatbot-builder-vs-custom-chatbot/): When a builder trained on your website is enough, when a custom chatbot is worth it, and how to trial the builder first.
 - [Designing an AI chatbot for lead capture](/blog/ai-chatbot-for-lead-capture/): Answer first, then qualify; structured lead fields, consent and privacy, handoff by email or WhatsApp, and what to measure.
+- [LangGraph human-in-the-loop with interrupt: approve, edit or reject](/blog/langgraph-human-in-the-loop-interrupt/): A three-outcome approval node using interrupt and Command(resume), finding paused threads, validating the reviewer's answer and avoiding subtle bugs.
+- [FastAPI LLM chatbot: models, streaming, conversation IDs and tests](/blog/fastapi-llm-chatbot/): Pydantic models, server-generated conversation IDs, Server-Sent Events streaming, timeouts and errors, and a TestClient suite.
+- [Approval workflows for AI agents in production](/blog/approval-workflows-for-ai-agents-in-production/): Approval policy, review queues, notifications, timeouts and escalation, audit logs and watching for approval fatigue.
 
 ## Projects
 
