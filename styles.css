@@ -207,3 +207,12 @@ nav a:not(.btn):hover { color: var(--accent); }
 .post-figure { margin: 32px 0; }
 .post-figure img { display: block; width: 100%; height: auto; border: 1px solid var(--line); border-radius: 12px; }
 .post-figure figcaption { margin-top: 10px; font-size: 14px; color: var(--muted, rgba(255,255,255,.7)); }
+
+/* Hero availability badge and skill chips */
+.badge-avail { display: inline-flex; align-items: center; gap: 10px; margin: 0 0 20px; padding: 7px 16px; border: 1px solid var(--line); border-radius: 999px; background: rgba(179,255,58,.08); color: var(--ink); font-size: 14px; font-weight: 500; }
+.badge-avail .dot { position: relative; width: 9px; height: 9px; border-radius: 50%; background: var(--accent); }
+.badge-avail .dot::after { content: ""; position: absolute; inset: 0; border-radius: 50%; background: var(--accent); animation: avail-pulse 2s ease-out infinite; }
+@keyframes avail-pulse { from { transform: scale(1); opacity: .7; } to { transform: scale(2.6); opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .badge-avail .dot::after { animation: none; } }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; margin: 28px 0 0; padding: 0; list-style: none; }
+.chips li { padding: 6px 14px; border: 1px solid var(--line); border-radius: 999px; color: var(--muted); font-size: 14px; }
